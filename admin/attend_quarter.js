@@ -81,9 +81,11 @@
 			$(this).html(str);
 		});
 
+		$("#DEF_THEAD").html("<th>팀</th>");
 		$("#DEF_A").html("<td style=\"background-color:#ffa2a2;\">A팀</td>");
 		$("#DEF_B").html("<td style=\"background-color:#9d9dff;\">B팀</td>");
 		for(var i=0; i<lastidx; i++){
+			$("#DEF_THEAD").append("<th>"+(i+1)+"쿼</th>");
 			$("#DEF_A").append("<td onclick='setDefQuarter(this);' class='def_a' id='def_a_"+(i+1)+"'></td>");
 			$("#DEF_B").append("<td onclick='setDefQuarter(this);' class='def_b' id='def_b_"+(i+1)+"'></td>");
 		}
@@ -165,6 +167,15 @@
 							bstr += "<td>"+(i+1)+"쿼</td>";
 						}
 						$("#TEAM_B_THEAD").html(bstr);
+
+						$("#DEF_THEAD").html("<th>팀</th>");
+						$("#DEF_A").html("<td style=\"background-color:#ffa2a2;\">A팀</td>");
+						$("#DEF_B").html("<td style=\"background-color:#9d9dff;\">B팀</td>");
+						for(var i=0; i<lastidx; i++){
+							$("#DEF_THEAD").append("<th>"+(i+1)+"쿼</th>");
+							$("#DEF_A").append("<td onclick='setDefQuarter(this);' class='def_a' id='def_a_"+(i+1)+"'></td>");
+							$("#DEF_B").append("<td onclick='setDefQuarter(this);' class='def_b' id='def_b_"+(i+1)+"'></td>");
+						}
 
 						setQuarterInit();
 
@@ -452,6 +463,18 @@
 					}
 				}
 				
+				if(data[0]["def_a"] != null && data[0]["def_a"] != "" && data[0]["def_a"] != undefined){
+					var def_a = data[0]["def_a"].split(";");
+					for(var di = 0; di<def_a.length; di++){
+						$("#def_a_" + def_a[di]).text("o");
+					}
+				}
+				if(data[0]["def_b"] != null && data[0]["def_b"] != "" && data[0]["def_b"] != undefined){
+					var def_b = data[0]["def_b"].split(";");
+					for(var di = 0; di<def_b.length; di++){
+						$("#def_b_" + def_b[di]).text("o");
+					}
+				}
 			}
 		}
 	}
