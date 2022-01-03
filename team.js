@@ -128,7 +128,7 @@
 				$("#header_logo").html("<img src='/football_tpm/img/LOGO_1.png' style='width:40px;' />");
 				$("#header_1").text(data[0]["team_name"]);
 				$("#nav_header").text(data[0]["team_name"]);
-				$("#total_match_cnt").text("총 경기 수: " + data[0]["total_cnt"]);
+				$("#total_match_cnt").text("기록 경기 수: " + data[0]["total_cnt"]);
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
@@ -176,6 +176,26 @@
 		}
 	}
 
+	function getMatchCnt(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "play_cnt",
+				id : 1,
+				st : $("#searchStartDate").val(),
+				ed : $("#searchEndDate").val()
+			},
+			dataType : "json",
+			success : function(data) {
+				$("#match_cnt").text("조회 경기 수: " + data[0]["total_cnt"]);
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
 	function getPlayer() {
 
 		$.ajax({
@@ -198,6 +218,8 @@
 				alert("오류발생 관리자에게 문의하세요.")
 			}
 		});
+
+		getMatchCnt();
 	}
 	function setPlayer(data){
 		for (var i = 0; i < data.length; i++) {
@@ -267,6 +289,8 @@
 				alert("오류발생 관리자에게 문의하세요.")
 			}
 		});
+		
+		getMatchCnt();
 	}
 
 	function createPlayer() {

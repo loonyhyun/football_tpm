@@ -18,6 +18,29 @@ if($pcmd == "team"){
         array_push($array, array('team_name'=>$row['team_name'], 'total_cnt'=>$row['total_cnt']));
     }
 }
+else if($pcmd == "play_cnt"){
+    if($conn){
+        $sql = "SELECT COUNT(1) total_cnt FROM football_match WHERE team_id = '".$pid."'";
+        
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $pst = $_REQUEST["st"];
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND match_date BETWEEN '".$pst."' AND '".$ped."' ";
+        }
+        else if( ! empty($_REQUEST["st"]) ){
+            $pst = $_REQUEST["st"];
+            $sql = $sql." AND match_date >= '".$pst."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND match_date <= '".$ped."' ";
+        }
+
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_array($result);
+        array_push($array, array('total_cnt'=>$row['total_cnt']));
+    }
+}
 else if($pcmd == "player"){
     if($conn){
         $sql = "SELECT * FROM football_player where team_id = '".$pid."' 
