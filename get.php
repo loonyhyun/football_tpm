@@ -651,9 +651,26 @@ else if($pcmd == "attend_quater"){
         $sql = "SELECT * FROM football_attend_quater";
         $result = mysqli_query($conn, $sql);
         while($row = mysqli_fetch_array($result)){
-            array_push($array, array('team_a'=>$row['team_a'],'team_b'=>$row['team_b'],'quarters'=>$row['quarters'])
+            array_push($array, array(
+                'team_a'=>$row['team_a']
+                ,'team_b'=>$row['team_b']
+                ,'quarters'=>$row['quarters']
+                ,'def_a'=>$row['def_a']
+                ,'def_b'=>$row['def_b']
+                )
             );
         }
+    }
+}
+else if($pcmd == "max_match_id"){
+    if($conn){
+        $sql = "SELECT max(id) match_id FROM football_match where team_id = ".$pid."";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_array($result);
+        array_push($array, array(
+            'match_id'=>$row['match_id']
+            )
+        );
     }
 }
 else{
