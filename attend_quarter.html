@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Football_Record_Statistics">
+<meta name="author" content="LoonyHyun">
+<meta property="og:url" content="https://loonyhyun.cafe24.com/">
+<meta property="og:title" content="바론 FC 경기 기록실">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+<meta property="og:description" content="바론 FC의 경기 기록실 입니다.">
+<title>쿼터 확인</title>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script src="/football_tpm/bootstrap-datepicker.min.js"></script>
+<script src="/football_tpm/bootstrap-datepicker.ko.min.js"></script>
+<link href="/football_tpm/bootstrap-datepicker.min.css" rel="stylesheet">
+
+<script src="/football_tpm/team.js"></script>
+<link href="/football_tpm/team.css" rel="stylesheet">
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1427445728121282"
+crossorigin="anonymous"></script>
+
+<script>
+	$(document).ready(function(){
+		$("#headers").load("/football_tpm/header.html", function(){
+			getTeam();
+			$("#header_attend_quater").addClass("text-warning").removeClass("text-white");
+			$("#drop_header").text($("#drop_header_attend_quater").text());
+		});
+		setLayout();
+		getInitAttend();
+	});
+
+	$(window).resize(function(){
+		setLayout();
+	});
+
+	var selectedPlayers = [];
+
+	function getInitAttend(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "attend",
+				id : 1,
+			},
+			dataType : "json",
+			success : function(data) {
+				var teamAidx = 0;
+				var teamBidx = 0;
+				for(var i=0; i<data.length; i++){
+					if(data[i]["team_type"] == "a"){
+						teamAidx++;
+						$("#ATTEND_TEAM_A").append("<tr><td>"+teamAidx+"</td><td>"+data[i]["player_name"]+"</td></tr>");
+						selectedPlayers.push(data[i]["player_id"]);
+					}
+					else if(data[i]["team_type"] == "b"){
+						teamBidx++;
+						$("#ATTEND_TEAM_B").append("<tr><td>"+teamBidx+"</td><td>"+data[i]["player_name"]+"</td></tr>");
+						selectedPlayers.push(data[i]["player_id"]);
+					}
+				}
+				setAttendQuater();
+				getAttendQuater();
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function setAttendQuater(){
+		var tvalue = $("#QUARTER_NUM").val();
+		var chkIdx = 0;
+		var itemIdx = 0;
+		$("#ATTEND_TEAM_A").children().children().each(function(){
+			if(chkIdx == 0){
+				$(this).html("<th colspan=\"2\">A팀</th><th>조퇴</th>");
+			}
+			else{
+				$(this).html("<td>"+$(this).children().eq(0).text()+"</td><td>"+$(this).children().eq(1).text()+"</td>"
+				+"<td onclick='setAttendLeave(this);'></td>");
+			}
+			for(var i=0; i<tvalue; i++){
+				if(chkIdx == 0){
+					$(this).append("<th>"+(i+1)+"쿼</th>");
+				}else{
+					$(this).append("<td onclick='setQuarter(\"a\", "+i+", this);'></td>");
+				}
+			}
+			if(chkIdx == 0){
+				$(this).append("<th>골</th>");
+				$(this).append("<th>어시</th>");
+			}else{
+				var goalsinput = "";
+				goalsinput += " <input type='number' name='goals' id='goals_"+itemIdx+"' style='width:35px;' value='0'/>";
+				goalsinput += "<br> <button type='button' class='btn btn-sm btn-primary' style='width:25px;' onclick=\"plusValue('goals_"+itemIdx+"');\">+</button>";
+				goalsinput += "<button type='button' class='btn btn-sm btn-danger' style='width:25px;' onclick=\"minusValue('goals_"+itemIdx+"');\">-</button>";
+				var asstsinput = "";
+				asstsinput += " <input type='number' name='assts' id='assts_"+itemIdx+"' style='width:35px;' value='0'/>";
+				asstsinput += "<br> <button type='button' class='btn btn-sm btn-primary' style='width:25px;' onclick=\"plusValue('assts_"+itemIdx+"');\">+</button>";
+				asstsinput += "<button type='button' class='btn btn-sm btn-danger' style='width:25px;' onclick=\"minusValue('assts_"+itemIdx+"');\">-</button>";
+				$(this).append("<td style='padding:0;min-width:52px;'>"+goalsinput+"</td>");
+				$(this).append("<td style='padding:0;min-width:52px;'>"+asstsinput+"</td>");
+				itemIdx++;
+			}
+			chkIdx++;
+		});
+		
+		chkIdx = 0;
+		$("#ATTEND_TEAM_B").children().children().each(function(){
+			if(chkIdx == 0){
+				$(this).html("<th colspan=\"2\">B팀</th><th>조퇴</th>");
+			}
+			else{
+				$(this).html("<td>"+$(this).children().eq(0).text()+"</td><td>"+$(this).children().eq(1).text()+"</td>"
+				+"<td onclick='setAttendLeave(this);'></td>");
+			}
+			for(var i=0; i<tvalue; i++){
+				if(chkIdx == 0){
+					$(this).append("<th>"+(i+1)+"쿼</th>");
+				}else{
+					$(this).append("<td onclick='setQuarter(\"b\", "+i+", this);'></td>");
+				}
+			}
+			if(chkIdx == 0){
+				$(this).append("<th>골</th>");
+				$(this).append("<th>어시</th>");
+			}else{
+				var goalsinput = "";
+				goalsinput += " <input type='number' name='goals' id='goals_"+itemIdx+"' style='width:35px;' value='0'/>";
+				goalsinput += "<br> <button type='button' class='btn btn-sm btn-primary' style='width:25px;' onclick=\"plusValue('goals_"+itemIdx+"');\">+</button>";
+				goalsinput += "<button type='button' class='btn btn-sm btn-danger' style='width:25px;' onclick=\"minusValue('goals_"+itemIdx+"');\">-</button>";
+				var asstsinput = "";
+				asstsinput += " <input type='number' name='assts' id='assts_"+itemIdx+"' style='width:35px;' value='0'/>";
+				asstsinput += "<br> <button type='button' class='btn btn-sm btn-primary' style='width:25px;' onclick=\"plusValue('assts_"+itemIdx+"');\">+</button>";
+				asstsinput += "<button type='button' class='btn btn-sm btn-danger' style='width:25px;' onclick=\"minusValue('assts_"+itemIdx+"');\">-</button>";
+				$(this).append("<td style='padding:0;min-width:52px;'>"+goalsinput+"</td>");
+				$(this).append("<td style='padding:0;min-width:52px;'>"+asstsinput+"</td>");
+				itemIdx++;
+			}
+			chkIdx++;
+		});
+	}
+
+	function plusValue(id){
+		$("#" + id).val(parseInt($("#" + id).val()) + 1);
+	}
+	function minusValue(id){
+		$("#" + id).val(parseInt($("#" + id).val()) - 1);
+	}
+
+	function setAttendLeave(obj){
+		var txt = $(obj).text();
+		var lastidx = parseInt($("#QUARTER_NUM").val()) - 1;
+		if(txt == ""){
+			txt = "1q 후";
+		}else if(txt == (lastidx) + "q 후"){
+			txt = "";
+		}
+		else{
+			for(var i=1; i<lastidx; i++){
+				if(txt == i + "q 후"){
+					txt = (i+1) + "q 후";
+					break;
+				}
+			}
+		}
+		$(obj).text(txt);
+	}
+
+	var quater_players_a = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	var quater_players_b = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	function setQuarter(type, idx, obj){
+		/*
+		var txt = $(obj).text();
+		var selectedPlayerCnt = 0;
+		
+		if(txt == ""){
+			txt = "o";
+		}
+		else{
+			txt = "";
+		}
+		$(obj).text(txt);
+
+		var tableTarget = $("#ATTEND_TEAM_B");
+
+		if(type == 'a'){
+			tableTarget = $("#ATTEND_TEAM_A");
+		}else{
+			tableTarget = $("#ATTEND_TEAM_B");
+		}
+		
+		chkIdx = 0;
+		tableTarget.children().children().each(function(){
+			if(chkIdx > 0){
+				var target = $(this).children();
+				var tmp = target.eq(3 + idx).text();
+				if(tmp != ""){
+					selectedPlayerCnt++;
+					if(selectedPlayerCnt < 11)
+						target.eq(3 + idx).text(selectedPlayerCnt);
+					else if(selectedPlayerCnt == 11){
+						target.eq(3 + idx).text("GK");
+					}
+					console.log(selectedPlayerCnt);
+				}
+			}
+			chkIdx++;
+		});
+		if(type == 'a'){
+			quater_players_a[idx] = selectedPlayerCnt;
+		}else{
+			quater_players_b[idx] = selectedPlayerCnt;
+		}
+		*/
+		var txt = $(obj).text();
+		var selectedPlayerCnt = 0;
+		
+		if(txt == ""){
+			txt = "GK";
+			$(obj).text(txt);
+			if(type == 'a'){
+				quater_players_a[idx]++;
+				var selectedPlayerCnt = quater_players_a[idx];
+				if(selectedPlayerCnt < 11)
+					$(obj).text(selectedPlayerCnt);
+			}else{
+				quater_players_b[idx]++;
+				var selectedPlayerCnt = quater_players_b[idx];
+				if(selectedPlayerCnt < 11)
+					$(obj).text(selectedPlayerCnt);
+			}
+		}
+		else{
+			txt = "";
+			$(obj).text(txt);
+			if(type == 'a'){
+				quater_players_a[idx]--;
+			}else{
+				quater_players_b[idx]--;
+			}
+		}
+		/*
+		var txt = $(obj).text();
+		if(txt == ""){
+			txt = "o";
+		}
+		else if(txt == "o"){
+			txt = "GK";
+		}
+		else if(txt == "GK"){
+			txt = "";
+		}
+		$(obj).text(txt);
+		*/
+	}
+
+	function getAttendQuater(){
+
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "attend_quater",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				if(data != null){
+					if(data[0] != null){
+						var team_a = data[0]["team_a"];
+						var team_b = data[0]["team_b"];
+
+						var lastidx = parseInt($("#QUARTER_NUM").val());
+						var team = team_a.split("$");
+						for(var i=0; i<team.length; i++){
+							var tmp = team[i].split("|");
+							var target = $("#ATTEND_TEAM_A").children().children().eq(i).children();
+							//target.eq(0).text(tmp[0]);
+							target.eq(2).text(tmp[1]);
+							for(var j=0; j<lastidx; j++){
+								target.eq(3 + j).text(tmp[2 + j]);
+								if(tmp[2+j] != "" && i > 0 && tmp[2+j] != undefined){
+									console.log(tmp[2+j])
+									quater_players_a[j]++;
+								}
+							}
+							target.eq(3 + lastidx).children().eq(0).val(tmp[2 + lastidx]);
+							target.eq(4 + lastidx).children().eq(0).val(tmp[3 + lastidx]);
+						}
+						var team = team_b.split("$");
+						for(var i=0; i<team.length; i++){
+							var tmp = team[i].split("|");
+							var target = $("#ATTEND_TEAM_B").children().children().eq(i).children();
+							//target.eq(0).text(tmp[0]);
+							target.eq(2).text(tmp[1]);
+							for(var j=0; j<lastidx; j++){
+								target.eq(3 + j).text(tmp[2 + j]);
+								if(tmp[2+j] != "" && i > 0 && tmp[2+j] != undefined){
+									quater_players_b[j]++;
+								}
+							}
+							target.eq(3 + lastidx).children().eq(0).val(tmp[2 + lastidx]);
+							target.eq(4 + lastidx).children().eq(0).val(tmp[3 + lastidx]);
+						}
+					}
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function saveAttendQuater(){
+		var strA = "$";
+		var strB = "$";
+		var chkidx = 0;
+		var lastidx = parseInt($("#QUARTER_NUM").val());
+		$("#ATTEND_TEAM_A").children().children().each(function(){
+			if(chkidx > 0){
+				strA += $(this).children().eq(0).text() + "|";
+				strA += $(this).children().eq(2).text() + "|";
+				for(var i=0; i<lastidx; i++){
+					strA += $(this).children().eq(3 + i).text() + "|";
+				}
+				strA += $(this).children().eq(3 + lastidx).children().eq(0).val() + "|";
+				strA += $(this).children().eq(4 + lastidx).children().eq(0).val() + "|";
+				strA += "$";
+			}
+			chkidx++;
+		});
+		chkidx = 0;
+		$("#ATTEND_TEAM_B").children().children().each(function(){
+			if(chkidx > 0){
+				strB += $(this).children().eq(0).text() + "|";
+				strB += $(this).children().eq(2).text() + "|";
+				for(var i=0; i<lastidx; i++){
+					strB += $(this).children().eq(3 + i).text() + "|";
+				}
+				strB += $(this).children().eq(3 + lastidx).children().eq(0).val() + "|";
+				strB += $(this).children().eq(4 + lastidx).children().eq(0).val() + "|";
+				strB += "$";
+			}
+			chkidx++;
+		});
+
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "attend_quater",
+				id : 1,
+				team_a : strA,
+				team_b : strB
+			},
+			success : function(data) {
+				if(data == "ok"){
+					location.reload();
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+function initAttendQuater(){
+	
+	var chkidx = 0;
+		var lastidx = parseInt($("#QUARTER_NUM").val());
+		var chkOkIdx = 0;
+		$("#ATTEND_TEAM_A").children().children().each(function(){
+			if(chkidx > 0){
+				$(this).children().eq(2).text("");
+				for(var i=0; i<lastidx; i++){
+					$(this).children().eq(3 + i).text("");
+				}
+				if(chkOkIdx < 10){
+					//$(this).children().eq(3).text("o");
+					$(this).children().eq(3).text((chkidx));
+				}
+				else if(chkOkIdx == 10){
+					$(this).children().eq(3).text("GK");
+				}
+				$(this).children().eq(3 + lastidx).children().eq(0).val(0);
+				$(this).children().eq(4 + lastidx).children().eq(0).val(0);
+				chkOkIdx++;
+			}
+			chkidx++;
+		});
+		chkidx = 0;
+		chkOkIdx = 0;
+		$("#ATTEND_TEAM_B").children().children().each(function(){
+			if(chkidx > 0){
+				$(this).children().eq(2).text("");
+				for(var i=0; i<lastidx; i++){
+					$(this).children().eq(3 + i).text("");
+				}
+				if(chkOkIdx < 10){
+					//$(this).children().eq(3).text("o");
+					$(this).children().eq(3).text((chkidx));
+				}
+				else if(chkOkIdx == 10){
+					$(this).children().eq(3).text("GK");
+				}
+				$(this).children().eq(3 + lastidx).children().eq(0).val(0);
+				$(this).children().eq(4 + lastidx).children().eq(0).val(0);
+				chkOkIdx++;
+			}
+			chkidx++;
+		});
+
+		quater_players_a[0] = 11;
+		quater_players_b[0] = 11;
+	/*
+	$.ajax({
+		type : "post",
+		url : '/football_tpm/save.php',
+		data : {
+			cmd : "attend_quater",
+			id : 1,
+			team_a : "",
+			team_b : ""
+		},
+		success : function(data) {
+			if(data == "ok"){
+				location.reload();
+			}
+		},
+		error : function(err) {
+			alert("오류발생 관리자에게 문의하세요.")
+		}
+	});
+	*/
+}
+</script>
+<style>
+</style>
+</head>
+<body>
+
+    <div id="headers"></div>
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="input-group">
+				<span class="input-group-text">총 쿼터 수</span>
+				<input type="number" class="form-control" id="QUARTER_NUM" value="4"/>
+				<button type="button" class="btn btn-success" onclick="setAttendQuater();">SET</button>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<div class="d-grid gap-2">
+					<button type="button" class="btn btn-secondary" onclick="initAttendQuater();">초기화</button>
+				</div>
+			</div>
+			<div class="col">
+				<div class="d-grid gap-2">
+					<button type="button" class="btn btn-primary" onclick="saveAttendQuater();">저장</button>
+				</div>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered" id="ATTEND_TEAM_A">
+					<tr style="background: #ffa2a2;" id="ATTEND_TEAM_A_HEADER">
+						<th colspan="2">A팀</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered" id="ATTEND_TEAM_B">
+					<tr style="background: #9d9dff;" id="ATTEND_TEAM_B_HEADER">
+						<th colspan="2">B팀</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<div id='footers'></div>
+	</div>
+</body>
+</html>

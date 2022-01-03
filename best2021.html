@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Football_Record_Statistics">
+<meta name="author" content="LoonyHyun">
+<meta property="og:url" content="https://loonyhyun.cafe24.com/">
+<meta property="og:title" content="바론 FC 경기 기록실">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+<meta property="og:description" content="바론 FC의 경기 기록실 입니다.">
+<title>Best11 및 2021년 결산</title>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script src="/football_tpm/bootstrap-datepicker.min.js"></script>
+<script src="/football_tpm/bootstrap-datepicker.ko.min.js"></script>
+<link href="/football_tpm/bootstrap-datepicker.min.css" rel="stylesheet">
+
+<script src="/football_tpm/team.js"></script>
+<link href="/football_tpm/team.css" rel="stylesheet">
+
+<style>
+	.bestPlayer {max-width:120px;}
+</style>
+<script>
+	$(document).ready(function(){
+		$("#headers").load("/football_tpm/header.html", function(){
+			var target_header = "best2021";
+			getTeam();
+			$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+			$("#drop_header").text($("#drop_header_" + target_header).text());
+		});
+		setLayout();
+		viewBest();
+	});
+
+	$(window).resize(function(){
+		setLayout();
+	});
+
+	function setSelectedPosition(){
+		$("#POSITION_ATT").html("");
+		$("#POSITION_MID").html("");
+		$("#POSITION_DEF").html("");
+		$("#POSITION_KEEP").html("");
+
+		var val = $("#REG_FORMATION").val();
+		if(val == ""){
+			return;
+		}
+		var def = parseInt(val.substring(0, 1));
+		var mid = parseInt(val.substring(1, 2));
+		var att = parseInt(val.substring(2, 3));
+
+		var playerCnt = 0;
+		for(var i=0; i<att; i++, playerCnt++){
+			var str  = "<div class='col'>";
+				str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' id='player_" + playerCnt + "'/>";
+				str += "</div>";
+			$("#POSITION_ATT").append(str);
+		}
+
+		if(mid == 5){
+			$("#POSITION_MID").html("<div class='row' id='POSITION_MID_1'></div><div class='row' id='POSITION_MID_2'></div>");
+		}
+		for(var i=0; i<mid; i++, playerCnt++){
+			if(mid == 5){
+				var stylevalue = " style='' ";
+				if(i == 0){
+					stylevalue = " style='float:right;' ";
+				}else if(i == 2){
+					stylevalue = " style='float:left;' ";
+				}else if(i == 3){
+					stylevalue = " style='float:left;' ";
+				}else if(i == 4){
+					stylevalue = " style='float:right;' ";
+				}
+				if(i < 3){
+					var str  = "<div class='col'>";
+						str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
+						str += "</div>";
+					$("#POSITION_MID_1").append(str);
+				}else{
+					var str  = "<div class='col'>";
+						str += "<input type='text' readonly class='bestPlayer form-control form-control-lg'  name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
+						str += "</div>";
+					$("#POSITION_MID_2").append(str);
+				}
+			}else{
+				var str  = "<div class='col'>";
+					str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
+					str += "</div>";
+				$("#POSITION_MID").append(str);
+			}
+		}
+		for(var i=0; i<def; i++, playerCnt++){
+			var str  = "<div class='col'>";
+				str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' id='player_" + playerCnt + "'/>";
+				str += "</div>";
+			$("#POSITION_DEF").append(str);
+		}
+		var str  = "<div class='col'>";
+			str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' id='player_10'></select>";
+			str += "</div>";
+		$("#POSITION_KEEP").append(str);
+	}
+
+	function viewBest(){
+		
+        $.ajax({
+            type : "post",
+            url : './get_best_2021.php',
+            data : {
+                cmd : "best2021_cnt",
+                id : 1
+            },
+            success : function(data) {
+				var tmp = data.split("$");
+				var def = parseInt(tmp[1].substring(0, 1));
+				var mid = parseInt(tmp[1].substring(1, 2));
+				var att = parseInt(tmp[1].substring(2, 3));
+				$("#REG_CNT").val(tmp[0]);
+				$("#REG_FORMATION").val(tmp[1]);
+				setSelectedPosition();
+
+				$.ajax({
+					type : "post",
+					url : './get_best_2021.php',
+					data : {
+						cmd : "best2021_list",
+						id : 1,
+						type : "1"
+					},
+					dataType : "json",
+					success : function(data) {
+
+						var tbody = $("#VIEW_BEST_PLAYER_TBODY");
+
+						for(var i=0; i<data.length; i++){
+							var td = data[i];
+
+							//if(parseInt(td["total_cnt"]) > 5)
+							{
+								tbody.append("<tr>"
+									+"<td scope='col'>"+(i+1)+"</td>"
+									+"<td>"+td["player_name"]+"</td>"
+									+"<td>"+td["total_cnt"]+"</td>"
+									+"<td>"+td["att_cnt"]+"</td>"
+									+"<td>"+td["mid_cnt"]+"</td>"
+									+"<td>"+td["def_cnt"]+"</td>"
+									+"<td>"+td["keep_cnt"]+"</td>"
+									+"</tr>");
+							}
+						}
+					},
+					error : function(err) {
+						alert("오류발생 관리자에게 문의하세요.")
+					}
+				});
+				
+				var chkPlayers = [];
+				var chkAtt = 0;
+				var chkMid = 0;
+				var chkDef = 0;
+				var chkKeep = 0;
+				$.ajax({
+					async: false,
+					type : "post",
+					url : './get_best_2021.php',
+					data : {
+						cmd : "best2021_list_formation",
+						id : 1
+					},
+					dataType : "json",
+					success : function(data) {
+						for(var i=0; i<data.length; i++){
+							var tmpType = data[i]["type"];
+							var tmpName = data[i]["player_name"];
+							if(tmpType == "att"){
+								if(chkPlayers.indexOf(tmpName) < 0 && chkAtt < att){
+									$("#player_" + chkPlayers.length).val(tmpName);
+									chkPlayers.push(tmpName);
+									chkAtt++;
+								}
+							}
+							else if(tmpType == "mid"){
+								if(chkPlayers.indexOf(tmpName) < 0 && chkMid < mid){
+									$("#player_" + chkPlayers.length).val(tmpName);
+									chkPlayers.push(tmpName);
+									chkMid++;
+								}
+							}
+							else if(tmpType == "def"){
+								if(chkPlayers.indexOf(tmpName) < 0 && chkDef < def){
+									$("#player_" + chkPlayers.length).val(tmpName);
+									chkPlayers.push(tmpName);
+									chkDef++;
+								}
+							}
+							else if(tmpType == "keep"){
+								if(chkPlayers.indexOf(tmpName) < 0 && chkKeep < 1){
+									$("#player_" + chkPlayers.length).val(tmpName);
+									chkPlayers.push(tmpName);
+									chkKeep++;
+								}
+							}
+						}
+					},
+					error : function(err) {
+						alert("오류발생 관리자에게 문의하세요.")
+					}
+				});
+            },
+            error : function(err) {
+                alert("오류발생 관리자에게 문의하세요.")
+            }
+        });
+
+		
+        $.ajax({
+            type : "post",
+            url : './get_best_2021.php',
+            data : {
+                cmd : "best_2021_result",
+                id : 1
+            },
+            dataType : "json",
+            success : function(data) {
+				var chk1 = 0, chk2 = 0, chk3 = 0, chk4 = 0, chk5 = 0;
+                for (var i = 0; i < data.length; i++) {
+					var tmpType = data[i]["type"];
+					var tmpName = data[i]["player_name"];
+					if(tmpType == "play"){
+						$("#VIEW_BEST_PLAY_TBODY").append("<tr>"
+							+"<td>"+(chk1+1)+"</td>"
+							+"<td>"+tmpName+"</td>"
+							+"<td>"+data[i]["play_cnt"]+"</td>"
+							+"</tr>");
+						chk1++;
+					}
+					else if(tmpType == "goal"){
+						$("#VIEW_BEST_GOAL_TBODY").append("<tr>"
+							+"<td>"+(chk2+1)+"</td>"
+							+"<td>"+tmpName+"</td>"
+							+"<td>"+data[i]["goal_cnt"]+"</td>"
+							+"</tr>");
+						chk2++;
+					}
+					else if(tmpType == "asst"){
+						$("#VIEW_BEST_ASST_TBODY").append("<tr>"
+							+"<td>"+(chk3+1)+"</td>"
+							+"<td>"+tmpName+"</td>"
+							+"<td>"+data[i]["asst_cnt"]+"</td>"
+							+"</tr>");
+						chk3++;
+					}
+					else if(tmpType == "pts"){
+						$("#VIEW_BEST_PTS_TBODY").append("<tr>"
+							+"<td>"+(chk4+1)+"</td>"
+							+"<td>"+tmpName+"</td>"
+							+"<td>"+data[i]["pts"]+"</td>"
+							+"</tr>");
+						chk4++;
+					}
+					else if(tmpType == "def"){
+						$("#VIEW_BEST_DEF_TBODY").append("<tr>"
+							+"<td>"+(chk5+1)+"</td>"
+							+"<td>"+tmpName+"</td>"
+							+"<td>"+data[i]["ls_cnt"]+"</td>"
+							+"</tr>");
+						chk5++;
+					}
+                }
+            },
+            error : function(err) {
+                alert("오류발생 관리자에게 문의하세요.")
+            }
+        });
+	}
+</script>
+<style>
+</style>
+</head>
+<body>
+
+    <div id="headers"></div>
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<h2>2021년 결산 - TOP5</h2>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Play</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_PLAY_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Goal</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_GOAL_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Asst</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_ASST_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Pts</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_PTS_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Def</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_DEF_TBODY"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<h2>2021년 BEST 11 보기.</h2>
+				<div class="input-group">
+					<span class="input-group-text">총 투표 횟수</span>
+					<input type="text" class="form-control" id="REG_CNT" readonly/>
+				</div>
+				<div class="row">&nbsp;</div>
+				<div class="input-group">
+					<span class="input-group-text">최다 포메이션</span>
+					<input type="text" class="form-control" id="REG_FORMATION" readonly/>
+				</div>
+				<table class="table" style="height:500px; text-align: center;vertical-align: middle;">
+					<tr class="table-primary">
+						<td>
+							<div class="row" id="POSITION_ATT" style="text-align: -webkit-center;">&nbsp;</div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td>
+							<div class="row" id="POSITION_MID" style="text-align: -webkit-center;">&nbsp;</div>
+						</td>
+					</tr>
+					<tr class="table-warning">
+						<td>
+							<div class="row" id="POSITION_DEF" style="text-align: -webkit-center;">&nbsp;</div>
+						</td>
+					</tr>
+					<tr class="table-secondary">
+						<td>
+							<div class="row" id="POSITION_KEEP" style="text-align: -webkit-center;">&nbsp;</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="col">
+				<h2>BEST 11 투표결과.</h2>
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Total</th>
+							<th scope="col">Att</th>
+							<th scope="col">Mid</th>
+							<th scope="col">Def</th>
+							<th scope="col">Keep</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_PLAYER_TBODY"></tbody>
+				</table>
+			</div>
+			<select id="PLAYER_SELECT_SAMPLE" style="display: none;">
+				<option value="">N/A</option>
+			</select>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+		</div>
+		<div class="row">
+		</div>
+		<div class="row">&nbsp;</div>
+		<div id='footers'></div>
+	</div>
+</body>
+</html>
