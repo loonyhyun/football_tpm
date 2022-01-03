@@ -296,13 +296,14 @@ else if($pcmd == "attend_quater"){
         
         $team_a = $_REQUEST["team_a"];
         $team_b = $_REQUEST["team_b"];
-
+        $quarters = $_REQUEST["quarters"];
+        
         $sql = "DELETE FROM football_attend_quater";
         $result = mysqli_query($conn, $sql);
 
         $sql = "INSERT INTO football_attend_quater
-            (team_a, team_b)
-            values ( '".$team_a."', '".$team_b."')";
+            (team_a, team_b, quarters)
+            values ( '".$team_a."', '".$team_b."', ".$quarters.")";
         
         $result = mysqli_query($conn, $sql);
         if($result){

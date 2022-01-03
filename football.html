@@ -20,12 +20,10 @@
 <script src="/football_tpm/bootstrap-datepicker.min.js"></script>
 <script src="/football_tpm/bootstrap-datepicker.ko.min.js"></script>
 <link href="/football_tpm/bootstrap-datepicker.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 
 <script src="/football_tpm/team.js"></script>
 <link href="/football_tpm/team.css" rel="stylesheet">
-
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1427445728121282"
-crossorigin="anonymous"></script>
 
 <script>
 	$(document).ready(function(){
@@ -50,12 +48,15 @@ crossorigin="anonymous"></script>
 
     <div id="headers"></div>
 	<div class="container">
-		<div class="row" id="total_match_cnt"></div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col" id="total_match_cnt"></div>
+		</div>
 		<div class="input-group">
-			<span class="input-group-text">기간 조회</span>
-			<input type="text" class="form-control" readonly="readonly" id="searchStartDate" value=""/>
+			<span class="input-group-text">기간</span>
+			<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
 			<span class="input-group-text">~</span>
-			<input type="text" class="form-control" readonly="readonly" id="searchEndDate" value=""/>
+			<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
 			<button type="button" class="btn btn-success" onclick="getPlayerSearch();">SEARCH</button>
 		</div>
 		<table class="table auto_font_size" id="PlayerMainTable">

@@ -20,6 +20,7 @@
 <script src="/football_tpm/bootstrap-datepicker.min.js"></script>
 <script src="/football_tpm/bootstrap-datepicker.ko.min.js"></script>
 <link href="/football_tpm/bootstrap-datepicker.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
 
 <script src="/football_tpm/team.js"></script>
 <link href="/football_tpm/team.css" rel="stylesheet">
@@ -60,7 +61,7 @@
 		var playerCnt = 0;
 		for(var i=0; i<att; i++, playerCnt++){
 			var str  = "<div class='col'>";
-				str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' id='player_" + playerCnt + "'/>";
+				str += "<input type='text' readonly class='bestPlayer form-control' name='bestPlayer' id='player_" + playerCnt + "'/>";
 				str += "</div>";
 			$("#POSITION_ATT").append(str);
 		}
@@ -82,32 +83,35 @@
 				}
 				if(i < 3){
 					var str  = "<div class='col'>";
-						str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
+						str += "<input type='text' readonly class='bestPlayer form-control' name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
 						str += "</div>";
 					$("#POSITION_MID_1").append(str);
 				}else{
 					var str  = "<div class='col'>";
-						str += "<input type='text' readonly class='bestPlayer form-control form-control-lg'  name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
+						str += "<input type='text' readonly class='bestPlayer form-control'  name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
 						str += "</div>";
 					$("#POSITION_MID_2").append(str);
 				}
 			}else{
 				var str  = "<div class='col'>";
-					str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
+					str += "<input type='text' readonly class='bestPlayer form-control' name='bestPlayer' " +stylevalue+" id='player_" + playerCnt + "'/>";
 					str += "</div>";
 				$("#POSITION_MID").append(str);
 			}
 		}
 		for(var i=0; i<def; i++, playerCnt++){
 			var str  = "<div class='col'>";
-				str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' id='player_" + playerCnt + "'/>";
+				str += "<input type='text' readonly class='bestPlayer form-control' name='bestPlayer' id='player_" + playerCnt + "'/>";
 				str += "</div>";
 			$("#POSITION_DEF").append(str);
 		}
 		var str  = "<div class='col'>";
-			str += "<input type='text' readonly class='bestPlayer form-control form-control-lg' name='bestPlayer' id='player_10'></select>";
+			str += "<input type='text' readonly class='bestPlayer form-control' name='bestPlayer' id='player_10'></select>";
 			str += "</div>";
 		$("#POSITION_KEEP").append(str);
+		$(".bestPlayer").addClass("form-control-lg");
+		$(".bestPlayer").addClass("auto_font_size");
+		$(".bestPlayer").addClass("text-center");
 	}
 
 	function viewBest(){

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Football_Record_Statistics">
+<meta name="author" content="LoonyHyun">
+<meta property="og:url" content="https://loonyhyun.cafe24.com/">
+<meta property="og:title" content="바론 FC 경기 기록실">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+<meta property="og:description" content="바론 FC의 경기 기록실 입니다.">
+<title>출석 체크</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<script src="/football_tpm/bootstrap-datepicker.min.js"></script>
+<script src="/football_tpm/bootstrap-datepicker.ko.min.js"></script>
+<link href="/football_tpm/bootstrap-datepicker.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+
+<script src="/football_tpm/admin/admin.js"></script>
+<link href="/football_tpm/admin/admin.css" rel="stylesheet">
+<script src="/football_tpm/admin/match.js"></script>
+
+<script>
+	$(document).ready(function(){
+		$("#headers").load("/football_tpm/admin/header.html", function(){
+			var targetHeader = 4;
+			getTeam();
+			$("#header_" + targetHeader).addClass("fw-bold");
+			$("#drop_header").text($("#drop_header_" + targetHeader).text());
+		});
+
+		getPlayerListByAttend();
+		getInitAttend();
+	});
+
+	$(window).resize(function(){
+		
+	});
+
+	var selectedPlayers = [];
+	var attendPlayers = [];
+	function getPlayerListByAttend() {
+		$.ajax({
+			async: false, 
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "player",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				var tbody = $("#ATTEND_PLAYERS_TBODY");
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var pname = tmp["player_name"];
+					var pid = tmp["player_id"];
+					attendPlayers[pid] = tmp;
+					tbody.append("<tr id='init_player_"+pid+"'>"
+						+"<td>"+pname+"</td>"
+						+"<td><button class='btn btn-sm btn-danger' onclick=\"setPlayerAttend('a', "+pid+");\">A팀</button></td>"
+						+"<td><button class='btn btn-sm btn-primary' onclick=\"setPlayerAttend('b', "+pid+");\">B팀</button></td>"
+						+"</tr>"
+					);
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+	function setPlayerAttend(team, pid){
+		var tmp = attendPlayers[pid];
+		var pname = tmp["player_name"];
+		setAttendTeam(team, pid);
+		setAttendTbody(team, pid, pname);
+	}
+
+	function setAttendTbody(team, pid, pname){
+		var tmp = attendPlayers[pid];
+		if(team == 'a'){
+			$("#TEAM_A_TBODY").append("<tr id='player_"+pid+"'>"
+				+"<td>"+pname+"</td>"
+				+"<td><button class='btn btn-sm btn-dark' onclick=\"delAttendTeam("+pid+");\">D</button></td>"
+				+"<td><button class='btn btn-sm btn-primary' onclick=\"setPlayerAttend('b', "+pid+");\">M</button></td>"
+				+"</tr>"
+			);
+		}else if(team == 'b'){
+			$("#TEAM_B_TBODY").append("<tr id='player_"+pid+"'>"
+				+"<td>"+pname+"</td>"
+				+"<td><button class='btn btn-sm btn-dark' onclick=\"delAttendTeam("+pid+");\">D</button></td>"
+				+"<td><button class='btn btn-sm btn-danger' onclick=\"setPlayerAttend('a', "+pid+");\">M</button></td>"
+				+"</tr>"
+			);
+		}
+		$("#init_player_" + pid).hide();
+		selectedPlayers.push(pid);
+	}
+
+	function getInitAttend(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "attend",
+				id : 1,
+			},
+			dataType : "json",
+			success : function(data) {
+				var teamAidx = 0;
+				var teamBidx = 0;
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var pid = tmp["player_id"];
+					var pname = tmp["player_name"];
+					var team = tmp["team_type"];
+					$("#player_" + pid).remove();
+					setAttendTbody(team, pid, pname);
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function setAttendTeam(type, pid){
+		delAttendTeam(pid);
+		$.ajax({
+			async: false,
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "attend",
+				id : 1,
+				teamtype : type,
+				player_id : pid
+			},
+			success : function(data) {
+				if(data == "ok"){
+					$("#init_player_" + pid).hide();
+				}else{
+					alert("실패");
+					$("#init_player_" + pid).show();
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+	function delAttendTeam(pid){
+		$("#player_" + pid).remove();
+		$.ajax({
+			async: false,
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "attend_del",
+				id : 1,
+				checker : "baron",
+				player_id : pid
+			},
+			success : function(data) {
+				if(data == "ok"){
+					$("#init_player_" + pid).show();
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+	
+	function setAttendInit(){
+		if(confirm("초기화 시 등록된 인원이 없어집니다. 되돌릴 수 없습니다.\n초기화 하시겠습니까?")){
+			$.ajax({
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "attend_init",
+				id : 1,
+				checker : "baron"
+			},
+			success : function(data) {
+				if(data == "ok"){
+					alert("초기화 완료");
+					location.reload();
+				}else{
+					alert("초기화 실패");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+		}
+	}
+
+function getConstantVowel(kor) {
+	const f = ['ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ',
+			'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ',
+			'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+	const s = ['ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ',
+			'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ',
+			'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ'];
+	const t = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ',
+			'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ',
+			'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ',
+			'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+
+	const ga = 44032;
+	let uni = kor.charCodeAt(0);
+
+	uni = uni - ga;
+
+	let fn = parseInt(uni / 588);
+	let sn = parseInt((uni - (fn * 588)) / 28);
+	let tn = parseInt(uni % 28);
+
+	return {
+		f: f[fn],
+		s: s[sn],
+		t: t[tn]
+	};
+}
+
+function searchTablePlayers() {
+	var tmp = $("#searchPlayerName").val();
+	var getConstantValue = getConstantVowel(tmp);
+	
+	var chk = false;
+	$("#ATTEND_PLAYERS_TBODY").children().each(function(){
+		if($(this).children().eq(0).text().indexOf(tmp) > -1){
+			$(this).show();
+			chk = true;
+		}else{
+			$(this).hide();
+			chk = false;
+		}
+
+		if(!chk){
+			var tmp2 = getConstantVowel($(this).children().eq(0).text());
+			if(tmp2.f == tmp){
+				$(this).show();
+			}else if(tmp2.f == getConstantValue.f && tmp2.s == getConstantValue.s){
+				$(this).show();
+			}
+		}
+	});
+}
+</script>
+</head>
+<body>
+    <div id="headers"></div>
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div id="ATTEND_PLAYERS_DIV">
+			<h5>[출석체크]</h5>
+			<div class="row">
+				<div class="col">
+					<button type="button" class="btn btn-warning" onclick="setAttendInit();">초기화</button>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+			<div class="row">
+				<div class="col">
+					<table style="width:100%; text-align:center;">
+						<colgroup>
+							<col width="40%"/>
+							<col width="30%"/>
+							<col width="*"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col" class="bg-dark text-white">선수리스트</th>
+								<th scope="col" style="background-color:#ffa2a2;">A팀(RED)</th>
+								<th scope="col" style="background-color:#9d9dff;">B팀(BLUE)</th>
+							</tr>
+						</thead>
+						<tbody style="font-size:12px;">
+							<tr>
+								<td>
+									<div class="align-top" style="width:100%; overflow-x: hidden; overflow-y: auto; height: 700px; max-height:1000px;">
+										<table class="table auto_font_size">
+											<caption style="caption-side: top;">
+												테이블 검색: <input type="text" id="searchPlayerName" value="" onkeyup="searchTablePlayers();"/>
+											</caption>
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>A</td>
+													<td>B</td>
+												</tr>
+											</thead>
+											<tbody id="ATTEND_PLAYERS_TBODY"></tbody>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class="align-top" style="width:100%; overflow-x: hidden; overflow-y: auto; height: 700px; max-height:1000px;">
+										<table class="table auto_font_size">
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>DEL</td>
+													<td>MOVE</td>
+												</tr>
+											</thead>
+											<tbody id="TEAM_A_TBODY"></tbody>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class="align-top" style="width:100%; overflow-x: hidden; overflow-y: auto; height: 700px; max-height:1000px;">
+										<table class="table auto_font_size">
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>DEL</td>
+													<td>MOVE</td>
+												</tr>
+											</thead>
+											<tbody id="TEAM_B_TBODY"></tbody>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+
+
+		<div id='footers'></div>
+    </div>
+	
+</body>
+</html>

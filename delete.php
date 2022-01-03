@@ -23,8 +23,8 @@ define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 
 $conn = mysqli_connect(
-  'loonyhyun.cafe24.com',
-  //'localhost',
+  //'loonyhyun.cafe24.com',
+  'localhost',
   'loonyhyun',
   'bodigad0',
   'loonyhyun');

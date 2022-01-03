@@ -607,7 +607,7 @@ else if($pcmd == "best_formation_view_list"){
 }
 else if($pcmd == "attend"){
     if($conn){
-        $sql = "SELECT a.team_type, a.player_id, b.player_name, a.reg_date
+        $sql = "SELECT a.team_type, a.player_id, b.player_name, a.reg_date, b.recommand_pos
         FROM football_attend a, football_player b 
         where a.player_id = b.id
         order by a.reg_date";
@@ -617,6 +617,7 @@ else if($pcmd == "attend"){
                 array('player_id'=>$row['player_id'],'player_name'=>$row['player_name']
                 ,'team_type'=>$row['team_type']
                 ,'reg_date'=>$row['reg_date']
+                ,'recommand_pos'=>$row['recommand_pos']
                 )
             );
         }
@@ -627,7 +628,7 @@ else if($pcmd == "attend_quater"){
         $sql = "SELECT * FROM football_attend_quater";
         $result = mysqli_query($conn, $sql);
         while($row = mysqli_fetch_array($result)){
-            array_push($array, array('team_a'=>$row['team_a'],'team_b'=>$row['team_b'])
+            array_push($array, array('team_a'=>$row['team_a'],'team_b'=>$row['team_b'],'quarters'=>$row['quarters'])
             );
         }
     }

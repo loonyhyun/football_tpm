@@ -23,8 +23,8 @@ define( 'DB_CHARSET', 'utf8mb4' );
 define( 'DB_COLLATE', '' );
 
 $conn = mysqli_connect(
-    'loonyhyun.cafe24.com',
-    //'localhost',
+    //'loonyhyun.cafe24.com',
+    'localhost',
   'loonyhyun',
   'bodigad0',
   'loonyhyun');
@@ -45,7 +45,7 @@ if($pcmd == "team"){
 }
 else if($pcmd == "player"){
     if($conn){
-        $sql = "SELECT * FROM football_player where team_id = '".$pid."' and del_yn = 'N' order by player_name";
+        $sql = "SELECT * FROM football_player where team_id = '".$pid."' order by player_name";
         $result = mysqli_query($conn, $sql);
         //$row = mysqli_fetch_array($result);
         while($row = mysqli_fetch_array($result)){
