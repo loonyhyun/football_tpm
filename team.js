@@ -7,29 +7,33 @@
 	let TODAY_YMD = year + "" + month + "" + date;
 	let DEFAULT_START_MATCH_DATE = year + ".01.01";
 
+	let FIRST_LOADING = true;
 	function setLayout(){
-		$("#searchStartDate").val(DEFAULT_START_MATCH_DATE);
-		$("#footers").load("/football_tpm/footer.html", function(){
-			
-			$('#input_match_date').datepicker({
-				format: "yyyy.mm.dd",
-				autoclose: true,
-				todayHighlight: true,
-				language: "ko"
+
+		if(FIRST_LOADING){
+			$("#searchStartDate").val(DEFAULT_START_MATCH_DATE);
+			$("#footers").load("/football_tpm/footer.html", function(){
+				$('#input_match_date').datepicker({
+					format: "yyyy.mm.dd",
+					autoclose: true,
+					todayHighlight: true,
+					language: "ko"
+				});
+				$('#searchStartDate').datepicker({
+					format: "yyyy.mm.dd",
+					autoclose: true,
+					todayHighlight: true,
+					language: "ko"
+				});
+				$('#searchEndDate').datepicker({
+					format: "yyyy.mm.dd",
+					autoclose: true,
+					todayHighlight: true,
+					language: "ko"
+				});
 			});
-			$('#searchStartDate').datepicker({
-				format: "yyyy.mm.dd",
-				autoclose: true,
-				todayHighlight: true,
-				language: "ko"
-			});
-			$('#searchEndDate').datepicker({
-				format: "yyyy.mm.dd",
-				autoclose: true,
-				todayHighlight: true,
-				language: "ko"
-			});
-		});
+			FIRST_LOADING = false;
+		}
 
 		$("#team_choice").css("max-height", $(window).height() - 350);
 		$("#team_a_tbody").css("max-height", $(window).height() - 350);
