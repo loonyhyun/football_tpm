@@ -1,0 +1,101 @@
+
+<script>
+    
+	$(document).ready(function(){
+        var target_header = "5";
+        getTeam();
+        $("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+        $("#drop_header").text($("#drop_header_" + target_header).text());
+		getPlayers();
+		setLayout();
+    });
+	$(window).resize(function(){
+		setLayout();
+	});
+
+    function getPlayers()
+    {
+        
+        $.ajax({
+            type : "post",
+            url : './get.php',
+            data : {
+                cmd : "players",
+                id : 1
+            },
+            dataType : "json",
+            success : function(data) {
+                $("#playerTbody").html("");
+                for (var i = 0; i < data.length; i++) {
+                    var playerId = data[i]["player_id"];
+                    var str = "<tr id='player_"+playerId+"' data-bs-toggle=\"modal\" data-bs-target=\"#updatePlayerDiv\" onclick=\"updatePlayerInfo('"+playerId+"');\" >";
+                    str += "  <td>"+(i+1)+"</td>";
+                    str += "  <td>"+data[i]["player_name"]+"</td>";
+                    str += "  <td>"+data[i]["back_no"]+"</td>";
+                    str += "  <td>"+data[i]["position"]+"</td>";
+                    str += "</tr>";
+                    str += "<tr>";
+                    str += "  <td> </td>";
+                    str += "  <td colspan='3'><pre>"+data[i]["desc"]+"</pre></td>";
+                    str += "</tr>";
+                    $("#playerTbody").append(str);
+                }
+            },
+            error : function(err) {
+                alert("오류발생 관리자에게 문의하세요.")
+            }
+        });
+    }
+
+    function searchTablePlayers() {
+		var tmp = $("#searchPlayerName").val();
+		
+        var chk = false;
+		$("#playerTbody > tr").each(function(){
+            if(parseInt($(this).children().eq(0).text()) > 0){
+                if($(this).children().eq(1).text().indexOf(tmp) > -1){
+                    $(this).show();
+                    chk = true;
+                }else{
+                    $(this).hide();
+                    chk = false;
+                }
+            }else{
+                if(chk){
+                    $(this).show();
+                    chk = false;
+                }
+                else{
+                    $(this).hide();
+                    chk = false;
+                }
+            }
+		});
+	}
+
+</script>
+
+	<div class="container">
+        
+		<table class="table auto_font_size" id="PlayerMainTable">
+			<caption style="caption-side: top;">
+				테이블 검색: <input type="text" id="searchPlayerName" value="" onkeyup="searchTablePlayers();"/>
+			</caption>
+            <colgroup>
+                <col width="25%"/>
+                <col width="25%"/>
+                <col width="25%"/>
+                <col width="25%"/>
+            </colgroup>
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">이름</th>
+					<th scope="col">등번호</th>
+					<th scope="col">포지션</th>
+				</tr>
+			</thead>
+			<tbody id="playerTbody"></tbody>
+		</table>
+
+    </div>       

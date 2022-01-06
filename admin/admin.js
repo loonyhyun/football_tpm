@@ -9,7 +9,7 @@
 
 	function setLayout(){
 		$("#searchStartDate").val(DEFAULT_START_MATCH_DATE);
-		$("#footers").load("/football_tpm/footer.html", function(){
+		$("#footers").load("/football_tpm/html/footer.html", function(){
 			
 			$('#input_match_date').datepicker({
 				format: "yyyy.mm.dd",

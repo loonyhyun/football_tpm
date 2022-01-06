@@ -1,0 +1,53 @@
+<script>
+	$(document).ready(function(){
+		getTeam();
+		$("#header_1").addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_1").text());
+		setLayout();
+		getPlayer();
+	});
+
+	$(window).resize(function(){
+		setLayout();
+	});
+
+</script>
+<style>
+</style>
+
+<div id="headers"></div>
+<div class="container">
+	<div class="row" style="margin-top:10px;">
+		<div class="col" id="total_match_cnt"></div>
+	</div>
+	<div class="row" style="margin-top:5px;">
+		<div class="col" id="match_cnt"></div>
+	</div>
+	<div class="input-group" style="margin-top:5px;">
+		<span class="input-group-text">기간</span>
+		<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
+		<span class="input-group-text">~</span>
+		<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
+		<button type="button" class="btn btn-success" onclick="getPlayerSearch();">SEARCH</button>
+	</div>
+	<table class="table auto_font_size" id="PlayerMainTable">
+		<caption style="caption-side: top;">
+			테이블 검색: <input type="text" id="searchPlayerName" value="" onkeyup="searchTablePlayer();"/>
+		</caption>
+		<thead>
+			<tr style="background-color:#bbbbbb;">
+				<th scope="col">#</th>
+				<th scope="col" onclick="SortTable(1, 'ASC')">NAME</th>
+				<th scope="col" onclick="SortTable(2, 'DESC')">PLAY</th>
+				<th scope="col" onclick="SortTable(3, 'DESC')">GOAL</th>
+				<th scope="col" onclick="SortTable(4, 'DESC')">ASST</th>
+				<th scope="col" onclick="SortTable(5, 'DESC')">WIN</th>
+				<th scope="col" onclick="SortTable(6, 'DESC')">PTS</th>
+			</tr>
+		</thead>
+		<tbody id="playerTbody"></tbody>
+	</table>
+
+
+	<div id='footers'></div>
+</div>

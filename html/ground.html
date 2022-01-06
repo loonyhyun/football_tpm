@@ -1,0 +1,114 @@
+<script>
+	var MAX_WIDTH = $(window).width();
+	$(document).ready(function(){
+		//MAX_WIDTH = $(window).width();
+		MAX_WIDTH = $(".table").width();
+        var target_header = "8";
+        getTeam();
+        $("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+        $("#drop_header").text($("#drop_header_" + target_header).text());
+		setLayout();
+		getGrounds();
+	});
+
+	$(window).resize(function(){
+		//MAX_WIDTH = $(window).width();
+		MAX_WIDTH = $(".table").width();
+		setLayout();
+	});
+
+	function getGrounds(){
+		MAX_WIDTH = $(".table").width();
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "ground",
+				id : 1
+			},
+			dataType:"json",
+			success : function(data, textStatus, jqXHR) {
+				var tbody = $("#GROUND_TBODY");
+				var tdiv = $("#GROUND_DIV");
+				tbody.html("");
+				tdiv.html("");
+
+				var EX_VALUE = 10;
+				EX_VALUE = MAX_WIDTH / 120;
+				
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var str = "";
+
+					str += "<tr>";
+					str += "<td>"+(i+1)+"</td>";
+					str += "<td>"+nvlValue(tmp["name"])+"</td>";
+					str += "<td>"+nvlValue(tmp["width"])+"</td>";
+					str += "<td>"+nvlValue(tmp["height"])+"</td>";
+					str += "<td>"+nvlValue(tmp["ground_type"])+"</td>";
+					str += "<td>"+nvlValue(tmp["recommend_shoe"])+"</td>";
+					str += "</tr>";
+
+					tbody.append(str);
+
+					if(nvlNumber(tmp["width"]) > 0 && nvlNumber(tmp["height"]) > 0){
+						var width = "width: " + (nvlNumber(tmp["width"]) * EX_VALUE) + "px; ";
+						var height = "height: " + (nvlNumber(tmp["height"]) * EX_VALUE) + "px; ";
+						var color = "#" + Math.round(Math.random() * 0xffffff).toString(16);
+						var style = "position:absolute; font-weight:bold; color: " + color + ";"; 
+						style += width + height + " border: 3px solid " + color + ";";
+
+						var div = "<div style='"+style+"'> " + brAppend(i) + nvlValue(tmp["name"])+" </div>";
+						tdiv.append(div);
+					}
+				}
+
+			}
+		});
+	}
+	function brAppend(cnt){
+		var str = "";
+		for(var i=0; i<cnt; i++){
+			str += "<br>";
+		}
+		return str;
+	}
+	function nvlValue(val){
+		if(val == null || val == 'null'){
+			return '';
+		}
+		return val;
+	}
+	function nvlNumber(val){
+		if(val == null || val == 'null' || val == undefined || val == ''){
+			return 0;
+		}
+		return val;
+	}
+</script>
+<style>
+</style>
+
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<table class="table auto_font_size">
+			<thead>
+				<tr style="background-color:#bbbbbb;">
+					<th scope="col">#</th>
+					<th scope="col" onclick="SortTable(1, 'ASC')">NAME</th>
+					<th scope="col" onclick="SortTable(2, 'DESC')">WIDTH</th>
+					<th scope="col" onclick="SortTable(3, 'DESC')">HEIGHT</th>
+					<th scope="col" onclick="SortTable(4, 'DESC')">TYPE</th>
+					<th scope="col" onclick="SortTable(5, 'DESC')">SHOES</th>
+				</tr>
+			</thead>
+			<tbody id="GROUND_TBODY"></tbody>
+		</table>
+
+		<div class="row">&nbsp;</div>
+		<div class="row" id="GROUND_DIV" style="margin-bottom: 15px; height:750px;">
+		</div>
+		<div class="row">&nbsp;</div>
+
+	</div>
+	

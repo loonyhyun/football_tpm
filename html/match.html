@@ -1,0 +1,308 @@
+
+<script>
+    
+	$(document).ready(function(){
+		var target_header = 4;
+		getTeam();
+		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_" + target_header).text());
+		setLayout();
+		getMatchHtmlList();
+		reMatchHtmlReply();
+    });
+	$(window).resize(function(){
+		setLayout();
+	});
+
+
+	function getMatchHtmlList(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "matchlist",
+				id : 1
+			},
+			dataType:"json",
+			success : function(data, textStatus, jqXHR) {
+				var target = $("#MatchlistTbody");
+				target.html("");
+				
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var match_id = tmp["match_id"];
+					var match_date = tmp["match_date"];
+					var win_ab = tmp["win_ab"];
+					if(win_ab == 'a'){
+						win_ab = "A팀 (RED)";
+					}else if(win_ab == 'b'){
+						win_ab = "B팀 (BLUE)";
+					}else if(win_ab == "-"){
+						win_ab = "DRAW"
+					}
+					var str = "<tr id='matchlist_"+match_id+"' onclick='getMatchHtml("+match_id+", \""+match_date+"\", \""+win_ab+"\");'>";
+						str += "<td>"+(i+1)+"</td>";
+						str += "<td>"+match_date+"</td>";
+						str += "<td>"+win_ab+"</td>";
+						str += "</tr>";
+					target.append(str);
+
+					if(i==0){
+						getMatchHtml(match_id, match_date, win_ab);
+					}
+				}
+			}
+		});
+	}
+
+	var selectedIdByMatchHtml = 0;
+	function getMatchHtml(mid, mdate, winab){
+		$("#matchlist_" + selectedIdByMatchHtml).css("background-color", "");
+		$("#matchlist_" + mid).css("background-color", "#ffd756");
+		selectedIdByMatchHtml = mid;
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "match",
+				id : 1,
+				match_id : mid
+			},
+			dataType: "json",
+			success : function(data, textStatus, jqXHR) {
+				if(winab == '-'){
+					winab = "무승부";
+				}
+				$("#MatchInfoDesc").text("경기일자: " + mdate + ", " + winab);
+				var targetA = $("#MatchInfoTbodyA");
+				var targetB = $("#MatchInfoTbodyB");
+				targetA.html("");
+				targetB.html("");
+
+				var goalA = 0;
+				var goalB = 0;
+				for(var i=1; i<data.length; i++){
+					var tmp = data[i];
+					var str = "<tr>";
+						str += "<td>"+tmp["player_name"]+"</td>";
+						str += "<td>"+tmp["goal_cnt"]+"</td>";
+						str += "<td>"+tmp["asst_cnt"]+"</td>";
+						str += "</tr>";
+					if(tmp["team_a_yn"] == 1){
+						targetA.append(str);
+						goalA += parseInt(tmp["goal_cnt"]);
+					}
+					else if(tmp["team_b_yn"] == 1){
+						targetB.append(str);
+						goalB += parseInt(tmp["goal_cnt"]);
+					}
+				}
+
+				$("#MatchInfoDesc").append(" (" + goalA + " : " + goalB + ")");
+
+				$("#MatchInfoImgs").html("");
+				//getMatchHtmlImgs(mdate);
+				//var str = "<img src='"+img1+"' style='width:100%;' id='MatchInfoImg1'>";
+				//$("#MatchInfoImgs").append(str);
+
+				getMatchHtmlReply(mid);
+			}
+		});
+	}
+	function getMatchHtmlImgs(mdate){
+		var mdateno = mdate.replace(".", "").replace(".", "");
+		var exts = ["gif", "jpg", "png"];
+		var src = "/football_tpm/img/" + mdateno;
+		loadMatchInfoImg(src + "/1." + exts[0]);
+		loadMatchInfoImg(src + "/1." + exts[1]);
+		loadMatchInfoImg(src + "/1." + exts[2]);
+		loadMatchInfoMp4(src + "/1.mp4");
+	}
+	function loadMatchInfoImg(src){
+		var str = "<img src='"+src+"' style='width:100%;' onError='noMatchInfoImg(this);'>";
+		$("#MatchInfoImgs").append(str);
+	}
+	function loadMatchInfoMp4(src){
+		var str = "<video src='"+src+"' style='width:100%; max-height:360px;' type='video/mp4' controls autoplay loop onError='noMatchInfoImg(this);'>";
+			str += "</video>";
+		$("#MatchInfoImgs").append(str);
+	}
+	function noMatchInfoImg(obj){
+		$(obj).hide();
+	}
+	function getMatchHtmlReply(mid){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "match_reply",
+				id : 1,
+				match_id : mid
+			},
+			dataType:"json",
+			success : function(data, textStatus, jqXHR) {
+				var target = $("#MatchInfoReply");
+				target.html("");
+				
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var reply = tmp["reply"];
+					var regdate = tmp["regdate"];
+					var str = "<tr>";
+						str += "<td>"+(i+1)+"</td>";
+						str += "<td>"+regdate+"</td>";
+						str += "<td colspan='2'>"+reply+"</td>";
+						str += "</tr>";
+					target.append(str);
+				}
+			}
+		});
+	}
+	function saveReplyText(){
+		if($("#reply_input_text").val() == ""){
+			alert("댓글 작성이 필요합니다.");
+			$("#reply_input_text").focus();
+			return;
+		}
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "match_reply",
+				id : 1,
+				match_id : selectedIdByMatchHtml,
+				reply : $("#reply_input_text").val()
+			},
+			success : function(data, textStatus, jqXHR) {
+				if (data == "ok") {
+					alert("댓글이 등록되었습니다.");
+					$("#reply_input_text").val("");
+					getMatchHtmlReply(selectedIdByMatchHtml);
+				}
+				else{
+					alert("등록 실패");
+				}
+			}
+		});
+	}
+	function reMatchHtmlReply(){
+		getMatchHtmlReply(selectedIdByMatchHtml);
+	}
+
+	function MatchListVisible(){
+		if($("#MatchListThead").is(":visible")){
+			$("#MatchListThead").hide();
+			$("#MatchlistTbody").hide();
+			//$("#MatchListCaption").text("경기 리스트 - 숨김");
+		}else{
+			$("#MatchListThead").show();
+			$("#MatchlistTbody").show();
+			//$("#MatchListCaption").text("경기 리스트 - 보기");
+		}
+	}
+</script>
+
+    <div id="headers"></div>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-8 col-md-9">
+				<table class="table auto_font_size" id="MatchInfoMainTable">
+					<caption style="caption-side: top; font-weight: bold; color:black;" id='MatchInfoDesc'>
+						경기 정보
+					</caption>
+					<colgroup>
+						<col width="25%"/>
+						<col width="25%"/>
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col" style="background-color:#ffa2a2;">A팀 (RED)</th>
+							<th scope="col" style="background-color:#9d9dff;">B팀 (BLUE)</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<table class='table'>
+									<thead>
+										<tr>
+											<th scope="col">이름</th>
+											<th scope="col">골</th>
+											<th scope="col">어시</th>
+										</tr>
+									</thead>
+									<tbody id="MatchInfoTbodyA"></tbody>
+								</table>
+							</td>
+							<td>
+								<table class='table'>
+									<thead>
+										<tr>
+											<th scope="col">이름</th>
+											<th scope="col">골</th>
+											<th scope="col">어시</th>
+										</tr>
+									</thead>
+									<tbody id="MatchInfoTbodyB"></tbody>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="input-group mb-3">
+								  <input type="text" id="reply_input_text" class="form-control"
+								  	onKeypress="javascript:if(event.keyCode==13) {saveReplyText()}"
+								  	placeholder="댓글 작성" aria-label="댓글 작성" aria-describedby="reply_input_group1">
+								  <span class="input-group-text" id="reply_input_group1" onclick="saveReplyText();">작성</span>
+								</div>
+								<div style="width:100%;">
+									<table class='table'>
+										<thead>
+											<colgroup>
+												<col width="10%"/>
+												<col width="25%"/>
+												<col width="*"/>
+												<col width="30%"/>
+											</colgroup>
+											<tr>
+												<th scope="col">#</th>
+												<th scope="col">작성시각</th>
+												<th scope="col">내용</th>
+												<th scope="col"><button class="btn btn-sm btn-success" onclick="reMatchHtmlReply();">새로고침</button></th>
+											</tr>
+										</thead>
+										<tbody id="MatchInfoReply"></tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+						<tr><td colspan="2" id="MatchInfoImgs"></td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-sm-4 col-md-3">
+				<table class="table auto_font_size" id="MatchListMainTable">
+					<caption style="caption-side: top; font-weight: bold; color:black;" onclick="MatchListVisible()" id="MatchListCaption">
+						경기 리스트 (보기 / 숨기기)
+					</caption>
+					<colgroup>
+						<col width="15%"/>
+						<col width="25%"/>
+						<col width="25%"/>
+					</colgroup>
+					<thead id="MatchListThead">
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">경기일자</th>
+							<th scope="col">승리팀</th>
+						</tr>
+					</thead>
+					<tbody id="MatchlistTbody"></tbody>
+				</table>
+			</div>
+		</div>
+
+
+		<div id='footers'></div>
+    </div>
+	
