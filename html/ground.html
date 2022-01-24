@@ -40,7 +40,7 @@
 					var tmp = data[i];
 					var str = "";
 
-					str += "<tr>";
+					str += "<tr style='cursor:pointer;' onclick=\"openUrl('"+nvlValue(tmp["map_url"])+"');\">";
 					str += "<td>"+(i+1)+"</td>";
 					str += "<td>"+nvlValue(tmp["name"])+"</td>";
 					str += "<td>"+nvlValue(tmp["width"])+"</td>";
@@ -84,6 +84,10 @@
 			return 0;
 		}
 		return val;
+	}
+
+	function openUrl(url){
+		window.open(url, "open_url");
 	}
 </script>
 <style>

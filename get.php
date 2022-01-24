@@ -527,6 +527,7 @@ else if($pcmd == "ground"){
                 ,'height'=>$row['height']
                 ,'ground_type'=>$row['ground_type']
                 ,'recommend_shoe'=>$row['recommend_shoe']
+                ,'map_url'=>$row['map_url']
             ));
         }
     }
