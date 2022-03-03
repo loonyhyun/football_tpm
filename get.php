@@ -495,6 +495,7 @@ else if($pcmd == "match"){
                 ,'team_b_yn'=>$row['team_b_yn']
                 ,'goal_cnt'=>$row['goal_cnt']
                 ,'asst_cnt'=>$row['asst_cnt']
+                ,'recommand_pos'=>$row['recommand_pos']
             ));
         }
     }

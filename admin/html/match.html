@@ -1,0 +1,143 @@
+<script>
+	var difWindowHeight = 320;
+
+	$(document).ready(function(){
+		var targetHeader = 3;
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+		getPlayerList();
+
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			$(this).css("height", wh - difWindowHeight);
+		})
+	});
+
+	$(window).resize(function(){
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			$(this).css("height", wh - difWindowHeight);
+		})
+	});
+
+</script>
+<style>
+	@media (max-width:861px) {
+		.PLUS_MINUS {
+			display: none;
+		}
+		.VALUE_INPUT {
+			width: 100%!important;
+		}
+	}
+</style>
+	<div class="container" style="max-width:100%;">
+		<div class="row">&nbsp;</div>
+		<div id="CREATE_MATCH_BUTTON" style="display:none;">
+			<div class="row">
+				<div class="col">
+					<button class="btn btn-warning" onclick="showCreateMatch();">CREATE MATCH</button>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+			<div class="row" style="border-top: 1px solid #333;">&nbsp;</div>
+		</div>
+		<div id="CREATE_MATCH_DIV">
+			<h5>[경기등록]</h5>
+			<div class="row">
+				<div class="col">
+					경기일자 : 
+					<input type="text" id="input_match_date" value="" readonly="readonly" style="width:130px;"/>
+				</div>
+				<div class="col">
+					승리팀 : 
+					<select id="win_ab">
+						<option value="-">무승부</option>
+						<option value="a">A팀 (RED)</option>
+						<option value="b">B팀 (BLUE)</option>
+					</select>
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<p>
+					</p>
+					<table class="table auto_font_size" style="width:100%; text-align:center;">
+						<colgroup>
+							<col width="130px"/>
+							<col width="300px"/>
+							<col width="300px"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">선수리스트</th>
+								<th scope="col" style="background-color:#ffa2a2;">A팀(RED)</th>
+								<th scope="col" style="background-color:#9d9dff;">B팀(BLUE)</th>
+							</tr>
+						</thead>
+						<tbody style="font-size:12px;">
+							<tr>
+								<td>
+									<div class="TABLE_INNER_DIV" style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;" id="team_choice">
+									</div>
+								</td>
+								<td>
+									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
+										<table class="table auto_font_size">
+											<colgroup>
+												<col width="100px"/>
+												<col width="100px"/>
+												<col width="100px"/>
+											</colgroup>
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>Goal</td>
+													<td>Asst</td>
+												</tr>
+											</thead>
+											<tbody id="team_a_tbody"></tbody>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
+										<table class="table auto_font_size">
+											<colgroup>
+												<col width="100px"/>
+												<col width="100px"/>
+												<col width="100px"/>
+											</colgroup>
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>Goal</td>
+													<td>Asst</td>
+												</tr>
+											</thead>
+											<tbody id="team_b_tbody"></tbody>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+            <!-- <div class="row">
+                <div class="col">
+					<button type="button" class="btn btn-secondary" onclick="hideCreateMatch();">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+                </div>
+            </div>
+			<div class="row">&nbsp;</div> -->
+			<div class="row" style="border-top: 1px solid #333;">&nbsp;</div>
+		</div>
+    </div>
+	

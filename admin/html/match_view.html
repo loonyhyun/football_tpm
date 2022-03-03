@@ -1,0 +1,199 @@
+<script>
+  $(document).ready(function () {
+    var targetHeader = "3_1";
+    getTeam();
+    $("#header_" + targetHeader).addClass("fw-bold");
+    $("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+    getMatchHtmlList();
+    reMatchHtmlReply();
+  });
+
+  $(window).resize(function () {});
+</script>
+
+<div class="container">
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col-sm-8 col-md-9">
+      <h5>[수비 기록 작성]</h5>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="input-group mb-3">
+            <span
+              class="input-group-text"
+              id="quarters_group"
+              style="width: 74px"
+              >쿼터 수</span
+            >
+            <input
+              type="text"
+              id="p_quarters"
+              class="form-control"
+              placeholder="쿼터 수"
+              aria-label="쿼터 수"
+              aria-describedby="quarters_group"
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="ateam_group" style="width: 54px"
+              >A팀</span
+            >
+            <input
+              type="text"
+              id="p_team_a"
+              class="form-control"
+              placeholder="1;2;3;"
+              aria-label="1;2;3;"
+              aria-describedby="ateam_group"
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="bteam_group" style="width: 54px"
+              >B팀</span
+            >
+            <input
+              type="text"
+              id="p_team_b"
+              class="form-control"
+              placeholder="1;2;3;"
+              aria-label="1;2;3;"
+              aria-describedby="bteam_group"
+            />
+          </div>
+        </div>
+        <div class="col-md-3">
+          <button class="btn btn-success" onclick="match_d_save();">
+            저장
+          </button>
+        </div>
+      </div>
+      <table class="table auto_font_size" id="MatchInfoMainTable">
+        <caption
+          style="caption-side: top; font-weight: bold; color: black"
+          id="MatchInfoDesc"
+        >
+          경기 정보
+        </caption>
+        <colgroup>
+          <col width="25%" />
+          <col width="25%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col" style="background-color: #ffa2a2">A팀 (RED)</th>
+            <th scope="col" style="background-color: #9d9dff">B팀 (BLUE)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">이름</th>
+                    <th scope="col">골</th>
+                    <th scope="col">어시</th>
+                  </tr>
+                </thead>
+                <tbody id="MatchInfoTbodyA"></tbody>
+              </table>
+            </td>
+            <td>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">이름</th>
+                    <th scope="col">골</th>
+                    <th scope="col">어시</th>
+                  </tr>
+                </thead>
+                <tbody id="MatchInfoTbodyB"></tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <div class="input-group mb-3">
+                <input
+                  type="text"
+                  id="reply_input_text"
+                  class="form-control"
+                  onKeypress="javascript:if(event.keyCode==13) {saveReplyText()}"
+                  placeholder="댓글 작성"
+                  aria-label="댓글 작성"
+                  aria-describedby="reply_input_group1"
+                />
+                <span
+                  class="input-group-text"
+                  id="reply_input_group1"
+                  onclick="saveReplyText();"
+                  >작성</span
+                >
+              </div>
+              <div style="width: 100%">
+                <table class="table">
+                  <thead>
+                    <colgroup>
+                      <col width="10%" />
+                      <col width="25%" />
+                      <col width="*" />
+                      <col width="30%" />
+                    </colgroup>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">작성시각</th>
+                      <th scope="col">내용</th>
+                      <th scope="col">
+                        <button
+                          class="btn btn-sm btn-success"
+                          onclick="reMatchHtmlReply();"
+                        >
+                          새로고침
+                        </button>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody id="MatchInfoReply"></tbody>
+                </table>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" id="MatchInfoImgs"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-sm-4 col-md-3">
+      <table class="table auto_font_size" id="MatchListMainTable">
+        <caption
+          style="caption-side: top; font-weight: bold; color: black"
+          onclick="MatchListVisible()"
+          id="MatchListCaption"
+        >
+          경기 리스트 (보기 / 숨기기)
+        </caption>
+        <colgroup>
+          <col width="15%" />
+          <col width="25%" />
+          <col width="25%" />
+        </colgroup>
+        <thead id="MatchListThead">
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">경기일자</th>
+            <th scope="col">승리팀</th>
+          </tr>
+        </thead>
+        <tbody id="MatchlistTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="footers"></div>
+</div>

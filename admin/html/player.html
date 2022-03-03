@@ -1,0 +1,259 @@
+<script>
+    
+	$(document).ready(function(){
+        var targetHeader = 2;
+        getTeam();
+        $("#header_" + targetHeader).addClass("fw-bold");
+        $("#drop_header").text($("#drop_header_" + targetHeader).text());
+        getPlayers();
+    });
+	$(window).resize(function(){
+
+	});
+
+    function getPlayers()
+    {
+        
+        $.ajax({
+            type : "post",
+            url : '/football_tpm/get.php',
+            data : {
+                cmd : "players",
+                id : 1
+            },
+            dataType : "json",
+            success : function(data) {
+                $("#playerTbody").html("");
+                for (var i = 0; i < data.length; i++) {
+                    var playerId = data[i]["player_id"];
+                    var str = "<tr id='player_"+playerId+"' onclick=\"updatePlayerInfo('"+playerId+"');\" >";
+                    str += "  <td>"+(i+1)+"</td>";
+                    str += "  <td>"+data[i]["player_name"]+"</td>";
+                    str += "  <td>"+data[i]["back_no"]+"</td>";
+                    str += "  <td>"+data[i]["position"]+"</td>";
+                    str += "</tr>";
+                    str += "<tr onclick=\"updatePlayerInfo('"+playerId+"');\">";
+                    str += "  <td> </td>";
+                    str += "  <td colspan='3'><pre>"+data[i]["desc"]+"</pre></td>";
+                    str += "</tr>";
+                    $("#playerTbody").append(str);
+                }
+            },
+            error : function(err) {
+                alert("오류발생 관리자에게 문의하세요.")
+            }
+        });
+    }
+
+    function searchTablePlayers() {
+		var tmp = $("#searchPlayerName").val();
+		
+        var chk = false;
+		$("#playerTbody > tr").each(function(){
+            if(parseInt($(this).children().eq(0).text()) > 0){
+                if($(this).children().eq(1).text().indexOf(tmp) > -1){
+                    $(this).show();
+                    chk = true;
+                }else{
+                    $(this).hide();
+                    chk = false;
+                }
+            }else{
+                if(chk){
+                    $(this).show();
+                    chk = false;
+                }
+                else{
+                    $(this).hide();
+                    chk = false;
+                }
+            }
+		});
+	}
+
+    function cancelUpdatePlayer(){
+        $("#player_update_id").val("");
+        $("#player_update_name").val("");
+        $("#player_update_backno").val("");
+        $("#player_update_position").val("");
+        $("#player_update_desc").val("");
+        $("#player_total_play_info").html("");
+        $("#UPDATE_PLAYER_DIV").hide();
+        $("#CREATE_PLAYER_DIV").show();
+    }
+    
+	function updatePlayerInfo(pid){
+        cancelUpdatePlayer();
+        $("#player_total_play_info").html("Loading...");
+        $("#UPDATE_PLAYER_DIV").show();
+        $("#CREATE_PLAYER_DIV").hide();
+
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "player_one",
+				id : 1,
+				playerId: pid
+			},
+			dataType : "json",
+			success : function(data, textStatus, jqXHR) {
+				var tmp = data[0];
+				var pname = tmp["player_name"];
+				var bno = tmp["back_no"];
+                var position = tmp["position"];
+				var desc = tmp["desc"];
+
+				$("#player_update_id").val(pid);
+				$("#player_update_name").val(pname);
+				$("#player_update_backno").val(bno);
+				$("#player_update_position").val(position);
+				$("#player_update_desc").val(desc);
+
+                //total info
+                $.ajax({
+                    type : "post",
+                    url : '/football_tpm/get.php',
+                    data : {
+                        cmd : "player_sum",
+                        id : 1,
+                        playerId: pid
+                    },
+                    dataType : "json",
+                    success : function(data, textStatus, jqXHR) {
+                        var tmp = data[0];
+                        var goal = tmp["goal_cnt"];
+                        var asst = tmp["asst_cnt"];
+                        var play = tmp["play_cnt"];
+                        var wins = tmp["win_cnt"];
+                        var ties = tmp["tie_cnt"];
+                        var defeat = play - wins - ties;
+                        
+                        var win_per = parseInt(
+                            (parseFloat(wins) + parseFloat(ties)*0.5) / parseFloat(play) * 100
+                        );
+						var goal_per = parseInt( parseFloat(goal) / parseFloat(play) * 100 ) / 100.0;
+						var asst_per = parseInt( parseFloat(asst) / parseFloat(play) * 100 ) / 100.0;
+
+                        //player_total_play_info
+                        $("#player_total_play_info").html(
+                            play + "전 " + wins + "승 " + ties + "무 " + defeat + "패"
+                            + "<br>승률 " + win_per + "%"
+                            + "<br>" + goal + "골 " + asst + "어시"
+							+ "<br>경기당 득점 " + goal_per + ", 어시 " + asst_per + ""
+                        );
+                    }
+                });
+			}
+		});
+	}
+
+</script>
+
+	<div class="container">
+        <div class="row">&nbsp;</div>
+        <div id="CREATE_PLAYER_DIV">
+            <h4>[선수등록]</h4>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_create_group1" style="width:74px;">이름</span>
+                        <input type="text" id="player_name" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="player_create_group1">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_create_group2" style="width:74px;">등번호</span>
+                        <input type="text" id="player_backno" class="form-control" placeholder="0" aria-label="0" aria-describedby="player_create_group2">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_create_group3" style="width:74px;">포지션</span>
+                        <input type="text" id="player_position" class="form-control" placeholder="" aria-label="" aria-describedby="player_create_group3">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_create_group4" style="width:74px;">특징</span>
+                        <textarea id="player_desc" style="min-height:100px;" class="form-control" placeholder="" aria-label="" aria-describedby="player_create_group4"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-primary" onclick="createPlayer();">CREATE</button>
+                </div>
+            </div>
+        </div>
+        <div id="UPDATE_PLAYER_DIV" style="display: none;">
+            <h4>[선수수정]</h4>
+            <div class="row">
+                <input type="hidden" id="player_update_id" value="" />
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_input_group1" style="width:74px;">이름</span>
+                        <input type="text" id="player_update_name" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="player_input_group1">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_input_group2" style="width:74px;">등번호</span>
+                        <input type="text" id="player_update_backno" class="form-control" placeholder="0" aria-label="0" aria-describedby="player_input_group2">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_input_group3" style="width:74px;">포지션</span>
+                        <input type="text" id="player_update_position" class="form-control" placeholder="" aria-label="" aria-describedby="player_input_group3">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="player_input_group4" style="width:74px;">특징</span>
+                        <textarea id="player_update_desc" style="min-height:100px;" class="form-control" placeholder="" aria-label="" aria-describedby="player_input_group4"></textarea>
+                    </div>
+                    <div style="text-align: center;">
+                        <div class="row" style="text-align: center;">
+                            <div class="col" id="player_total_play_info"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="button" class="btn btn-secondary" onclick="cancelUpdatePlayer();">CANCEL</button>
+                    <button type="button" class="btn btn-warning" onclick="updatePlayer();">UPDATE</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <table class="table auto_font_size" id="PlayerMainTable">
+                <caption style="caption-side: top;">
+                    테이블 검색: <input type="text" id="searchPlayerName" value="" onkeyup="searchTablePlayers();"/>
+                </caption>
+                <colgroup>
+                    <col width="25%"/>
+                    <col width="25%"/>
+                    <col width="25%"/>
+                    <col width="25%"/>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">이름</th>
+                        <th scope="col">등번호</th>
+                        <th scope="col">포지션</th>
+                    </tr>
+                </thead>
+                <tbody id="playerTbody"></tbody>
+            </table>
+        </div>
+    </div>
