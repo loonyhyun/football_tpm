@@ -5,12 +5,10 @@
 </style>
 <script>
 	$(document).ready(function(){
-		$("#headers").load("/football_tpm/admin/header.html", function(){
-			var targetHeader = "4_q";
-			getTeam();
-			$("#header_" + targetHeader).addClass("fw-bold");
-			$("#drop_header").text($("#drop_header_" + targetHeader).text());
-		});
+		var targetHeader = "4_q";
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
 
 		getInitAttend();
 		getAttendQuater();
