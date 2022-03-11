@@ -1,9 +1,11 @@
 <?php
 
 include 'setting.php';
+
+$POST_DATA = json_decode(file_get_contents('php://input'), true);
   
-$pid = $_REQUEST["id"];
-$pcmd = $_REQUEST["cmd"];
+$pid = !empty($_REQUEST["id"]) ? $_REQUEST["id"] : $POST_DATA["id"];
+$pcmd = !empty($_REQUEST["cmd"]) ? $_REQUEST["cmd"] : $POST_DATA["cmd"];
 
 $notinplayer1 = " and id not in ('79','80','81','82','87','88') ";
 $notinplayer = " and player_id not in ('79','80','81','82','87','88') ";
@@ -673,6 +675,35 @@ else if($pcmd == "max_match_id"){
             'match_id'=>$row['match_id']
             )
         );
+    }
+}
+else if($pcmd == "match_together"){
+    if($conn){
+        $pids = $_REQUEST["players"];
+        $sql = "
+        SELECT * FROM (
+            SELECT match_date, SUM(play_yn) play_yn,
+                SUM(case when win_yn = 1 then 1 ELSE 0 end) win_yn,
+                SUM(team_a_yn) team_a,
+                SUM(team_b_yn) team_b
+            FROM football_tpm_view
+            WHERE player_id in (".$pids.")
+                AND play_yn = 1
+            GROUP BY match_date
+        ) t
+        ORDER BY match_date desc
+        ";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'match_date'=>$row['match_date']
+                ,'play_yn'=>$row['play_yn']
+                ,'win_yn'=>$row['win_yn']
+                ,'team_a'=>$row['team_a']
+                ,'team_b'=>$row['team_b']
+                )
+            );
+        }
     }
 }
 else{

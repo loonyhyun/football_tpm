@@ -1,6 +1,12 @@
 <?php
 
 header("Progma:no-cache");
+
+header("Access-Control-Allow-Origin: *");
+header('Access-Control-Allow-Credentials: true');
+header("Access-Control-Allow-Methods: POST, GET, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization");
+
 header("Content-Type:text/html;charset=utf-8");
 
 // ** MySQL settings - You can get this info from your web host ** //
