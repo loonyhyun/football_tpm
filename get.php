@@ -684,6 +684,7 @@ else if($pcmd == "match_together"){
         SELECT * FROM (
             SELECT match_date, SUM(play_yn) play_yn,
                 SUM(case when win_yn = 1 then 1 ELSE 0 end) win_yn,
+                SUM(case when win_yn = 0 then 1 ELSE 0 end) lose_yn,
                 SUM(team_a_yn) team_a,
                 SUM(team_b_yn) team_b
             FROM football_tpm_view
@@ -699,6 +700,7 @@ else if($pcmd == "match_together"){
                 'match_date'=>$row['match_date']
                 ,'play_yn'=>$row['play_yn']
                 ,'win_yn'=>$row['win_yn']
+                ,'lose_yn'=>$row['lose_yn']
                 ,'team_a'=>$row['team_a']
                 ,'team_b'=>$row['team_b']
                 )

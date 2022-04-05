@@ -36,7 +36,7 @@
 				var div = $("#player_list_div");
 				div.html("");
 				for(var i=0; i<data.length; i++){
-					var str = "<button class='btn btn-outline-primary'";
+					var str = "<button class='btn btn-outline-primary' id='p_"+data[i]["player_id"]+"'";
 						str += " onclick='selectPlayerRecord("+data[i]["player_id"]+", \""+data[i]["player_name"]+"\")'>";
 						str += "" + data[i]["player_name"];
 						str += "</button>";
@@ -53,10 +53,12 @@
 	function selectPlayerRecord(pid, pname){
 		if(selectedPlayers.indexOf(pid) > -1){
 			selectedPlayers.splice(selectedPlayers.indexOf(pid), 1);
+			$("#p_" + pid).removeClass("btn-warning").addClass("btn-outline-primary");
 			$("#SELECTED_PLAYERS").text($("#SELECTED_PLAYERS").text().replace("[" + pname + "]", ""));
 		}
 		else{
 			selectedPlayers.push(pid);
+			$("#p_" + pid).addClass("btn-warning").removeClass("btn-outline-primary");
 			$("#SELECTED_PLAYERS").append("[" + pname + "]");
 		}
 	}
@@ -88,6 +90,11 @@
 				var body = $("#tableBody");
 				body.html("");
 
+				var plays = 0;
+				var wins = 0;
+				var loses = 0;
+				var players = selectedPlayers.length;
+				
 				for(var i=0; i<data.length; i++){
 					body.append("<tr>"
 						+"<td>"+data[i]["match_date"]+"</td>"
@@ -96,7 +103,20 @@
 						+"<td>"+data[i]["team_a"]+"</td>"
 						+"<td>"+data[i]["team_b"]+"</td>"
 						+"</tr>");
+
+					if(data[i]["team_a"] == players || data[i]["team_b"] == players){
+						plays++;
+
+						if(data[i]["win_yn"] == players){
+							wins++;
+						}
+						if(data[i]["lose_yn"] == players){
+							loses++;
+						}
+					}
 				}
+
+				$("#tableResult").text(plays + "전 " + wins + "승 " + (plays - wins - loses) + "무 " + loses + "패");
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
@@ -141,6 +161,7 @@
 								</td>
 								<td>
 									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
+										<h5 id="tableResult"></h5>
 										<table class="table auto_font_size">
 											<colgroup>
 												<col width="100px"/>
