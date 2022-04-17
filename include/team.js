@@ -250,12 +250,9 @@
 			str += " onclick=\"updatePlayerInfo('"+playerId+"');\" >";
 			str += "<td scope='row'>" + (i + 1) + "</td>";
 			str += "<td>" + playerName + "</td>";
-			str += "<td>" + play + " ( "
-					+ play_per + " % )</td>";
-			str += "<td>" + goal + " ( "
-					+ goal_per + " )</td>";
-			str += "<td>" + asst + " ( "
-					+ asst_per + " )</td>";
+			str += "<td>" + play + " ( " + play_per + " % )</td>";
+			str += "<td>" + goal + " ( " + goal_per + " )</td>";
+			str += "<td>" + asst + " ( "+ asst_per + " )</td>";
 			//str += "<td>" + wins + " ( " + win_per + " % )</td>";
 			str += "<td>" + win_per + " % ( " + wins + " )</td>";
 			str += "<td>" + parseInt(data[i]["pts"]) + "</td>";

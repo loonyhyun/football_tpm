@@ -73,7 +73,12 @@
 				if(winab == '-'){
 					winab = "무승부";
 				}
-				$("#MatchInfoDesc").text("경기일자: " + mdate + ", " + winab);
+				var g_name = "-";
+				if(data.length > 0){
+					if(data[0]["g_name"] != undefined && data[0]["g_name"] != null)
+						g_name = data[0]["g_name"];
+				}
+				$("#MatchInfoDesc").text("경기일자: " + mdate + ", " + winab + ", " + g_name);
 				var targetA = $("#MatchInfoTbodyA");
 				var targetB = $("#MatchInfoTbodyB");
 				targetA.html("");

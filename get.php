@@ -478,12 +478,14 @@ else if($pcmd == "match"){
     if($conn){
         $pmatchid = $_REQUEST["match_id"];
         $sql1 = "SELECT win_ab
+                    , (select name from football_ground where id = ground_id) g_name
                 FROM football_match
                 WHERE id = '".$pmatchid."'";
         $result1 = mysqli_query($conn, $sql1);
         $row1 = mysqli_fetch_array($result1);
         $win_ab = $row1["win_ab"];
-        array_push($array, array('win_ab'=>$win_ab));
+        $g_name = $row1["g_name"];
+        array_push($array, array('win_ab'=>$win_ab, 'g_name'=>$g_name));
         
         $sql = "SELECT *
                 FROM football_tpm_view
