@@ -12,7 +12,21 @@
 		var wh = $(window).height();
 		$(".TABLE_INNER_DIV").each(function(){
 			$(this).css("height", wh - difWindowHeight);
-		})
+		});
+
+		
+		$('#searchStartDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
+		$('#searchEndDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
 	});
 
 	$(window).resize(function(){
@@ -83,7 +97,9 @@
 			data : {
 				cmd : "match_together",
 				id : 1,
-				players: tmp
+				players: tmp,
+				from: $("#searchStartDate").val(),
+				to: $("#searchEndDate").val()
 			},
 			dataType : "json",
 			success : function(data) {
@@ -138,7 +154,14 @@
 		<div class="row">&nbsp;</div>
 		<div id="">
 			<h5>[선수별 기록]
-				<button class="btn btn-primary" onclick="getMatchRecordsTogether();">VIEW</button>
+				<div class="input-group" style="margin-top:5px;">
+					<span class="input-group-text">기간</span>
+					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
+					<span class="input-group-text">~</span>
+					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
+					
+					<button class="btn btn-primary" onclick="getMatchRecordsTogether();">VIEW</button>
+				</div>
 			</h5>
 			<div class="row">
 				<div class="col">

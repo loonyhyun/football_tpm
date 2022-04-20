@@ -692,7 +692,16 @@ else if($pcmd == "match_together"){
             FROM football_tpm_view
             WHERE player_id in (".$pids.")
                 AND play_yn = 1
-            GROUP BY match_date
+        ";
+        if( ! empty($_REQUEST["from"]) ){
+            $pfrom = $_REQUEST["from"];
+            $sql = $sql." AND match_date >= '".$pfrom."' ";
+        }
+        if( ! empty($_REQUEST["to"]) ){
+            $pto = $_REQUEST["to"];
+            $sql = $sql." AND match_date <= '".$pto."' ";
+        }
+        $sql = $sql."    GROUP BY match_date
         ) t
         ORDER BY match_date desc
         ";
