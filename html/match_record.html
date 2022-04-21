@@ -132,13 +132,50 @@
 				var players = selectedPlayers.length;
 				
 				for(var i=0; i<data.length; i++){
-					body.append("<tr>"
-						+"<td>"+data[i]["match_date"]+"</td>"
-						+"<td>"+data[i]["play_yn"]+"</td>"
-						+"<td>"+data[i]["win_yn"]+"</td>"
-						+"<td>"+data[i]["team_a"]+"</td>"
-						+"<td>"+data[i]["team_b"]+"</td>"
-						+"</tr>");
+					var bgColor = "#FFFFFF";
+					var str = "";
+					str += "<td>"+data[i]["match_date"]+"</td>";
+					if(data[i]["play_yn"] == players){
+						str += "<td>출석</td>";
+					}else{
+						str += "<td>"+data[i]["play_yn"]+"명 출석</td>";
+					}
+					if(data[i]["win_yn"] == players){
+						str += "<td>승</td>";
+						bgColor = "#81BEF7";
+					}
+					else if(data[i]["lose_yn"] == players){
+						str += "<td>패</td>"
+						bgColor = "#F78181";
+					}
+					else if(data[i]["team_a"] == players || data[i]["team_b"] == players) {
+						str += "<td>무</td>";
+						bgColor = "#E6E6E6";
+					}
+					else {
+						str += "<td>"+data[i]["win_yn"]+"명 승</td>"
+					}
+					if(data[i]["team_a"] == players){
+						str += "<td>출석</td>";
+						str += "<td>-</td>";
+					}
+					else if(data[i]["team_b"] == players){
+						str += "<td>-</td>";
+						str += "<td>출석</td>";
+					}
+					else {
+						if(data[i]["team_a"] == 0){
+							str += "<td>-</td>";
+						}else{
+							str += "<td>"+data[i]["team_a"]+"명 출석</td>";
+						}
+						if(data[i]["team_b"] == 0){
+							str += "<td>-</td>";
+						}else{
+							str += "<td>"+data[i]["team_b"]+"명 출석</td>";
+						}
+					}
+					body.append("<tr style='background-color:"+bgColor+"'>" + str + "</tr>");
 
 					if(data[i]["team_a"] == players || data[i]["team_b"] == players){
 						plays++;
