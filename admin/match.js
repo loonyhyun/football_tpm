@@ -461,10 +461,12 @@ function saveMatch() {
                 goalB : goalB,
                 asstA : asstA,
                 asstB : asstB,
-                winAB : $("#win_ab").val()
+                winAB : $("#win_ab").val(),
+                groundId : $("#ground_id option:selected").val()
             },
             success : function(data, textStatus, jqXHR) {
                 if (data == "ok") {
+                    alert("등록되었습니다.");
                     location.reload();
                 }
             }

@@ -12,7 +12,9 @@
 		var wh = $(window).height();
 		$(".TABLE_INNER_DIV").each(function(){
 			$(this).css("height", wh - difWindowHeight);
-		})
+		});
+
+		getGrounds();
 	});
 
 	$(window).resize(function(){
@@ -21,6 +23,27 @@
 			$(this).css("height", wh - difWindowHeight);
 		})
 	});
+
+	function getGrounds(){
+		
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "ground",
+				id : 1
+			},
+			dataType:"json",
+			success : function(data, textStatus, jqXHR) {
+				var select = $("#ground_id");
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					select.append("<option value='"+tmp["ground_id"]+"'>"+ tmp["name"]+"</option>");
+				}
+
+			}
+		});
+	}
 
 </script>
 <style>
@@ -48,19 +71,33 @@
 			<h5>[경기등록]</h5>
 			<div class="row">
 				<div class="col">
-					경기일자 : 
-					<input type="text" id="input_match_date" value="" readonly="readonly" style="width:130px;"/>
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="input_match_date">경기일자</label>
+						<input type="text" class="form-control" id="input_match_date">
+					</div>
 				</div>
 				<div class="col">
-					승리팀 : 
-					<select id="win_ab">
-						<option value="-">무승부</option>
-						<option value="a">A팀 (RED)</option>
-						<option value="b">B팀 (BLUE)</option>
-					</select>
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="win_ab">승리팀</label>
+						<select id="win_ab" class="form-select">
+							<option value="-">무승부</option>
+							<option value="a">A팀 (RED)</option>
+							<option value="b">B팀 (BLUE)</option>
+						</select>
+					</div>
 				</div>
 				<div class="col">
-					<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="ground_id">구장</label>
+						<select id="ground_id" class="form-select">
+							<option value="">Unknown</option>
+						</select>
+					</div>
+				</div>
+				<div class="col">
+					<div class="d-grid">
+						<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+					</div>
 				</div>
 			</div>
 			<div class="row">

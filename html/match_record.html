@@ -2,10 +2,10 @@
 	var difWindowHeight = 320;
 
 	$(document).ready(function(){
-		var targetHeader = "9";
+		var target_header = "9";
 		getTeam();
-		$("#header_" + targetHeader).addClass("fw-bold");
-		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_" + target_header).text());
 
 		getPlayers();
 
@@ -153,7 +153,7 @@
 	<div class="container" style="max-width:100%;">
 		<div class="row">&nbsp;</div>
 		<div id="">
-			<h5>[선수별 기록]
+			<h5>[선수 궁합 별 기록]
 				<div class="input-group" style="margin-top:5px;">
 					<span class="input-group-text">기간</span>
 					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>

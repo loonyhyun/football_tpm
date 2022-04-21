@@ -77,9 +77,11 @@ else if($pcmd == "match"){
         $pGoalB = $_REQUEST["goalB"];
         $pAsstA = $_REQUEST["asstA"];
         $pAsstB = $_REQUEST["asstB"];
+
+        $pGround = $_REQUEST["groundId"];
         
         $sql = "INSERT INTO football_match
-        (team_id, match_date, team_a, team_b, win_ab, goal_a, goal_b, asst_a, asst_b)
+        (team_id, match_date, team_a, team_b, win_ab, goal_a, goal_b, asst_a, asst_b, ground_id)
         values (
 		".$pid.",
 		'".$pDate."',
@@ -89,7 +91,8 @@ else if($pcmd == "match"){
 		'".$pGoalA."',
 		'".$pGoalB."',
 		'".$pAsstA."',
-		'".$pAsstB."'
+		'".$pAsstB."',
+        '".$pGround."'
         )";
         
         $result = mysqli_query($conn, $sql);
