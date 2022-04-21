@@ -27,6 +27,25 @@
 			todayHighlight: true,
 			language: "ko"
 		});
+
+		
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "ground",
+				id : 1
+			},
+			dataType:"json",
+			success : function(data, textStatus, jqXHR) {
+				var select = $("#ground_id");
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					select.append("<option value='"+tmp["ground_id"]+"'>"+ tmp["name"]+"</option>");
+				}
+
+			}
+		});
 	});
 
 	$(window).resize(function(){
@@ -99,7 +118,8 @@
 				id : 1,
 				players: tmp,
 				from: $("#searchStartDate").val(),
-				to: $("#searchEndDate").val()
+				to: $("#searchEndDate").val(),
+				groundId: $("#ground_id option:selected").val()
 			},
 			dataType : "json",
 			success : function(data) {
@@ -159,7 +179,9 @@
 					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
 					<span class="input-group-text">~</span>
 					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
-					
+					<select class="form-select" id="ground_id">
+						<option value="">-</option>
+					</select>
 					<button class="btn btn-primary" onclick="getMatchRecordsTogether();">VIEW</button>
 				</div>
 			</h5>

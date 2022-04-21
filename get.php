@@ -701,6 +701,10 @@ else if($pcmd == "match_together"){
             $pto = $_REQUEST["to"];
             $sql = $sql." AND match_date <= '".$pto."' ";
         }
+        if( ! empty($_REQUEST["groundId"]) ){
+            $pGround = $_REQUEST["groundId"];
+            $sql = $sql." AND ground_id = '".$pGround."' ";
+        }
         $sql = $sql."    GROUP BY match_date
         ) t
         ORDER BY match_date desc
