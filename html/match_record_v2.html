@@ -11,7 +11,7 @@
 
 		var wh = $(window).height();
 		$(".TABLE_INNER_DIV").each(function(){
-			$(this).css("height", wh - difWindowHeight);
+			//$(this).css("height", wh - difWindowHeight);
 		});
 
 		
@@ -51,7 +51,7 @@
 	$(window).resize(function(){
 		var wh = $(window).height();
 		$(".TABLE_INNER_DIV").each(function(){
-			$(this).css("height", wh - difWindowHeight);
+			//$(this).css("height", wh - difWindowHeight);
 		})
 	});
 
@@ -69,7 +69,7 @@
 				var div = $("#player_list_div");
 				div.html("");
 				for(var i=0; i<data.length; i++){
-					var str = "<button class='btn btn-outline-primary' id='p_"+data[i]["player_id"]+"'";
+					var str = "<button class='btn btn-outline-primary btn-sm' id='p_"+data[i]["player_id"]+"'";
 						str += " onclick='selectPlayerRecord("+data[i]["player_id"]+", \""+data[i]["player_name"]+"\")'>";
 						str += "" + data[i]["player_name"];
 						str += "</button>";
@@ -189,15 +189,45 @@
 					}
 				}
 
+				var players = "";
+				for(var i=0; i<selectedPlayers.length; i++){
+					if(players != ""){
+						players += ", ";
+					}
+					players += $("#p_" + selectedPlayers[i]).text();
+				}
+				$("#tableResultPlayers").text(players);
+				var from = $("#searchStartDate").val();
+				var to = $("#searchEndDate").val();
+				var dateStr = "";
+				if(from != ""){
+					dateStr = from + " ~ ";
+				}
+				if(to != ""){
+					if(dateStr == ""){
+						dateStr += " ~ ";
+					}
+					dateStr += to;
+				}
+				var ground = $("#ground_id option:selected").text();
+				if(ground == "-"){
+					ground = "";
+				}
+				$("#tableResultDate").text(dateStr);
+				$("#tableResultGround").text(ground);
 				$("#tableResult").text(plays + "전 " + wins + "승 " + (plays - wins - loses) + "무 " + loses + "패");
 
-				$("#TABLE_INNER_DIV_RESULT").scrollTop(0);
+				location.href = '#TABLE_RESULT_DIV';
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
 			}
 		});
 	}
+
+	$(window).scroll(function(){
+		console.log($(window).scrollTop() + " " + $(".TABLE_INNER_DIV").offset().top);
+	});
 </script>
 <style>
 	@media (max-width:861px) {
@@ -213,28 +243,29 @@
 		<div class="row">&nbsp;</div>
 		<div id="">
 			<h5>[선수 궁합 별 기록]
-				<a class="btn btn-outline-success" href="/football_tpm/page.php?page=match_record_v2">모바일 보기</a>
+				<a class="btn btn-outline-success" href="/football_tpm/page.php?page=match_record">기본 보기</a>
 				<div class="input-group" style="margin-top:5px;">
 					<span class="input-group-text">기간</span>
 					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
 					<span class="input-group-text">~</span>
 					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
+				</div>
+				<div class="input-group" style="margin-top:5px;">
 					<select class="form-select" id="ground_id">
 						<option value="">-</option>
 					</select>
 					<button class="btn btn-primary" onclick="getMatchRecordsTogether();">VIEW</button>
 				</div>
+
 			</h5>
 			<div class="row">
 				<div class="col">
 					<table class="table auto_font_size" style="width:100%; text-align:center;">
-						<colgroup>
-							<col width="130px"/>
-							<col width="600px"/>
-						</colgroup>
 						<thead>
 							<tr>
 								<th scope="col" style="min-width: 130px;">선수리스트</th>
+							</tr>
+							<tr>
 								<th scope="col" id="SELECTED_PLAYERS"></th>
 							</tr>
 						</thead>
@@ -244,32 +275,43 @@
 									<div class="TABLE_INNER_DIV" style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;" id="player_list_div">
 									</div>
 								</td>
-								<td>
-									<div class="align-top TABLE_INNER_DIV" id="TABLE_INNER_DIV_RESULT" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
-										<h5 id="tableResult"></h5>
-										<table class="table auto_font_size">
-											<colgroup>
-												<col width="100px"/>
-												<col width="100px"/>
-												<col width="100px"/>
-												<col width="100px"/>
-												<col width="100px"/>
-											</colgroup>
-											<thead>
-												<tr>
-													<td>MATCH_DATE</td>
-													<td>PLAYERs</td>
-													<td>WINs</td>
-													<td>TEAM_A</td>
-													<td>TEAM_B</td>
-												</tr>
-											</thead>
-											<tbody id="tableBody"></tbody>
-										</table>
-									</div>
-								</td>
 							</tr>
 						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row" id="TABLE_RESULT_DIV">
+				<div class="col">
+					<table class="table auto_font_size" style="width:100%; text-align:center;">
+						<tr>
+							<td>
+								<div class="align-top TABLE_INNER_DIV">
+									<h5 id="tableResultPlayers"></h5>
+									<h6 id="tableResultDate"></h6>
+									<h6 id="tableResultGround"></h6>
+									<h5 id="tableResult"></h5>
+									<table class="table auto_font_size">
+										<colgroup>
+											<col width="100px"/>
+											<col width="100px"/>
+											<col width="100px"/>
+											<col width="100px"/>
+											<col width="100px"/>
+										</colgroup>
+										<thead>
+											<tr>
+												<td>MATCH_DATE</td>
+												<td>PLAYERs</td>
+												<td>WINs</td>
+												<td>TEAM_A</td>
+												<td>TEAM_B</td>
+											</tr>
+										</thead>
+										<tbody id="tableBody"></tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
 					</table>
 				</div>
 			</div>
