@@ -1,0 +1,230 @@
+<style></style>
+<script>
+  var difWindowHeight = 320;
+
+  var groundInfo = null;
+  var MAX_DISTANCE = -1;
+  var gps_location = null;
+  var gps_distance = -1;
+
+  var GROUND_DATA = null;
+  $(document).ready(function () {
+    var targetHeader = "attend";
+    getTeam();
+    $("#header_" + targetHeader).addClass("fw-bold");
+    $("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+    // $.ajax({
+    //   type: "post",
+    //   url: "/football_tpm/get.php",
+    //   data: {
+    //     cmd: "ground_attend",
+    //     id: 1,
+    //   },
+    //   dataType: "json",
+    //   success: function (gdata, textStatus, jqXHR) {
+    //     GROUND_DATA = gdata[0];
+    //     $("#ground_name").val(GROUND_DATA.name);
+    //     $("#max_distance").val(GROUND_DATA.max_distance);
+    //   },
+    // });
+
+    const reg = /<[^>]*>?/g;
+    $.ajax({
+      type: "post",
+      url: "/football_tpm/get.php",
+      data: {
+        cmd: "ground_attend_player",
+        id: 1,
+      },
+      dataType: "json",
+      success: function (data) {
+        var alength = 0;
+        var blength = 0;
+        for (var i = 0; i < data.length; i++) {
+          var pname = data[i]["player_name"].replace(reg, "");
+          if (data[i].team_type == "a") {
+            alength++;
+          } else {
+            blength++;
+          }
+          if (data[i].team_type == "a") {
+            var str =
+              "<tr>" +
+              "<td>"+pname+"</td>" +
+              "<td onclick='setPlayer(this, 1, \"a\");'>-</td>" +
+              "<td onclick='setPlayer(this, 2, \"a\");'>-</td>" +
+              "<td onclick='setPlayer(this, 3, \"a\");'>-</td>" +
+              "<td onclick='setPlayer(this, 4, \"a\");'>-</td>" +
+              "<td onclick='setPlayer(this, 5, \"a\");'>-</td>" +
+              "<td onclick='setPlayer(this, 6, \"a\");'>-</td>" +
+              "</tr>";
+            $("#A_TEAM").append(str);
+          } else {
+            var str =
+              "<tr>" +
+              "<td>"+pname+"</td>" +
+              "<td onclick='setPlayer(this, 1, \"b\");'>-</td>" +
+              "<td onclick='setPlayer(this, 2, \"b\");'>-</td>" +
+              "<td onclick='setPlayer(this, 3, \"b\");'>-</td>" +
+              "<td onclick='setPlayer(this, 4, \"b\");'>-</td>" +
+              "<td onclick='setPlayer(this, 5, \"b\");'>-</td>" +
+              "<td onclick='setPlayer(this, 6, \"b\");'>-</td>" +
+              "</tr>";
+            $("#B_TEAM").append(str);
+          }
+        }
+
+        $("#A_TEAM_BTN").text("A팀: " + alength + "명");
+        $("#B_TEAM_BTN").text("B팀: " + blength + "명");
+      },
+      error: function (err) {
+        alert("오류발생 관리자에게 문의하세요.");
+      },
+    });
+  });
+
+  $(window).resize(function () {});
+
+  var aPlayerCnt = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  var bPlayerCnt = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  function setPlayer(obj, qidx, team){
+    var text = $(obj).text();
+    if(text == "-"){
+      if(team == 'a'){
+        if(aPlayerCnt[qidx] >= 11){
+          alert("선수 최대 값.!");
+          return;
+        }
+        aPlayerCnt[qidx]++;
+      }else{
+        if(bPlayerCnt[qidx] >= 11){
+          alert("선수 최대 값.!");
+          return;
+        }
+        bPlayerCnt[qidx]++;
+      }
+      $(obj).text("O");
+    }else if(text == "O"){
+      $(obj).text("GK");
+    }else{
+      $(obj).text("-");
+      if(team == 'a'){
+        aPlayerCnt[qidx]--;
+      }else{
+        bPlayerCnt[qidx]--;
+      }
+    }
+    if(team == 'a'){
+      $("#a_q_" + qidx).text(aPlayerCnt[qidx]);
+    }else{
+      bPlayerCnt[qidx]++;
+      $("#b_q_" + qidx).text(bPlayerCnt[qidx]);
+    }
+  }
+</script>
+<div class="container" style="max-width: 100%">
+  <div class="row">&nbsp;</div>
+  <div id="">
+    <h5>[출석 GPS 기반 - 선발]</h5>
+    <!-- <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text">구장</span>
+          <input
+            type="text"
+            id="ground_name"
+            class="form-control"
+            readonly
+            style="background-color: white"
+            value=""
+          />
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 5px">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text">거리</span>
+          <input
+            type="text"
+            class="form-control"
+            id="max_distance"
+            readonly
+            style="background-color: white"
+            value=""
+          />
+          <span class="input-group-text">km</span>
+        </div>
+      </div>
+    </div> -->
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col">
+        <div class="d-grid gap-2 col-6 mx-auto">
+          <button id="A_TEAM_BTN" class="btn btn-danger" type="button" onclick="viewTactics('a')">
+            A팀
+          </button>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>1q</th>
+              <th>2q</th>
+              <th>3q</th>
+              <th>4q</th>
+              <th>5q</th>
+              <th>6q</th>
+            </tr>
+            <tr>
+              <th>인원</th>
+              <th id="a_q_1">0</th>
+              <th id="a_q_2">0</th>
+              <th id="a_q_3">0</th>
+              <th id="a_q_4">0</th>
+              <th id="a_q_5">0</th>
+              <th id="a_q_6">0</th>
+            </tr>
+          </thead>
+          <tbody id="A_TEAM">
+
+          </tbody>
+        </table>
+      </div>
+      <div class="col">
+        <div class="d-grid gap-2 col-6 mx-auto">
+          <button id="A_TEAM_BTN" class="btn btn-primary" type="button" onclick="viewTactics('b')">
+            B팀
+          </button>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>1q</th>
+              <th>2q</th>
+              <th>3q</th>
+              <th>4q</th>
+              <th>5q</th>
+              <th>6q</th>
+            </tr>
+            <tr>
+              <th>인원</th>
+              <th id="b_q_1">0</th>
+              <th id="b_q_2">0</th>
+              <th id="b_q_3">0</th>
+              <th id="b_q_4">0</th>
+              <th id="b_q_5">0</th>
+              <th id="b_q_6">0</th>
+            </tr>
+          </thead>
+          <tbody id="B_TEAM">
+
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

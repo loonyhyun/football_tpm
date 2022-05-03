@@ -33,6 +33,7 @@
       },
     });
 
+    const reg = /<[^>]*>?/g
     $.ajax({
       type: "post",
       url: "/football_tpm/get.php",
@@ -44,11 +45,12 @@
       success: function (data) {
         for (var i = 0; i < data.length; i++) {
           var str =
-            "<pre>" +
-            data[i]["player_name"] +
-            "<br>(" +
+            "<p class='auto_font_size'>" +
+            data[i]["player_name"].replace(reg, '') +
+            " (" +
             data[i]["gps_distance"].substring(0, 6) +
-            ", "+data[i]["reg_date"].substring(11)+")</pre>";
+            ", "+data[i]["reg_date"].substring(11, 16)+") " +
+            "</p>";
           if (data[i].team_type == "a") {
             $("#A_TEAM").append(str);
           } else {
@@ -56,8 +58,8 @@
           }
         }
 
-		$("#A_TEAM_BTN").text("A팀: " + $("#A_TEAM > pre").length + "명");
-		$("#B_TEAM_BTN").text("B팀: " + $("#B_TEAM > pre").length + "명");
+        $("#A_TEAM_BTN").text("A팀: " + $("#A_TEAM > p").length + "명");
+        $("#B_TEAM_BTN").text("B팀: " + $("#B_TEAM > p").length + "명");
       },
       error: function (err) {
         alert("오류발생 관리자에게 문의하세요.");
@@ -208,7 +210,7 @@
         </button>
       </div>
     </div>
-    <div class="row">
+    <div class="row" style="margin-top:5px;">
       <div class="col" id="A_TEAM">
       </div>
       <div class="col" id="B_TEAM">
