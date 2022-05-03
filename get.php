@@ -533,6 +533,8 @@ else if($pcmd == "ground"){
                 ,'ground_type'=>$row['ground_type']
                 ,'recommend_shoe'=>$row['recommend_shoe']
                 ,'map_url'=>$row['map_url']
+                ,'latitude'=>$row['latitude']
+                ,'longitude'=>$row['longitude']
             ));
         }
     }
@@ -718,6 +720,41 @@ else if($pcmd == "match_together"){
                 ,'lose_yn'=>$row['lose_yn']
                 ,'team_a'=>$row['team_a']
                 ,'team_b'=>$row['team_b']
+                )
+            );
+        }
+    }
+}
+else if($pcmd == "ground_attend"){
+    if($conn){
+        $sql1 = "SELECT * FROM football_ground g1, football_attend_ground g2
+        WHERE g1.id = g2.ground_id";
+        $result = mysqli_query($conn, $sql1);
+        $row = mysqli_fetch_array($result);
+        array_push($array, array('ground_id'=>$row['id']
+            ,'name'=>$row['name']
+            ,'width'=>$row['width']
+            ,'height'=>$row['height']
+            ,'ground_type'=>$row['ground_type']
+            ,'recommend_shoe'=>$row['recommend_shoe']
+            ,'map_url'=>$row['map_url']
+            ,'latitude'=>$row['latitude']
+            ,'longitude'=>$row['longitude']
+            ,'max_distance'=>$row['max_distance']
+        ));
+    }
+}
+else if($pcmd == "ground_attend_player"){
+    if($conn){
+        $sql1 = "SELECT * FROM football_attend_gps
+        ORDER BY reg_date";
+        $result = mysqli_query($conn, $sql1);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_name'=>$row['player_name']
+                ,'team_type'=>$row['team_type']
+                ,'reg_date'=>$row['reg_date']
+                ,'gps_distance'=>$row['gps_distance']
                 )
             );
         }

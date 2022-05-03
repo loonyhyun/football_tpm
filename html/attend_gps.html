@@ -1,0 +1,219 @@
+<style></style>
+<script>
+  var difWindowHeight = 320;
+
+  var groundInfo = null;
+  var MAX_DISTANCE = -1;
+  var gps_location = null;
+  var gps_distance = -1;
+
+  $(document).ready(function () {
+    var target_header = "attend";
+    getTeam();
+    $("#header_" + target_header)
+      .addClass("text-warning")
+      .removeClass("text-white");
+    $("#drop_header").text($("#drop_header_" + target_header).text());
+
+    $.ajax({
+      type: "post",
+      url: "/football_tpm/get.php",
+      data: {
+        cmd: "ground_attend",
+        id: 1,
+      },
+      dataType: "json",
+      success: function (data, textStatus, jqXHR) {
+        var target_ground = data[0]["ground_id"];
+        groundInfo = data[0];
+        MAX_DISTANCE = data[0]["max_distance"];
+        $("#ground_info").text(groundInfo["name"]);
+        $("#max_distance").text("출석 가능 거리: " + MAX_DISTANCE + " km");
+        getLocation();
+      },
+    });
+
+    $.ajax({
+      type: "post",
+      url: "/football_tpm/get.php",
+      data: {
+        cmd: "ground_attend_player",
+        id: 1,
+      },
+      dataType: "json",
+      success: function (data) {
+        for (var i = 0; i < data.length; i++) {
+          var str =
+            "<pre>" +
+            data[i]["player_name"] +
+            "<br>(" +
+            data[i]["gps_distance"].substring(0, 6) +
+            ", "+data[i]["reg_date"].substring(11)+")</pre>";
+          if (data[i].team_type == "a") {
+            $("#A_TEAM").append(str);
+          } else {
+            $("#B_TEAM").append(str);
+          }
+        }
+
+		$("#A_TEAM_BTN").text("A팀: " + $("#A_TEAM > pre").length + "명");
+		$("#B_TEAM_BTN").text("B팀: " + $("#B_TEAM > pre").length + "명");
+      },
+      error: function (err) {
+        alert("오류발생 관리자에게 문의하세요.");
+      },
+    });
+  });
+
+  $(window).resize(function () {});
+
+  function getLocation() {
+    if (groundInfo == null) {
+      alert("운동장 정보를 확인할 수 없습니다.");
+      return;
+    } else if (groundInfo.latitude == null) {
+      alert("운동장 좌표를 알수 없습니다.");
+      return;
+    }
+    if (!!navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+    } else {
+      alert("이 브라우저는 Geolocation를 지원하지 않습니다");
+    }
+  }
+
+  function errorCallback(error) {
+    alert(error.message);
+  }
+
+  function successCallback(position) {
+    gps_location = position.coords;
+    var lat = position.coords.latitude;
+    var lng = position.coords.longitude;
+    getDistance(lat, lng, groundInfo.latitude, groundInfo.longitude);
+  }
+
+  function getDistance(latitude1, longitude1, latitude2, longitude2) {
+    var lat1 = (latitude1 * Math.PI) / 180.0;
+    var lat2 = (latitude2 * Math.PI) / 180.0;
+    var lon1 = (longitude1 * Math.PI) / 180.0;
+    var lon2 = (longitude2 * Math.PI) / 180.0;
+    gps_distance =
+      6378.137 *
+      Math.acos(
+        Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1) +
+          Math.sin(lat1) * Math.sin(lat2)
+      );
+    $("#gps_distance").val(gps_distance);
+  }
+
+  function addTeam(type) {
+    if (gps_distance == -1) {
+      getLocation();
+      alert("거리확인 필요");
+      return;
+    }
+    if (gps_distance < MAX_DISTANCE && gps_distance >= 0) {
+      if ($("#player_name").val() == "") {
+        alert("선수명 입력해주세요.");
+        return;
+      }
+	  
+      $.ajax({
+        type: "post",
+        url: "/football_tpm/save.php",
+        data: {
+          cmd: "ground_attend_player",
+          id: 1,
+          player_name: $("#player_name").val(),
+          team_type: type,
+          gps_distance: gps_distance,
+        },
+        success: function (data) {
+          if (data == "ok") {
+            location.reload();
+          }
+        },
+        error: function (err) {
+          alert("오류발생 관리자에게 문의하세요.");
+        },
+      });
+    } else {
+      alert("운동장 근처가 아님.");
+    }
+  }
+</script>
+<div class="container" style="max-width: 100%">
+  <div class="row">&nbsp;</div>
+  <div id="">
+    <h5>[출석 GPS 기반]</h5>
+    <h6 id="ground_info">-</h6>
+    <h6 id="max_distance">-</h6>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col">
+        <!-- <select id="player_id" style="width:100%;" multiple="multiple">
+			<option value="-">선수 선택 필요</option>
+		</select> -->
+
+        <div class="input-group">
+          <span class="input-group-text">선수명</span>
+          <input
+            type="text"
+            class="form-control"
+            id="player_name"
+            value=""
+          />
+        </div>
+      </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text">거리</span>
+          <input
+            type="text"
+            class="form-control"
+            style="background-color: white"
+            readonly="readonly"
+            id="gps_distance"
+            value=""
+          />
+          <span class="input-group-text">km</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="d-grid gap-2">
+          <button
+            class="btn btn-success"
+            type="button"
+            onclick="getLocation();"
+          >
+            재확인
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button id="A_TEAM_BTN" class="btn btn-danger" type="button" onclick="addTeam('a');">
+          A팀
+        </button>
+      </div>
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button id="B_TEAM_BTN" class="btn btn-primary" type="button" onclick="addTeam('b');">
+          B팀
+        </button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col" id="A_TEAM">
+      </div>
+      <div class="col" id="B_TEAM">
+      </div>
+    </div>
+    <div class="row">&nbsp;</div>
+  </div>
+</div>

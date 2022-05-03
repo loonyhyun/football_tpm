@@ -1,0 +1,230 @@
+<style></style>
+<script>
+  var difWindowHeight = 320;
+
+  var groundInfo = null;
+  var MAX_DISTANCE = -1;
+  var gps_location = null;
+  var gps_distance = -1;
+
+  var GROUND_DATAS = null;
+  $(document).ready(function () {
+    var targetHeader = "attend";
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+    $.ajax({
+      type: "post",
+      url: "/football_tpm/get.php",
+      data: {
+        cmd: "ground",
+        id: 1,
+      },
+      dataType: "json",
+      success: function (data, textStatus, jqXHR) {
+        GROUND_DATAS = data;
+       var grounds = $("#grounds");
+       for(var i=0; i<data.length; i++){
+         var str = "<option value='"+data[i]["ground_id"]+"'>"+data[i]["name"]+"</option>";
+         grounds.append(str);
+       }
+       
+        $.ajax({
+          type: "post",
+          url: "/football_tpm/get.php",
+          data: {
+            cmd: "ground_attend",
+            id: 1,
+          },
+          dataType: "json",
+          success: function (gdata, textStatus, jqXHR) {
+            var target = gdata[0]["ground_id"];
+            $("#grounds").val(target);
+            $("#set_max_distance").val(gdata[0]["max_distance"]);
+          },
+        });
+      },
+    });
+
+    const reg = /<[^>]*>?/g
+    $.ajax({
+      type: "post",
+      url: "/football_tpm/get.php",
+      data: {
+        cmd: "ground_attend_player",
+        id: 1,
+      },
+      dataType: "json",
+      success: function (data) {
+        for (var i = 0; i < data.length; i++) {
+          var str =
+            "<p class='auto_font_size'>" +
+            data[i]["player_name"].replace(reg, '') +
+            " (" +
+            data[i]["gps_distance"].substring(0, 6) +
+            ", "+data[i]["reg_date"].substring(11, 16)+") " +
+            "<button type='button' style='font-size:10px;' " +
+            "class='btn btn-sm btn-outline-dark' onclick='delPlayer(this, \""+data[i]["player_name"]+"\", \""+data[i]["team_type"]+"\")'>삭제</button>" +
+            "</p>";
+          if (data[i].team_type == "a") {
+            $("#A_TEAM").append(str);
+          } else {
+            $("#B_TEAM").append(str);
+          }
+        }
+
+        $("#A_TEAM_BTN").text("A팀: " + $("#A_TEAM > p").length + "명");
+        $("#B_TEAM_BTN").text("B팀: " + $("#B_TEAM > p").length + "명");
+      },
+      error: function (err) {
+        alert("오류발생 관리자에게 문의하세요.");
+      },
+    });
+  });
+
+  function delPlayer(obj, name, team){
+    $.ajax({
+      type: "post",
+      url: "/football_tpm/save.php",
+      data: {
+        cmd: "ground_attend_player_del",
+        id: 1,
+        player_name: name,
+        team_type: team
+      },
+      success: function (data) {
+        if (data == "ok") {
+          $(obj).parent().remove();
+          $("#A_TEAM_BTN").text("A팀: " + $("#A_TEAM > p").length + "명");
+          $("#B_TEAM_BTN").text("B팀: " + $("#B_TEAM > p").length + "명");
+        }
+      },
+      error: function (err) {
+        alert("오류발생 관리자에게 문의하세요.");
+      },
+    });
+  }
+
+  $(window).resize(function () {});
+  
+  function setGround(){
+    $.ajax({
+        type: "post",
+        url: "/football_tpm/save.php",
+        data: {
+          cmd: "ground_attend_gps",
+          id: 1,
+          max_distance: $("#set_max_distance").val(),
+          ground_id: $("#grounds").val(),
+        },
+        success: function (data) {
+          if (data == "ok") {
+            location.reload();
+          }
+        },
+        error: function (err) {
+          alert("오류발생 관리자에게 문의하세요.");
+        },
+      });
+  }
+
+  function initAttendGPS(){
+    if($("#initPassword").val() != "" 
+      && confirm("출석을 초기화 하시겠습니까? 되돌릴 수 없습니다.")){
+      $.ajax({
+        type: "post",
+        url: "/football_tpm/save.php",
+        data: {
+          cmd: "ground_attend_player_init",
+          id: 1,
+          initPassword: $("#initPassword").val()
+        },
+        success: function (data) {
+          if (data == "ok") {
+            $("#A_TEAM").html("");
+            $("#B_TEAM").html("");
+          }else if(data == "fail password"){
+            alert("비밀번호가 잘못됨.");
+          }else{
+            alert("초기화 실패");
+          }
+        },
+        error: function (err) {
+          alert("오류발생 관리자에게 문의하세요.");
+        },
+      });
+    }else{
+      alert("비밀번호 입력 필요");
+    }
+  }
+</script>
+<div class="container" style="max-width: 100%">
+  <div class="row">&nbsp;</div>
+  <div id="">
+    <h5>[출석 GPS 기반 - 설정]</h5>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text">구장</span>
+          <select id="grounds" class="form-select">
+            <option value="-1">구장 선택</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 5px;">
+      <div class="col">
+        <div class="input-group">
+          <span class="input-group-text">거리</span>
+          <input
+            type="text"
+            class="form-control"
+            id="set_max_distance"
+            value=""
+          />
+          <span class="input-group-text">km</span>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 5px;">
+      <div class="d-grid gap-2">
+        <button class="btn btn-success" type="button" onclick="setGround();">
+          구장 설정
+        </button>
+      </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="col-6">
+        <input type="password" id="initPassword" value="" class="form-control">
+      </div>
+      <div class="d-grid gap-2 col-6">
+        <button class="btn btn-warning" type="button" onclick="initAttendGPS();">
+          출석 초기화
+        </button>
+      </div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button id="A_TEAM_BTN" class="btn btn-danger" type="button">
+          A팀
+        </button>
+      </div>
+      <div class="d-grid gap-2 col-6 mx-auto">
+        <button id="B_TEAM_BTN" class="btn btn-primary" type="button">
+          B팀
+        </button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:5px;">
+      <div class="col" id="A_TEAM">
+      </div>
+      <div class="col" id="B_TEAM">
+      </div>
+    </div>
+    <div class="row">&nbsp;</div>
+  </div>
+</div>

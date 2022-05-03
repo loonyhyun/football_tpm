@@ -320,6 +320,83 @@ else if($pcmd == "attend_quater"){
         }
     }
 }
+else if($pcmd == "ground_attend_player"){
+    if($conn){
+        $pname = $_REQUEST["player_name"];
+        $pteam = $_REQUEST["team_type"];
+        $pdis = $_REQUEST["gps_distance"];
+        
+        $sql = "INSERT INTO football_attend_gps (player_name, team_type, reg_date, gps_distance)
+        VALUES ('".$pname."', '".$pteam."', NOW(), ".$pdis.")";
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo "ok";
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
+else if($pcmd == "ground_attend_player_del"){
+    if($conn){
+        $pname = $_REQUEST["player_name"];
+        $pteam = $_REQUEST["team_type"];
+        
+        $sql = "DELETE FROM football_attend_gps 
+        WHERE player_name = '".$pname."' AND team_type = '".$pteam."'";
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo "ok";
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
+else if($pcmd == "ground_attend_gps"){
+    if($conn){
+        $pGroundId = $_REQUEST["ground_id"];
+        $pMaxDistance = $_REQUEST["max_distance"];
+
+        $sql = "DELETE FROM football_attend_ground";
+        $result = mysqli_query($conn, $sql);
+        
+        $sql = "INSERT INTO football_attend_ground 
+        (ground_id, max_distance)
+        VALUES (".$pGroundId.", ".$pMaxDistance.")";
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo "ok";
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
+else if($pcmd == "ground_attend_player_init"){
+    if($conn){
+        $pPw = $_REQUEST["initPassword"];
+
+        if($pPw == "qwqp1210"){
+            $sql = "DELETE FROM football_attend_gps";
+            $result = mysqli_query($conn, $sql);
+            
+            if($result){
+                echo "ok";
+            }
+            else{
+                echo "fail";
+            }
+        }
+        else{
+            echo "fail password";
+        }
+
+    }
+}
 else{
     echo "fail else";
 }
