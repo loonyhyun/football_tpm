@@ -130,6 +130,8 @@
 				var wins = 0;
 				var loses = 0;
 				var players = selectedPlayers.length;
+				var goals = 0;
+				var assts = 0;
 				
 				for(var i=0; i<data.length; i++){
 					var bgColor = "#FFFFFF";
@@ -175,6 +177,7 @@
 							str += "<td>"+data[i]["team_b"]+"명 출석</td>";
 						}
 					}
+					str += "<td>"+data[i]["goal_cnt"]+" / "+data[i]["asst_cnt"]+"</td>";
 					body.append("<tr style='background-color:"+bgColor+"'>" + str + "</tr>");
 
 					if(data[i]["team_a"] == players || data[i]["team_b"] == players){
@@ -186,6 +189,9 @@
 						if(data[i]["lose_yn"] == players){
 							loses++;
 						}
+
+						goals += parseInt(data[i]["goal_cnt"]);
+						assts += parseInt(data[i]["asst_cnt"]);
 					}
 				}
 
@@ -215,7 +221,8 @@
 				}
 				$("#tableResultDate").text(dateStr);
 				$("#tableResultGround").text(ground);
-				$("#tableResult").text(plays + "전 " + wins + "승 " + (plays - wins - loses) + "무 " + loses + "패");
+				$("#tableResult").html(plays + "전 " + wins + "승 " + (plays - wins - loses) + "무 " + loses + "패");
+				$("#tableResult").append("<br>" + goals + "골 / " + assts + "어시");
 
 				location.href = '#TABLE_RESULT_DIV';
 			},
@@ -297,6 +304,7 @@
 											<col width="100px"/>
 											<col width="100px"/>
 											<col width="100px"/>
+											<col width="100px"/>
 										</colgroup>
 										<thead>
 											<tr>
@@ -305,6 +313,7 @@
 												<td>WINs</td>
 												<td>TEAM_A</td>
 												<td>TEAM_B</td>
+												<td>GOAL/ASST</td>
 											</tr>
 										</thead>
 										<tbody id="tableBody"></tbody>

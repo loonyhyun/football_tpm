@@ -690,7 +690,9 @@ else if($pcmd == "match_together"){
                 SUM(case when win_yn = 1 then 1 ELSE 0 end) win_yn,
                 SUM(case when win_yn = 0 then 1 ELSE 0 end) lose_yn,
                 SUM(team_a_yn) team_a,
-                SUM(team_b_yn) team_b
+                SUM(team_b_yn) team_b,
+                SUM(goal_cnt) goal_cnt,
+                SUM(asst_cnt) asst_cnt
             FROM football_tpm_view
             WHERE player_id in (".$pids.")
                 AND play_yn = 1
@@ -720,6 +722,8 @@ else if($pcmd == "match_together"){
                 ,'lose_yn'=>$row['lose_yn']
                 ,'team_a'=>$row['team_a']
                 ,'team_b'=>$row['team_b']
+                ,'goal_cnt'=>$row['goal_cnt']
+                ,'asst_cnt'=>$row['asst_cnt']
                 )
             );
         }
