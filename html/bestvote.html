@@ -1,0 +1,288 @@
+
+<style>
+	.bestPlayer {max-width:120px;}
+</style>
+<script>
+	$(document).ready(function(){
+		var target_header = "bestvote";
+		getTeam();
+		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_" + target_header).text());
+		setLayout();
+		getPlayers();
+	});
+
+	$(window).resize(function(){
+		setLayout();
+	});
+	
+	function getPlayers(){
+		//tableBody
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "player",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				var select = $("#playersList");
+				select.html("<option value=''>-</option>");
+				for(var i=0; i<data.length; i++){
+					if(data[i]["player_name"].indexOf("_용병") > -1){
+						continue;
+					}
+					select.append("<option value='"+data[i]["player_id"]+"'>"+data[i]["player_name"]+"</option>");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function setSelectedPosition(){
+		$("#POSITION_ATT").html("");
+		$("#POSITION_MID_1").html("");
+		$("#POSITION_MID_2").html("");
+		$("#POSITION_MID_3").html("");
+		$("#POSITION_DEF").html("");
+		$("#POSITION_KEEP").html("");
+		var val = $("#REG_FORMATION").val();
+		if(val == ""){
+			return;
+		}
+
+		var def = parseInt(val.substring(0, 1));
+		var mid = parseInt(val.substring(1, 2));
+		var att = parseInt(val.substring(2, 3));
+		
+		$.ajax({
+			async: false,
+			type : "post",
+			url : './get_bestvote.php',
+			data : {
+				cmd : "info_formation",
+				id : 1,
+				formation : val
+			},
+			dataType : "json",
+			success : function(data) {
+				setFormationCheck($("#POSITION_ATT"), data[0], "pos_lw");
+				setFormationCheck($("#POSITION_ATT"), data[0], "pos_st");
+				setFormationCheck($("#POSITION_ATT"), data[0], "pos_rw");
+				
+				setFormationCheck($("#POSITION_MID_1"), data[0], "pos_am");
+				
+				setFormationCheck($("#POSITION_MID_2"), data[0], "pos_lm");
+				setFormationCheck($("#POSITION_MID_2"), data[0], "pos_cm");
+				setFormationCheck($("#POSITION_MID_2"), data[0], "pos_rm");
+
+				setFormationCheck($("#POSITION_MID_3"), data[0], "pos_lwb");
+				setFormationCheck($("#POSITION_MID_3"), data[0], "pos_dm");
+				setFormationCheck($("#POSITION_MID_3"), data[0], "pos_rwb");
+
+				setFormationCheck($("#POSITION_DEF"), data[0], "pos_lb");
+				setFormationCheck($("#POSITION_DEF"), data[0], "pos_cb");
+				setFormationCheck($("#POSITION_DEF"), data[0], "pos_rb");
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+
+		var str  = "<select class='bestPlayer form-select' style='display:inline-block; width:auto;' name='pos_gk'></select>";
+		$("#POSITION_KEEP").html(str);
+
+		$(".bestPlayer").addClass("form-control-lg");
+		$(".bestPlayer").addClass("auto_font_size");
+		$(".bestPlayer").addClass("text-center");
+
+		$(".bestPlayer").each(function(){
+			$(this).html($("#playersList").html());
+		})
+	}
+
+	function setFormationCheck(htmlTarget, datas, target){
+		var value = parseInt(datas[target]);
+		var stylevalue = "";
+		if(target == 'pos_lwb'){
+			stylevalue = "float:left;";
+		}
+		if(target == 'pos_rwb'){
+			stylevalue = "float:right;";
+		}
+		for(var i=0; i<value; i++){
+			htmlTarget.append("<select class='bestPlayer form-select' style='display:inline-block; width:auto; "+stylevalue+"' name='"+target+"'></select>");
+		}
+	}
+
+	function funcVote(){
+		var name = $("#REG_NAME").val();
+		var formation = $("#REG_FORMATION").val();
+		var pos_lw  = "$";
+		var pos_st  = "$";
+		var pos_rw  = "$";
+		var pos_lm  = "$";
+		var pos_am  = "$";
+		var pos_cm  = "$";
+		var pos_dm  = "$";
+		var pos_rm  = "$";
+		var pos_lwb = "$";
+		var pos_rwb = "$";
+		var pos_lb  = "$";
+		var pos_cb  = "$";
+		var pos_rb  = "$";
+		var pos_gk  = "$";
+		if(name == ""){
+			alert("이름 작성 필요.");
+			return;
+		}
+		if(formation == ""){
+			alert("포지션 설정 필요.");
+			return;
+		}
+
+		var playerCount = 0;
+
+		$("select[name=pos_lw]" ).each(function(){ if($(this).val() != ""){ pos_lw  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_st]" ).each(function(){ if($(this).val() != ""){ pos_st  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_rw]" ).each(function(){ if($(this).val() != ""){ pos_rw  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_lm]" ).each(function(){ if($(this).val() != ""){ pos_lm  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_am]" ).each(function(){ if($(this).val() != ""){ pos_am  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_cm]" ).each(function(){ if($(this).val() != ""){ pos_cm  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_dm]" ).each(function(){ if($(this).val() != ""){ pos_dm  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_rm]" ).each(function(){ if($(this).val() != ""){ pos_rm  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_lwb]").each(function(){ if($(this).val() != ""){ pos_lwb += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_rwb]").each(function(){ if($(this).val() != ""){ pos_rwb += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_lb]" ).each(function(){ if($(this).val() != ""){ pos_lb  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_cb]" ).each(function(){ if($(this).val() != ""){ pos_cb  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_rb]" ).each(function(){ if($(this).val() != ""){ pos_rb  += $(this).val() + "$"; playerCount++; } });
+		$("select[name=pos_gk]" ).each(function(){ if($(this).val() != ""){ pos_gk  += $(this).val() + "$"; playerCount++; } });
+		
+		if(playerCount < 11){
+			alert("선수 선택 필요. (현재 " + playerCount + "명 선택)");
+			return;
+		}
+		
+		$.ajax({
+			async: false,
+			type : "post",
+			url : './get_bestvote.php',
+			data : {
+				cmd : "vote",
+				id : 1
+				, name: name
+				, formation : formation
+				, pos_lw : pos_lw 
+				, pos_st : pos_st 
+				, pos_rw : pos_rw 
+				, pos_lm : pos_lm 
+				, pos_am : pos_am 
+				, pos_cm : pos_cm 
+				, pos_dm : pos_dm 
+				, pos_rm : pos_rm 
+				, pos_lwb: pos_lwb
+				, pos_rwb: pos_rwb
+				, pos_lb : pos_lb 
+				, pos_cb : pos_cb 
+				, pos_rb : pos_rb 
+				, pos_gk : pos_gk 
+			},
+			dataType : "json",
+			success : function(data) {
+				if(data == "ok"){
+					alert("투표하였습니다.");
+					location.href = "/football_tpm/page.php?page=bestvote";
+				}else{
+					alert("실패하였습니다. 재확인해주세요.");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+</script>
+<style>
+</style>
+
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<h2>2022년 전반기 BEST 11.</h2>
+				<div class="row">&nbsp;</div>
+				<div class="input-group">
+					<span class="input-group-text">이름</span>
+					<input type="text" id="REG_NAME" class="form-control" />
+				</div>
+				<div class="row">&nbsp;</div>
+				<div class="input-group">
+					<span class="input-group-text">포메이션</span>
+					<select id="REG_FORMATION" class="form-select" onchange="setSelectedPosition();">
+						<option value="">선택</option>
+						<option value="433">4-3-3</option>
+						<option value="442">4-4-2</option>
+						<option value="424">4-2-4</option>
+						<option value="451">4-5-1</option>
+						<option value="352">3-5-2</option>
+						<option value="343">3-4-3</option>
+					</select>
+				</div>
+				<div class="row">&nbsp;</div>
+				<div class="row">
+					<div class="col">
+						<button class="btn-primary">FW</button>
+						<button class="btn-success">MF</button>
+						<button class="btn-warning">DF</button>
+						<button class="btn-secondary">GK</button>
+					</div>
+				</div>
+				<table class="table" style="height:500px; text-align: center;vertical-align: middle;">
+					<tr class="table-primary">
+						<td class="bg-primary">
+							<div class="row" id="POSITION_ATT" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_1" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_2" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_3" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-warning">
+						<td class="bg-warning">
+							<div class="row" id="POSITION_DEF" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-secondary">
+						<td class="bg-secondary">
+							<div class="row" id="POSITION_KEEP" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="row">
+				<div class="d-grid gap-2 col-6 mx-auto">
+					<button class="btn btn-outline-primary" onclick="funcVote();">투표하기</button>
+				</div>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div style="display:none;">
+			<select id="playersList">
+
+			</select>
+		</div>
+	</div>
