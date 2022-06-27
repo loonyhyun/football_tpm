@@ -81,7 +81,7 @@ else if($pcmd == "vote"){
 else if($pcmd == "count_formation"){
     $sql = "select reg_formation, count(1) cnt from football_best_formation_2
 	group by reg_formation
-	order by reg_formation desc";
+	order by cnt desc";
     $result = mysqli_query($conn, $sql);
     while($row = mysqli_fetch_array($result)){
         array_push($array, array('formation'=>$row['reg_formation']
@@ -135,6 +135,45 @@ else if($pcmd == "count_player"){
     while($row = mysqli_fetch_array($result)){
         array_push($array, array('player_name'=>$row['player_name']
             ,'total_cnt'=>$row['total_cnt']
+            ,'pos_lw'=>$row['pos_lw']
+            ,'pos_st'=>$row['pos_st']
+            ,'pos_rw'=>$row['pos_rw']
+            ,'pos_lm'=>$row['pos_lm']
+            ,'pos_am'=>$row['pos_am']
+            ,'pos_cm'=>$row['pos_cm']
+            ,'pos_dm'=>$row['pos_dm']
+            ,'pos_rm'=>$row['pos_rm']
+            ,'pos_lwb'=>$row['pos_lwb']
+            ,'pos_rwb'=>$row['pos_rwb']
+            ,'pos_lb'=>$row['pos_lb']
+            ,'pos_cb'=>$row['pos_cb']
+            ,'pos_rb'=>$row['pos_rb']
+            ,'pos_gk'=>$row['pos_gk']
+        ));
+    }
+    echo json_encode($array);
+}
+else if($pcmd == "list"){
+    $sql = "SELECT id, reg_name FROM football_best_formation_2
+	order by id";
+    $result = mysqli_query($conn, $sql);
+    while($row = mysqli_fetch_array($result)){
+        array_push($array, array('id'=>$row['id']
+            ,'reg_name'=>$row['reg_name']
+        ));
+    }
+    echo json_encode($array);
+}
+else if($pcmd == "voteinfo"){
+    $sql = "SELECT * 
+    FROM football_best_formation_2
+	where id = ".$_REQUEST["voteid"];
+    $result = mysqli_query($conn, $sql);
+    while($row = mysqli_fetch_array($result)){
+        array_push($array, array('id'=>$row['id']
+            ,'reg_name'=>$row['reg_name']
+            ,'reg_date'=>$row['reg_date']
+            ,'reg_formation'=>$row['reg_formation']
             ,'pos_lw'=>$row['pos_lw']
             ,'pos_st'=>$row['pos_st']
             ,'pos_rw'=>$row['pos_rw']
