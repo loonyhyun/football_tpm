@@ -192,6 +192,119 @@ else if($pcmd == "voteinfo"){
     }
     echo json_encode($array);
 }
+else if($pcmd == "top"){
+    if($conn){
+        $paramcount = $_REQUEST["cnt"];
+        $pfrom = $_REQUEST["from"];
+        $pto = $_REQUEST["to"];
+
+        $sql = "SELECT player_id, player_name
+            , SUM(goal_cnt) goal_cnt
+            , SUM(asst_cnt) asst_cnt
+            , SUM(play_yn) play_cnt
+            , SUM(win_yn) win_point
+            ,SUM(case when win_yn = 1.0 then 3 when win_yn = 0.5 then 1 ELSE 0 END) pts
+        FROM football_tpm_view
+        WHERE match_date BETWEEN '".$pfrom."' AND '".$pto."'
+        AND team_id = ".$pid."
+        GROUP BY player_id, player_name
+        ORDER BY play_cnt desc";
+        $result = mysqli_query($conn, $sql);
+        $cnt = 0;
+        while(($row = mysqli_fetch_array($result)) && $cnt < $paramcount){
+            array_push($array, array('player_name'=>$row['player_name']
+                ,'play_cnt'=>$row['play_cnt']
+                ,'type'=>'play')
+            );
+
+            $cnt = $cnt + 1;
+        }
+        $sql = "SELECT player_id, player_name
+            , SUM(goal_cnt) goal_cnt
+            , SUM(asst_cnt) asst_cnt
+            , SUM(play_yn) play_cnt
+            , SUM(win_yn) win_point
+            ,SUM(case when win_yn = 1.0 then 3 when win_yn = 0.5 then 1 ELSE 0 END) pts
+        FROM football_tpm_view
+        WHERE match_date BETWEEN '".$pfrom."' AND '".$pto."'
+        AND team_id = ".$pid."
+        GROUP BY player_id, player_name
+        ORDER BY goal_cnt desc";
+        $result = mysqli_query($conn, $sql);
+        $cnt = 0;
+        while(($row = mysqli_fetch_array($result)) && $cnt < $paramcount){
+            array_push($array, array('player_name'=>$row['player_name']
+                ,'goal_cnt'=>$row['goal_cnt']
+                ,'type'=>'goal')
+            );
+
+            $cnt = $cnt + 1;
+        }
+        $sql = "SELECT player_id, player_name
+            , SUM(goal_cnt) goal_cnt
+            , SUM(asst_cnt) asst_cnt
+            , SUM(play_yn) play_cnt
+            , SUM(win_yn) win_point
+            ,SUM(case when win_yn = 1.0 then 3 when win_yn = 0.5 then 1 ELSE 0 END) pts
+        FROM football_tpm_view
+        WHERE match_date BETWEEN '".$pfrom."' AND '".$pto."'
+        AND team_id = ".$pid."
+        GROUP BY player_id, player_name
+        ORDER BY asst_cnt desc";
+        $result = mysqli_query($conn, $sql);
+        $cnt = 0;
+        while(($row = mysqli_fetch_array($result)) && $cnt < $paramcount){
+            array_push($array, array('player_name'=>$row['player_name']
+                ,'asst_cnt'=>$row['asst_cnt']
+                ,'type'=>'asst')
+            );
+
+            $cnt = $cnt + 1;
+        }
+        $sql = "SELECT player_id, player_name
+            , SUM(goal_cnt) goal_cnt
+            , SUM(asst_cnt) asst_cnt
+            , SUM(play_yn) play_cnt
+            , SUM(win_yn) win_point
+            ,SUM(case when win_yn = 1.0 then 3 when win_yn = 0.5 then 1 ELSE 0 END) pts
+        FROM football_tpm_view
+        WHERE match_date BETWEEN '".$pfrom."' AND '".$pto."'
+        AND team_id = ".$pid."
+        GROUP BY player_id, player_name
+        ORDER BY pts desc";
+        $result = mysqli_query($conn, $sql);
+        $cnt = 0;
+        while(($row = mysqli_fetch_array($result)) && $cnt < $paramcount){
+            array_push($array, array('player_name'=>$row['player_name']
+                ,'pts'=>$row['pts']
+                ,'type'=>'pts')
+            );
+
+            $cnt = $cnt + 1;
+        }
+        $sql = "SELECT player_id, player_name
+                    , sum(quarters) t_cnt
+                    , sum(ls_cnt) ls_cnt
+                FROM football_tpm_scoreless
+                WHERE team_id = ".$pid."
+                AND match_date BETWEEN '".$pfrom."' AND '".$pto."'
+                GROUP BY player_id, player_name
+                ORDER BY ls_cnt desc, player_name";
+        $result = mysqli_query($conn, $sql);
+        $cnt = 0;
+        while(($row = mysqli_fetch_array($result)) && $cnt < $paramcount){
+            array_push($array, array('player_id'=>$row['player_id']
+                ,'player_name'=>$row['player_name']
+                ,'t_cnt'=>$row['t_cnt']
+                ,'ls_cnt'=>$row['ls_cnt']
+                , 'type'=>'def')
+            );
+
+            $cnt = $cnt + 1;
+        }
+        echo json_encode($array);
+    }
+}
 else{
     echo "fail-cmd";
 }
