@@ -79,9 +79,12 @@ else if($pcmd == "vote"){
     }
 }
 else if($pcmd == "count_formation"){
-    $sql = "select reg_formation, count(1) cnt from football_best_formation_2
-	group by reg_formation
-	order by cnt desc";
+    $pfrom = $_REQUEST["from"];
+    $pto = $_REQUEST["to"];
+    $sql = "SELECT reg_formation, count(1) cnt from football_best_formation_2
+    where date_format(reg_date, '%Y.%m.%d') between '".$pfrom."' and '".$pto."'
+	GROUP BY reg_formation
+	ORDER BY cnt desc";
     $result = mysqli_query($conn, $sql);
     while($row = mysqli_fetch_array($result)){
         array_push($array, array('formation'=>$row['reg_formation']
@@ -91,6 +94,8 @@ else if($pcmd == "count_formation"){
     echo json_encode($array);
 }
 else if($pcmd == "count_player"){
+    $pfrom = $_REQUEST["from"];
+    $pto = $_REQUEST["to"];
     $sql = "SELECT player_id, player_name
     , sum(pos_lw ) pos_lw 
     , sum(pos_st ) pos_st 
@@ -128,6 +133,7 @@ else if($pcmd == "count_player"){
             select id player_id, player_name, concat('$', id ,'$') player_label
             from football_player
         ) p
+        where date_format(f.reg_date, '%Y.%m.%d') between '".$pfrom."' and '".$pto."'
     ) t1
     GROUP BY player_id, player_name
     ORDER BY total_cnt DESC";
@@ -154,7 +160,10 @@ else if($pcmd == "count_player"){
     echo json_encode($array);
 }
 else if($pcmd == "list"){
+    $pfrom = $_REQUEST["from"];
+    $pto = $_REQUEST["to"];
     $sql = "SELECT id, reg_name FROM football_best_formation_2
+    where date_format(reg_date, '%Y.%m.%d') between '".$pfrom."' and '".$pto."'
 	order by id";
     $result = mysqli_query($conn, $sql);
     while($row = mysqli_fetch_array($result)){

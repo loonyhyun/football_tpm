@@ -17,13 +17,14 @@ pos_info["pos_rb" ] = [];
 pos_info["pos_gk" ] = [];
 var pos_ret = [];
 
-function getCount(){
+function getCount(from, to){
 	$.ajax({
 		type : "post",
 		url : '/football_tpm/get_bestvote.php',
 		data : {
 			cmd : "count_formation",
 			id : 1
+			, from: from, to: to
 		},
 		dataType : "json",
 		success : function(data) {
@@ -35,7 +36,7 @@ function getCount(){
 			$("#REG_FORMATION").val(data[0]["formation"]);
 			setSelectedPosition();
 
-			getCountPlayer();
+			getCountPlayer(from, to);
 		},
 		error : function(err) {
 			alert("오류발생 관리자에게 문의하세요.")
@@ -43,13 +44,14 @@ function getCount(){
 	});
 }
 
-function getCountPlayer(){
+function getCountPlayer(from, to){
 	$.ajax({
 		type : "post",
 		url : '/football_tpm/get_bestvote.php',
 		data : {
 			cmd : "count_player",
 			id : 1
+			, from: from, to: to
 		},
 		dataType : "json",
 		success : function(data) {
@@ -119,7 +121,7 @@ function setPositionByCount(target){
 	}
 }
 
-function setSelectedPosition(){
+function setSelectedPosition(from, to){
 	$("#POSITION_ATT").html("");
 	$("#POSITION_MID_1").html("");
 	$("#POSITION_MID_2").html("");
@@ -143,6 +145,7 @@ function setSelectedPosition(){
 			cmd : "info_formation",
 			id : 1,
 			formation : val
+			, from: from, to: to
 		},
 		dataType : "json",
 		success : function(data) {
