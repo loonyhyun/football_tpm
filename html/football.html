@@ -5,12 +5,35 @@
 		$("#drop_header").text($("#drop_header_1").text());
 		setLayout();
 		getPlayer();
+
+		if(urlParams.admin == 1){
+			$("#playerTableViewColumns").show();
+		}else{
+			$("#playerTableViewColumns").hide();
+		}
 	});
 
 	$(window).resize(function(){
 		setLayout();
 	});
 
+	function funcViewChecked(obj){
+		var value = obj.value;
+		var checked = $(obj).is(":checked");
+		var thead = $("#playerThead");
+		var tbody = $("#playerTbody");
+		if(checked){
+			thead.children().eq(value).show();
+			tbody.children().each(function(){
+				$(this).children().eq(value).show();
+			});
+		}else{
+			thead.children().eq(value).hide();
+			tbody.children().each(function(){
+				$(this).children().eq(value).hide();
+			});
+		}
+	}
 </script>
 <style>
 </style>
@@ -22,6 +45,30 @@
 	</div>
 	<div class="row" style="margin-top:5px;">
 		<div class="col" id="match_cnt"></div>
+	</div>
+	<div class="row">
+		<div class="col" id="playerTableViewColumns" style="display: none; ">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="view2" value="2" checked onchange="funcViewChecked(this);">
+				<label class="form-check-label" for="view2">PLAY</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="view3" value="3" checked onchange="funcViewChecked(this);">
+				<label class="form-check-label" for="view3">GOAL</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="view4" value="4" checked onchange="funcViewChecked(this);">
+				<label class="form-check-label" for="view4">ASST</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="view5" value="5" checked onchange="funcViewChecked(this);">
+				<label class="form-check-label" for="view5">WIN</label>
+			</div>
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" id="view6" value="6" checked onchange="funcViewChecked(this);">
+				<label class="form-check-label" for="view6">PTS</label>
+			</div>
+		</div>
 	</div>
 	<div class="input-group" style="margin-top:5px;">
 		<span class="input-group-text">기간</span>
@@ -35,7 +82,7 @@
 			테이블 검색: <input type="text" id="searchPlayerName" value="" onkeyup="searchTablePlayer();"/>
 		</caption>
 		<thead>
-			<tr style="background-color:#bbbbbb;">
+			<tr style="background-color:#bbbbbb;" id="playerThead">
 				<th scope="col">#</th>
 				<th scope="col" onclick="SortTable(1, 'ASC')">NAME</th>
 				<th scope="col" onclick="SortTable(2, 'DESC')">PLAY</th>
