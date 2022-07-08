@@ -1,0 +1,153 @@
+
+<script src="/football_tpm/include/bestresult.js"></script>
+<style>
+	.bestPlayer {
+		max-width:80px;
+		display:inline-block; width:auto;
+	}
+</style>
+<script>
+	$(document).ready(function(){
+		var target_header = "best2022_1";
+		getTeam();
+		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_" + target_header).text());
+		setLayout();
+		var from = '2022.07.01';
+		var to = '2022.12.31';
+		getCount(from, to);
+		getTopScore(from, to, 5);
+	});
+
+	$(window).resize(function(){
+		setLayout();
+	});
+</script>
+<style>
+</style>
+
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<h2>2022년 상반기 결산 - TOP5</h2>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Play</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_PLAY_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Goal</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_GOAL_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Asst</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_ASST_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Pts</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_PTS_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Def</th>
+						</tr>
+					</thead>
+					<tbody id="VIEW_BEST_DEF_TBODY"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col-md-6">
+				<h2>BEST11</h2>
+				<div class="input-group">
+					<span class="input-group-text">포메이션</span>
+					<input type="text" id="REG_FORMATION" class="form-control" readonly/>
+				</div>
+				<br>
+				<button class="btn-primary">FW</button>
+				<button class="btn-success">MF</button>
+				<button class="btn-warning">DF</button>
+				<button class="btn-secondary">GK</button>
+				<br>
+				
+				<table class="table" style="height:500px; text-align: center;vertical-align: middle;">
+					<tr class="table-primary">
+						<td class="bg-primary">
+							<div class="row" id="POSITION_ATT" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_1" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_2" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_3" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-warning">
+						<td class="bg-warning">
+							<div class="row" id="POSITION_DEF" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-secondary">
+						<td class="bg-secondary">
+							<div class="row" id="POSITION_KEEP" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="col">
+				<h2>투표결과</h2>
+				<table class="table">
+					<thead>
+						<tr><th>No.</th><th>Name.</th><th>Count.</th><th>Detail.</th></tr>
+					</thead>
+					<tbody id="RESULT_TBODY"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+	</div>
