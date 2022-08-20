@@ -5,6 +5,7 @@
     $("#header_" + targetHeader).addClass("fw-bold");
     $("#drop_header").text($("#drop_header_" + targetHeader).text());
 
+		getGrounds();
     getMatchHtmlList();
     reMatchHtmlReply();
   });
@@ -72,12 +73,41 @@
           </button>
         </div>
       </div>
+      <div class="row">&nbsp;</div>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="input_match_date_span">경기일자</span>
+            <input type="text" class="form-control" id="input_match_date" placeholder="경기일자" aria-label="경기일자" aria-describedby="input_match_date_span">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="input-group mb-3">
+						<label class="input-group-text" for="win_ab">승리팀</label>
+						<select id="win_ab" class="form-select">
+							<option value="-">무승부</option>
+							<option value="a">A팀 (RED)</option>
+							<option value="b">B팀 (BLUE)</option>
+						</select>
+          </div>
+        </div>
+				<div class="col-md-4">
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="ground_id">구장</label>
+						<select id="ground_id" class="form-select">
+							<option value="">Unknown</option>
+						</select>
+					</div>
+				</div>
+      </div>
+      <button class="btn btn-primary" onclick="updateMatch()">수정</button>
       <table class="table auto_font_size" id="MatchInfoMainTable">
         <caption
           style="caption-side: top; font-weight: bold; color: black"
           id="MatchInfoDesc"
         >
           경기 정보
+          
         </caption>
         <colgroup>
           <col width="25%" />

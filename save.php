@@ -397,6 +397,41 @@ else if($pcmd == "ground_attend_player_init"){
 
     }
 }
+else if($pcmd == "match_update"){
+    if($conn){
+        $pMid = $_REQUEST["match_id"];
+        $pDate = $_REQUEST["match_date"];
+        $pWinAB = $_REQUEST["winAB"];
+        $pTeamA = $_REQUEST["teamA"];
+        $pTeamB = $_REQUEST["teamB"];
+        $pGoalA = $_REQUEST["goalA"];
+        $pGoalB = $_REQUEST["goalB"];
+        $pAsstA = $_REQUEST["asstA"];
+        $pAsstB = $_REQUEST["asstB"];
+
+        $pGround = $_REQUEST["groundId"];
+        
+        $sql = "UPDATE football_match SET
+          match_date = '".$pDate."'
+        , team_a = '".$pTeamA."'
+        , team_b = '".$pTeamB."'
+        , win_ab = '".$pWinAB."'
+        , goal_a = '".$pGoalA."'
+        , goal_b = '".$pGoalB."'
+        , asst_a = '".$pAsstA."'
+        , asst_b = '".$pAsstB."'
+        , ground_id = '".$pGround."'
+        WHERE id = ".$pMid." AND team_id = ".$pid;
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo "ok";
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
 else{
     echo "fail else";
 }

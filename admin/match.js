@@ -1,4 +1,26 @@
 
+function getGrounds(){
+    
+    $.ajax({
+        async: false,
+        type : "post",
+        url : '/football_tpm/get.php',
+        data : {
+            cmd : "ground",
+            id : 1
+        },
+        dataType:"json",
+        success : function(data, textStatus, jqXHR) {
+            var select = $("#ground_id");
+            for(var i=0; i<data.length; i++){
+                var tmp = data[i];
+                select.append("<option value='"+tmp["ground_id"]+"'>"+ tmp["name"]+"</option>");
+            }
+
+        }
+    });
+}
+
 function getMatchHtmlList(){
     $.ajax({
         type : "post",
@@ -39,6 +61,77 @@ function getMatchHtmlList(){
     });
 }
 
+function funcSet(tid, pm){
+    var target = $("#" + tid);
+    if(pm == '+'){
+        target.val(parseInt(target.val()) + 1);
+    }else{
+        target.val(parseInt(target.val()) - 1);
+    }
+}
+function updateMatch(){
+    var teamA = "$";
+    var teamB = "$";
+    var goalA = "$";
+    var goalB = "$";
+    var asstA = "$";
+    var asstB = "$";
+
+    $("input[name=team_a]").each(function(){
+        var pid = $(this).val();
+        var goal = $("#goals_" + pid).val();
+        var asst = $("#assts_" + pid).val();
+        teamA += pid + "$";
+        if(goal > 0){
+            goalA += pid + "|" + goal + "$";
+        }
+        if(asst > 0){
+            asstA += pid + "|" + asst + "$";
+        }
+    });
+    $("input[name=team_b]").each(function(){
+        var pid = $(this).val();
+        var goal = $("#goals_" + pid).val();
+        var asst = $("#assts_" + pid).val();
+        teamB += pid + "$";
+        if(goal > 0){
+            goalB += pid + "|" + goal + "$";
+        }
+        if(asst > 0){
+            asstB += pid + "|" + asst + "$";
+        }
+    });
+
+    if (confirm("경기를 수정하시겠습니까?")) {
+
+
+        $.ajax({
+            type : "post",
+            url : '/football_tpm/save.php',
+            data : {
+                cmd : "match_update",
+                id : 1,
+                match_id : selectedIdByMatchHtml,
+                match_date : $("#input_match_date").val(),
+                teamA : teamA,
+                teamB : teamB,
+                goalA : goalA,
+                goalB : goalB,
+                asstA : asstA,
+                asstB : asstB,
+                winAB : $("#win_ab").val(),
+                groundId : $("#ground_id option:selected").val()
+            },
+            success : function(data, textStatus, jqXHR) {
+                if (data == "ok") {
+                    alert("수정되었습니다.");
+                    location.reload();
+                }
+            }
+        });
+    }
+}
+
 var selectedIdByMatchHtml = 0;
 function getMatchHtml(mid, mdate, winab){
     $("#matchlist_" + selectedIdByMatchHtml).css("background-color", "");
@@ -54,6 +147,7 @@ function getMatchHtml(mid, mdate, winab){
         },
         dataType: "json",
         success : function(data, textStatus, jqXHR) {
+            
             if(winab == '-'){
                 winab = "무승부";
             }
@@ -61,7 +155,15 @@ function getMatchHtml(mid, mdate, winab){
             if(data.length > 0){
                 if(data[0]["g_name"] != undefined && data[0]["g_name"] != null)
                     g_name = data[0]["g_name"];
+                if(data[0]["win_ab"] != undefined && data[0]["win_ab"] != null)
+                    $("#win_ab").val(data[0]["win_ab"])
             }
+            $("#ground_id").children().each(function(){
+                if(g_name == $(this).text()){
+                    $("#ground_id").val($(this).val()).prop("selected", true);
+                }
+            })
+            $("#input_match_date").val(mdate);
             $("#MatchInfoDesc").text("경기일자: " + mdate + ", " + winab + ", " + g_name);
             var targetA = $("#MatchInfoTbodyA");
             var targetB = $("#MatchInfoTbodyB");
@@ -73,9 +175,23 @@ function getMatchHtml(mid, mdate, winab){
             for(var i=1; i<data.length; i++){
                 var tmp = data[i];
                 var str = "<tr>";
-                    str += "<td>"+tmp["player_name"]+"</td>";
-                    str += "<td>"+tmp["goal_cnt"]+"</td>";
-                    str += "<td>"+tmp["asst_cnt"]+"</td>";
+                    str += "<td><input type='hidden' name='team_"+(tmp["team_a_yn"] == 1 ? 'a' : 'b')+"' value='"+tmp["player_id"]+"'/>"+tmp["player_name"]+"</td>";
+                    str += "<td>";
+                    str += "<div class=\"input-group mb-3\">" +
+                        "<span class=\"input-group-text\" onclick=\"funcSet('goals_"+tmp["player_id"]+"', '+');\">+</span>" +
+                        "<input type=\"text\" class=\"form-control\" style='width:25px;' name='goals' id='goals_"+tmp["player_id"]+"' value='"+tmp["goal_cnt"]+"'>" +
+                        "<span class=\"input-group-text\" onclick=\"funcSet('goals_"+tmp["player_id"]+"', '-');\">-</span>" +
+                        "</div>";
+                    str += "</td>";
+                    str += "<td>";
+                    str += "<div class=\"input-group mb-3\">" +
+                        "<span class=\"input-group-text\" onclick=\"funcSet('assts_"+tmp["player_id"]+"', '+');\">+</span>" +
+                        "<input type=\"text\" class=\"form-control\" style='width:25px;' name='assts' id='assts_"+tmp["player_id"]+"' value='"+tmp["asst_cnt"]+"'>" +
+                        "<span class=\"input-group-text\" onclick=\"funcSet('assts_"+tmp["player_id"]+"', '-');\">-</span>" +
+                        "</div>";
+                    str += "</td>";
+                    // str += "<td><input type='text' class='form-control' name='goal_a' id='goal_a_"+tmp["player_id"]+"' value='"+tmp["goal_cnt"]+"'/> <button class='btn btn-sm btn-danger'>+</button><button class='btn btn-sm btn-primary'>-</button></td>";
+                    //str += "<td>"+tmp["asst_cnt"]+" <button class='btn btn-sm btn-danger'>+</button><button class='btn btn-sm btn-primary'>-</button></td>";
                     str += "</tr>";
                 if(tmp["team_a_yn"] == 1){
                     targetA.append(str);

@@ -24,27 +24,6 @@
 		})
 	});
 
-	function getGrounds(){
-		
-		$.ajax({
-			type : "post",
-			url : '/football_tpm/get.php',
-			data : {
-				cmd : "ground",
-				id : 1
-			},
-			dataType:"json",
-			success : function(data, textStatus, jqXHR) {
-				var select = $("#ground_id");
-				for(var i=0; i<data.length; i++){
-					var tmp = data[i];
-					select.append("<option value='"+tmp["ground_id"]+"'>"+ tmp["name"]+"</option>");
-				}
-
-			}
-		});
-	}
-
 </script>
 <style>
 	@media (max-width:861px) {
