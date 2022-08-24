@@ -432,6 +432,22 @@ else if($pcmd == "match_update"){
         }
     }
 }
+else if($pcmd == "match_delete"){
+    if($conn){
+        $pMid = $_REQUEST["match_id"];
+        
+        $sql = "DELETE FROM football_match
+        WHERE id = ".$pMid." AND team_id = ".$pid;
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo "ok";
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
 else{
     echo "fail else";
 }

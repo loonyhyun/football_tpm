@@ -132,6 +132,28 @@ function updateMatch(){
     }
 }
 
+function deleteMatch(){
+
+    if (confirm("경기를 삭제하시겠습니까?\n삭제 시 복구할 수 없습니다.")) {
+
+        $.ajax({
+            type : "post",
+            url : '/football_tpm/save.php',
+            data : {
+                cmd : "match_delete",
+                id : 1,
+                match_id : selectedIdByMatchHtml
+            },
+            success : function(data, textStatus, jqXHR) {
+                if (data == "ok") {
+                    alert("삭제되었습니다.");
+                    location.reload();
+                }
+            }
+        });
+    }
+}
+
 var selectedIdByMatchHtml = 0;
 function getMatchHtml(mid, mdate, winab){
     $("#matchlist_" + selectedIdByMatchHtml).css("background-color", "");
