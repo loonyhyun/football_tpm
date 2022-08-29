@@ -63,7 +63,7 @@
 					$(this).html("");
 				})
 				var i = 0;
-				var max = 5;
+				var max = 10;
 				if(data.length < 5){
 					max = data.length;
 				}
@@ -112,7 +112,7 @@
 					return sortDesc(win_per_a, win_per_b)
 				});
 				var winperCnt = 0;
-				for(i=0; i<data.length && winperCnt < 5; i++){
+				for(i=0; i<data.length && winperCnt < max; i++){
 					var tmpPlay = data[i]["play_cnt"];
 					var win_per = parseInt(parseFloat(data[i]["win_cnt"])
 							/ parseFloat(tmpPlay) * 100);
