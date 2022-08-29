@@ -12,6 +12,7 @@
 		getTeam();
 		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
 		$("#drop_header").text($("#drop_header_" + target_header).text());
+		$("#dropdown_best").addClass("text-warning").removeClass("text-white");
 		setLayout();
 		
 		var nowDate = new Date();
@@ -42,7 +43,7 @@
 			dataType : "json",
 			success : function(data) {
 				MatchCnt = data[0]["total_cnt"];
-				$("#match_cnt").html("월별 경기 수 : " + MatchCnt);
+				$("#match_cnt").html($("#selectYear").val() + "년 " + $("#selectMonth").val() + "월 결산 <br/> 경기 수 : " + MatchCnt);
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
@@ -82,8 +83,11 @@
 					return sortDesc(a["goal_cnt"], b["goal_cnt"])
 				});
 				for(i=0; i<max; i++){
+					var goal = data[i]["goal_cnt"];
+					var play = data[i]["play_cnt"];
+					var goal_per = parseInt( parseFloat(goal) / parseFloat(play) * 100 ) / 100.0;
 					var tmpName = data[i]["player_name"];
-					var tmpValue = data[i]["goal_cnt"];
+					var tmpValue = goal + " ("+goal_per+")";
 					setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_GOAL_TBODY");
 				}
 				//어시
@@ -91,8 +95,11 @@
 					return sortDesc(a["asst_cnt"], b["asst_cnt"])
 				});
 				for(i=0; i<max; i++){
+					var asst = data[i]["asst_cnt"];
+					var play = data[i]["play_cnt"];
+					var asst_per = parseInt( parseFloat(asst) / parseFloat(play) * 100 ) / 100.0;
 					var tmpName = data[i]["player_name"];
-					var tmpValue = data[i]["asst_cnt"];
+					var tmpValue = asst + " ("+asst_per+")";
 					setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_ASST_TBODY");
 				}
 				//승점
@@ -200,11 +207,7 @@
 				<option value="11">11</option>
 				<option value="12">12</option>
 			</select>
-		</div>
-		<div class="row">
-			<div class="col">
-				<button class="btn btn-primary" onclick="selectYearMonth();">SEARCH</button>
-			</div>
+			<button class="btn btn-primary" onclick="selectYearMonth();">SEARCH</button>
 		</div>
 		<div class="row">&nbsp;</div>
 		<div class="row">
