@@ -1,0 +1,384 @@
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet"></link>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<script>
+  $(document).ready(function () {
+    var targetHeader = "calendar";
+    getTeam();
+    $("#header_" + targetHeader).addClass("fw-bold");
+    $("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+    var tmp = calendar.currentData.currentDate;
+    var year = tmp.getFullYear() + "";
+    var month = tmp.getMonth() + 1;
+    if(parseInt(month) < 10){
+      month = "0" + month;
+    }else{
+      month = "" + month;
+    }
+    getChangeDateInfo(year, month);
+  });
+
+  $(window).resize(function () {});
+
+  var calendar = null;
+  var holidays = [];
+  var yeyakdays = [];
+  var API_URL  = "http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService";
+  var API_URLS = "https://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService";
+  var API_ENC_KEY = "o5RwYitLVpryWx6tluhRvZU3mWFfCA9zdMk%2FrqVjNXKrWHCeO4CoYduuPdnmxKvgB5WJWtv1NJ2BvfSp9ngeWQ%3D%3D";
+  var API_DEC_KEY = "o5RwYitLVpryWx6tluhRvZU3mWFfCA9zdMk/rqVjNXKrWHCeO4CoYduuPdnmxKvgB5WJWtv1NJ2BvfSp9ngeWQ==";
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        //right: 'custom1,custom2 prev,next'
+        right: 'custom1,custom2'
+      },
+      customButtons: {
+        custom1: {
+          text: 'prev',
+          click: function() {
+            calendar.prev();
+            //console.log(calendar.currentData.currentDate)
+            var tmp = calendar.currentData.currentDate;
+            var year = tmp.getFullYear() + "";
+            var month = tmp.getMonth() + 1;
+            if(parseInt(month) < 10){
+              month = "0" + month;
+            }else{
+              month = "" + month;
+            }
+            getChangeDateInfo(year, month);
+          }
+        },
+        custom2: {
+          text: 'next',
+          click: function() {
+            calendar.next();
+            var tmp = calendar.currentData.currentDate;
+            var year = tmp.getFullYear() + "";
+            var month = tmp.getMonth() + 1;
+            if(month < 10){
+              month = "0" + month;
+            }else{
+              month = "" + month;
+            }
+            getChangeDateInfo(year, month);
+          }
+        }
+      },
+      //event insert
+      dateClick: function(info) {
+        //alert('clicked ' + info.dateStr);
+        
+        $("#yeyak_title").text("[예약등록]");
+        $("#yeyak_prevId").val("");
+        $("#yeyak_start").val(info.dateStr);
+        $("#yeyak_txt").val("");
+        $("#yeyak_desc").val("");
+        $("#yeyak_color").val("#B45F04");
+        $("#yeyak_btn_insert").show();
+        $("#yeyak_btn_update").hide();
+        $("#yeyak_btn_delete").hide();
+        $('#createYeyak').modal('show');
+      },
+
+      //event view & update
+      eventClick: function(info) {
+        var eventObj = info.event;
+        //console.log(eventObj)
+        if (eventObj.extendedProps.prevId) {
+          $("#yeyak_title").text("[예약수정]");
+          $("#yeyak_prevId").val(eventObj.extendedProps.prevId);
+          $("#yeyak_start").val(eventObj.extendedProps.txtStart);
+          $("#yeyak_txt").val(eventObj.extendedProps.txt);
+          $("#yeyak_desc").val(eventObj.extendedProps.desc);
+          $("#yeyak_color").val(eventObj.extendedProps.txtColor);
+          $("#yeyak_btn_insert").hide();
+          $("#yeyak_btn_update").show();
+          $("#yeyak_btn_delete").show();
+          $('#createYeyak').modal('show');
+        }
+      },
+    });
+    calendar.render();
+  });
+
+  function getChangeDateInfo(year, month){
+    getHoliInfo(year, month);
+    getRestInfo(year, month);
+    getYeyakInfo(year, month);
+  }
+
+  function addCalendarEvent(txt, date, desc, color, prevId){
+    calendar.batchRendering( function() {
+      calendar.addEvent({ title: txt, start: date, color : color
+        , txtStart : date, txtColor : color
+        , desc : desc, prevId : prevId, txt: txt });
+    } );
+  }
+  function setLocdate(locdate){
+    var tmp = locdate.substring(0, 4);
+    tmp += "-" + locdate.substring(4, 6);
+    tmp += "-" + locdate.substring(6, 8);
+    return tmp;
+  }
+  function getHoliInfo(year, month){
+    $("#loading").show();
+    $.ajax({
+			type : "get",
+			url : API_URL + "/getHoliDeInfo",
+			data : {
+        serviceKey : API_DEC_KEY,
+        _type : "json",
+        solYear : year,
+        solMonth : month
+        ,numOfRows : 30
+			},
+			dataType : "json",
+			success : function(data) {
+
+        var items = data["response"]["body"]["items"]["item"];
+        if(items != ""){
+          for(var i=0; i<items.length; i++){
+            var tmp = items[i];
+            if(!holidays.includes(tmp["locdate"])){
+              var tmpdate = setLocdate(tmp["locdate"] + "");
+              addCalendarEvent(tmp["dateName"], tmpdate, "", "#ff004c");
+              holidays.push(tmp["locdate"]);
+            }
+          }
+        }
+
+        $("#loading").hide();
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+        $("#loading").hide();
+			}
+		});
+  }
+  function getRestInfo(year, month){
+    $("#loading").show();
+    $.ajax({
+			type : "get",
+			url : API_URL + "/getRestDeInfo",
+			data : {
+        serviceKey : API_DEC_KEY,
+        _type : "json",
+        solYear : year,
+        solMonth : month
+        ,numOfRows : 30
+			},
+			dataType : "json",
+			success : function(data) {
+
+        var items = data["response"]["body"]["items"]["item"];
+        if(items != ""){
+          for(var i=0; i<items.length; i++){
+            var tmp = items[i];
+            if(!holidays.includes(tmp["locdate"])){
+              var tmpdate = setLocdate(tmp["locdate"] + "");
+              addCalendarEvent(tmp["dateName"], tmpdate, "", "#ff004c");
+              holidays.push(tmp["locdate"]);
+            }
+          }
+        }
+        
+        $("#loading").hide();
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+        $("#loading").hide();
+			}
+		});
+  }
+
+  function getYeyakInfo(year, month){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/get.php',
+			data : {
+				cmd : "yeyak",
+				id : 1,
+        from: year +"-"+ month + "-01",
+        to: year + "-" + month + "-31"
+			},
+			dataType : "json",
+			success : function(data) {
+				for(var i=0; i<data.length; i++){
+          console.log(data[i]);
+          var tmp = data[i];
+          if(!yeyakdays.includes(tmp["start"])){
+            addCalendarEvent(tmp["txt"], tmp["start"], tmp["desc"], tmp["color"], tmp["yeyak_id"]);
+            yeyakdays.push(tmp["start"]);
+          }
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+  }
+
+  function createYeyak(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/save.php',
+			data : {
+				cmd : "yeyak",
+				id : 1,
+        txt : $("#yeyak_txt").val(),
+        start : $("#yeyak_start").val(),
+        desc : $("#yeyak_desc").val(),
+        color : $("#yeyak_color").val()
+			},
+			success : function(data) {
+        if(data == 'ok'){
+          alert("등록되었습니다.");
+          location.reload();
+        }
+        else{
+          alert("등록 실패.");
+        }
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+  }
+  function updateYeyak(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/save.php',
+			data : {
+				cmd : "yeyak_update",
+				id : 1,
+        txt : $("#yeyak_txt").val(),
+        start : $("#yeyak_start").val(),
+        desc : $("#yeyak_desc").val(),
+        color : $("#yeyak_color").val(),
+        prevId : $("#yeyak_prevId").val()
+			},
+			success : function(data) {
+        if(data == 'ok'){
+          alert("수정되었습니다.");
+          location.reload();
+        }
+        else{
+          alert("수정 실패.");
+        }
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+  }
+  function deleteYeyak(){
+    if(confirm("삭제 하시겠습니까? 되돌릴 수 없습니다.")){
+      $.ajax({
+        type : "post",
+        url : '/football_tpm/admin/save.php',
+        data : {
+          cmd : "yeyak_delete",
+          id : 1,
+          prevId : $("#yeyak_prevId").val()
+        },
+        success : function(data) {
+          if(data == 'ok'){
+            alert("삭제되었습니다.");
+            location.reload();
+          }
+          else{
+            alert("삭제 실패.");
+          }
+        },
+        error : function(err) {
+          alert("오류발생 관리자에게 문의하세요.")
+        }
+      });
+    }
+  }
+</script>
+
+<div id="loading"
+  style="width:100%;height:100%; display:none;
+    position:absolute;left:0px;top:0px; 
+    background-image: url('/football_tpm/img/background_opacity_50.png'); background-repeat: repeat;">
+  <div class="position-relative" style="height:100%;">
+    <div class="position-absolute top-50 start-50 translate-middle">LOADING...</div>
+  </div>
+</div>
+<div class="container">
+  <div class="row">&nbsp;</div>
+  <div class="row">
+    <div class="col">
+      <div id='calendar'></div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Modal Header</h4>
+        </div>
+        <div class="modal-body">
+          <p>Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  <div class="modal fade" id="createYeyak" data-bs-backdrop="static"
+      data-bs-keyboard="false" tabindex="-1" aria-labelledby="예약등록"
+      aria-hidden="true">
+      <div
+          class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="yeyak_title">[예약등록]</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="yeyak_prevId" value=""/>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="yeyak_group1" style="width:84px;">날짜</span>
+                    <input type="text" id="yeyak_start" class="form-control" readonly aria-describedby="yeyak_group1">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="yeyak_group2" style="width:84px;">구장</span>
+                    <input type="text" id="yeyak_txt" class="form-control" placeholder="구장명" aria-label="구장명" aria-describedby="yeyak_group2">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="yeyak_group3" style="width:84px;">설명</span>
+                    <input type="text" id="yeyak_desc" class="form-control" placeholder="설명(예:시각)" aria-label="설명(예:시각)" aria-describedby="yeyak_group3">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="yeyak_group4" style="width:84px;">예약여부</span>
+                    <select type="text" id="yeyak_color" class="form-select" placeholder="확정여부" aria-label="확정여부" aria-describedby="yeyak_group4">
+                      <option value="#B45F04">NO</option>
+                      <option value="#088A29">YES</option>
+                    </select>
+                </div>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary"
+                      data-bs-dismiss="modal">Close</button>
+                  <button type="button" id="yeyak_btn_insert" class="btn btn-primary" onclick="createYeyak();">등록</button>
+                  <button type="button" id="yeyak_btn_update" class="btn btn-success" onclick="updateYeyak();">수정</button>
+                  <button type="button" id="yeyak_btn_delete" class="btn btn-danger" onclick="deleteYeyak();">삭제</button>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
