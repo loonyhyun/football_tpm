@@ -125,6 +125,11 @@
       },
     });
     calendar.render();
+
+    if(screen.width < 500){
+      calendar.setOption('contentHeight', $(window).height() - 176);
+    }
+    //calendar.setOption('contentHeight', screen.height - 200);
   });
 
   function getChangeDateInfo(year, month){
