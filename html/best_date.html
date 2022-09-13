@@ -18,6 +18,8 @@
 		var nowDate = new Date();
 		$("#selectYear").val(nowDate.getFullYear());
 		$("#selectMonth").val(('0' + (nowDate.getMonth() + 1)).slice(-2));
+		searchYear = $("#selectYear").val();
+		searchMonth = $("#selectMonth").val();
 		selectYearMonth();
 	});
 
@@ -25,8 +27,45 @@
 		setLayout();
 	});
 
+	var searchYear = 0;
+	var searchMonth = 0;
 	var MatchCnt = 1;
+	function selectPrevMonth(){
+		var tmpMonth = $("#selectMonth").val();
+		if(tmpMonth == "01"){
+			$("#selectYear").val(parseInt($("#selectYear").val()) - 1);
+			$("#selectMonth").val("12");
+		}
+		else if(parseInt(tmpMonth) - 1 < 10){
+			tmpMonth = "0" + (parseInt(tmpMonth) - 1);
+			$("#selectMonth").val(tmpMonth);
+		}
+		else {
+			tmpMonth = (parseInt(tmpMonth) - 1);
+			$("#selectMonth").val(tmpMonth);
+		}
+		selectYearMonth();
+	}
+	function selectNextMonth(){
+		var tmpMonth = $("#selectMonth").val();
+		if(tmpMonth == "12"){
+			$("#selectYear").val(parseInt($("#selectYear").val()) + 1);
+			$("#selectMonth").val("01");
+		}
+		else if(parseInt(tmpMonth) + 1 < 10){
+			tmpMonth = "0" + (parseInt(tmpMonth) + 1);
+			$("#selectMonth").val(tmpMonth);
+		}
+		else {
+			tmpMonth = (parseInt(tmpMonth) + 1);
+			$("#selectMonth").val(tmpMonth);
+		}
+		selectYearMonth();
+	}
 	function selectYearMonth(){
+		searchYear = $("#selectYear").val();
+		searchMonth = $("#selectMonth").val();
+
 		var from = $("#selectYear").val() + "." + $("#selectMonth").val() + '.01';
 		var to = $("#selectYear").val() + "." + $("#selectMonth").val() + '.31';
 		
@@ -128,7 +167,7 @@
 					if(play_per >= 60){
 						var tmpName = data[i]["player_name"];
 						var tmpValue = win_per;
-						setHtml(tmpName, tmpValue, (winperCnt+1), "VIEW_BEST_WINPER_TBODY");
+						setHtml(tmpName, tmpValue + " ("+data[i]["win_cnt"]+")", (winperCnt+1), "VIEW_BEST_WINPER_TBODY");
 						winperCnt++;
 					}
 				}
@@ -207,7 +246,14 @@
 				<option value="11">11</option>
 				<option value="12">12</option>
 			</select>
-			<button class="btn btn-primary" onclick="selectYearMonth();">SEARCH</button>
+			<button class="btn btn-primary " onclick="selectYearMonth();">SEARCH</button>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<button class="btn btn-outline-dark" onclick="selectPrevMonth();"><i class="bi bi-box-arrow-left"></i></button>
+				<button class="btn btn-outline-dark" onclick="selectNextMonth();"><i class="bi bi-box-arrow-right"></i></button>
+			</div>
 		</div>
 		<div class="row">&nbsp;</div>
 		<div class="row">
