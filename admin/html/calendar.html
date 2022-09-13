@@ -1,5 +1,12 @@
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet"></link>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+<style>
+.fc-day-sat > div > a { color: #0000ff!important; } /* 토요일 */
+.fc-day-sun > div > a { color:#FF0000!important; } /* 일요일 */
+.fc-day-sat > div > .fc-daygrid-day-top > a {color:#0000ff!important;}
+.fc-day-sun > div > .fc-daygrid-day-top > a {color:#FF0000!important;}
+.fc-daygrid-day-top > a {color: #000!important;}
+</style>
 <script>
   $(document).ready(function () {
     var targetHeader = "calendar";
@@ -102,6 +109,20 @@
           $('#createYeyak').modal('show');
         }
       },
+      dayCellContent: function(info, create) {
+        var tmp = info.date;
+        var y = tmp.getFullYear();
+        var m = tmp.getMonth() + 1;
+        if(m<10){
+          m = "0" + m;
+        }
+        var d = tmp.getDate();
+        if(d < 10){
+          d = "0" + d;
+        }
+        const element = create('span', { id: "fc-day-span-" + y + "-" + m + "-" + d }, info.dayNumberText);
+        return element;
+      },
     });
     calendar.render();
   });
@@ -118,6 +139,16 @@
         , txtStart : date, txtColor : color
         , desc : desc, prevId : prevId, txt: txt });
     } );
+  }
+  function addCalendarHoliday(txt, date, desc, color){
+    calendar.batchRendering( function() {
+      calendar.addEvent({ title: txt, start: date, color : color
+        , txtStart : date, txtColor : color
+        , desc : desc });
+    } );
+    //console.log(date);
+    //$("#fc-day-span-" + date).css("color", "red");
+    //$("#fc-day-span-" + date).parent().css("color", "red");
   }
   function setLocdate(locdate){
     var tmp = locdate.substring(0, 4);
@@ -146,7 +177,7 @@
             var tmp = items[i];
             if(!holidays.includes(tmp["locdate"])){
               var tmpdate = setLocdate(tmp["locdate"] + "");
-              addCalendarEvent(tmp["dateName"], tmpdate, "", "#ff004c");
+              addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
               holidays.push(tmp["locdate"]);
             }
           }
@@ -209,7 +240,7 @@
 			dataType : "json",
 			success : function(data) {
 				for(var i=0; i<data.length; i++){
-          console.log(data[i]);
+          //console.log(data[i]);
           var tmp = data[i];
           if(!yeyakdays.includes(tmp["start"])){
             addCalendarEvent(tmp["txt"], tmp["start"], tmp["desc"], tmp["color"], tmp["yeyak_id"]);
@@ -239,6 +270,8 @@
         if(data == 'ok'){
           alert("등록되었습니다.");
           location.reload();
+          addCalendarEvent($("#yeyak_txt").val(), $("#yeyak_start").val(), $("#yeyak_desc").val(), $("#yeyak_color").val(), 0);
+          $('#createYeyak').modal('hide');
         }
         else{
           alert("등록 실패.");
