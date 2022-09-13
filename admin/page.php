@@ -22,12 +22,24 @@ while (!feof($fp)){
 }
 fclose($fp);
 
-//body
-$fp = fopen($SET_DIRECTORY.$PAGE_NAME.".html", "r") or die("no found file.");
-while (!feof($fp)){
-    echo fgets($fp);
+try {
+    $fileName = $SET_DIRECTORY.$PAGE_NAME.".html";
+    if ( !file_exists($fileName) ) {
+        throw new Exception('File not found.');
+    }
+    //body
+    $fp = fopen($SET_DIRECTORY.$PAGE_NAME.".html", "r") or die("no found file.");
+    while (!feof($fp)){
+        echo fgets($fp);
+    }
+    fclose($fp);
+} catch (Throwable $th) {
+    $fp = fopen($SET_DIRECTORY."error.html", "r") or die("no found file.");
+    while (!feof($fp)){
+        echo fgets($fp);
+    }
+    fclose($fp);
 }
-fclose($fp);
 
 //footer
 $fp = fopen($SET_DIRECTORY."footer.html", "r") or die("no found file.");
