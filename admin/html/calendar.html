@@ -146,14 +146,12 @@
     } );
   }
   function addCalendarHoliday(txt, date, desc, color){
+    //console.log(txt + "/" + date);
     calendar.batchRendering( function() {
       calendar.addEvent({ title: txt, start: date, color : color
         , txtStart : date, txtColor : color
         , desc : desc });
     } );
-    //console.log(date);
-    //$("#fc-day-span-" + date).css("color", "red");
-    //$("#fc-day-span-" + date).parent().css("color", "red");
   }
   function setLocdate(locdate){
     var tmp = locdate.substring(0, 4);
@@ -177,9 +175,20 @@
 			success : function(data) {
 
         var items = data["response"]["body"]["items"]["item"];
-        if(items != "" && items != undefined && items.length != undefined){
-          for(var i=0; i<items.length; i++){
+        //console.log(items);
+        if(items != "" && items != undefined){
+          if(items.length != undefined){
+            for(var i=0; i<items.length; i++){
             var tmp = items[i];
+            if(!holidays.includes(tmp["locdate"])){
+              var tmpdate = setLocdate(tmp["locdate"] + "");
+              addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
+              holidays.push(tmp["locdate"]);
+            }
+          }
+          }
+          else{
+            var tmp = items;
             if(!holidays.includes(tmp["locdate"])){
               var tmpdate = setLocdate(tmp["locdate"] + "");
               addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
@@ -212,12 +221,22 @@
 			success : function(data) {
 
         var items = data["response"]["body"]["items"]["item"];
-        if(items != "" && items != undefined && items.length != undefined){
-          for(var i=0; i<items.length; i++){
-            var tmp = items[i];
+        if(items != "" && items != undefined){
+          if(items.length != undefined){
+            for(var i=0; i<items.length; i++){
+              var tmp = items[i];
+              if(!holidays.includes(tmp["locdate"])){
+                var tmpdate = setLocdate(tmp["locdate"] + "");
+                addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
+                holidays.push(tmp["locdate"]);
+              }
+            }
+          }
+          else{
+            var tmp = items;
             if(!holidays.includes(tmp["locdate"])){
               var tmpdate = setLocdate(tmp["locdate"] + "");
-              addCalendarEvent(tmp["dateName"], tmpdate, "", "#ff004c");
+              addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
               holidays.push(tmp["locdate"]);
             }
           }
