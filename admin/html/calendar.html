@@ -6,6 +6,7 @@
 .fc-day-sat > div > .fc-daygrid-day-top > a {color:#0000ff!important;}
 .fc-day-sun > div > .fc-daygrid-day-top > a {color:#FF0000!important;}
 .fc-daygrid-day-top > a {color: #000!important;}
+.fc-event-title {white-space: pre-wrap !important;}
 </style>
 <script>
   $(document).ready(function () {
@@ -25,7 +26,11 @@
     getChangeDateInfo(year, month);
   });
 
-  $(window).resize(function () {});
+  $(window).resize(function () {
+    if(screen.width < 500){
+      calendar.setOption('contentHeight', $(window).height() - 176);
+    }
+  });
 
   var calendar = null;
   var holidays = [];
@@ -123,6 +128,16 @@
         const element = create('span', { id: "fc-day-span-" + y + "-" + m + "-" + d }, info.dayNumberText);
         return element;
       },
+      // eventContent: function(arg){
+      //   var evt = arg.event;
+      //   var html = '';
+      //   html += evt.title;
+      //   return {html:html};
+      // },
+      // eventDidMount: function(info){
+      //   console.log($(info.el).find('.fc-event-title').text())
+      //   //$(info.el).find('.fc-event-title').html($(info.el).find('.fc-event-title').text());
+      // }
     });
     calendar.render();
 
@@ -179,19 +194,27 @@
         if(items != "" && items != undefined){
           if(items.length != undefined){
             for(var i=0; i<items.length; i++){
-            var tmp = items[i];
-            if(!holidays.includes(tmp["locdate"])){
-              var tmpdate = setLocdate(tmp["locdate"] + "");
-              addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
-              holidays.push(tmp["locdate"]);
-            }
+              var tmp = items[i];
+              if(!holidays.includes(tmp["locdate"])){
+                var txt = tmp["dateName"];
+                if(txt == '대체공휴일'){
+                  txt = '대체';
+                }
+                var tmpdate = setLocdate(tmp["locdate"] + "");
+                addCalendarHoliday(txt, tmpdate, "", "#ff004c");
+                holidays.push(tmp["locdate"]);
+              }
           }
           }
           else{
             var tmp = items;
             if(!holidays.includes(tmp["locdate"])){
+              var txt = tmp["dateName"];
+              if(txt == '대체공휴일'){
+                txt = '대체';
+              }
               var tmpdate = setLocdate(tmp["locdate"] + "");
-              addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
+              addCalendarHoliday(txt, tmpdate, "", "#ff004c");
               holidays.push(tmp["locdate"]);
             }
           }
@@ -226,8 +249,12 @@
             for(var i=0; i<items.length; i++){
               var tmp = items[i];
               if(!holidays.includes(tmp["locdate"])){
+                var txt = tmp["dateName"];
+                if(txt == '대체공휴일'){
+                  txt = '대체';
+                }
                 var tmpdate = setLocdate(tmp["locdate"] + "");
-                addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
+                addCalendarHoliday(txt, tmpdate, "", "#ff004c");
                 holidays.push(tmp["locdate"]);
               }
             }
@@ -235,8 +262,12 @@
           else{
             var tmp = items;
             if(!holidays.includes(tmp["locdate"])){
+              var txt = tmp["dateName"];
+              if(txt == '대체공휴일'){
+                txt = '대체';
+              }
               var tmpdate = setLocdate(tmp["locdate"] + "");
-              addCalendarHoliday(tmp["dateName"], tmpdate, "", "#ff004c");
+              addCalendarHoliday(txt, tmpdate, "", "#ff004c");
               holidays.push(tmp["locdate"]);
             }
           }
