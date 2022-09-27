@@ -9,10 +9,7 @@
 
 		getPlayers();
 
-		var wh = $(window).height();
-		$(".TABLE_INNER_DIV").each(function(){
-			$(this).css("height", wh - difWindowHeight);
-		});
+		tableResize();
 
 		
 		$('#searchStartDate').datepicker({
@@ -49,11 +46,15 @@
 	});
 
 	$(window).resize(function(){
+		tableResize();
+	});
+
+	function tableResize(){
 		var wh = $(window).height();
 		$(".TABLE_INNER_DIV").each(function(){
 			$(this).css("height", wh - difWindowHeight);
 		})
-	});
+	}
 
 	function getPlayers(){
 		//tableBody
