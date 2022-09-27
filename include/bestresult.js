@@ -225,7 +225,7 @@ function getTopScore(from, to, cnt){
 		}
 	});
 
-	getTopList(from, to, 5);
+	getTopList(from, to, cnt);
 }
 
 function getTopList(from, to, max){
