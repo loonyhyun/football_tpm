@@ -178,7 +178,11 @@
 						}
 					}
 					str += "<td>"+data[i]["goal_cnt"]+" / "+data[i]["asst_cnt"]+"</td>";
-					body.append("<tr style='background-color:"+bgColor+"'>" + str + "</tr>");
+					
+					if(data[i]["win_yn"] == players || data[i]["lose_yn"] == players || data[i]["team_a"] == players || data[i]["team_b"] == players) 
+					{
+						body.append("<tr style='background-color:"+bgColor+"'>" + str + "</tr>");
+					}
 
 					if(data[i]["team_a"] == players || data[i]["team_b"] == players){
 						plays++;
@@ -289,39 +293,33 @@
 			</div>
 			<div class="row" id="TABLE_RESULT_DIV">
 				<div class="col">
-					<table class="table auto_font_size" style="width:100%; text-align:center;">
-						<tr>
-							<td>
-								<div class="align-top TABLE_INNER_DIV">
-									<h5 id="tableResultPlayers"></h5>
-									<h6 id="tableResultDate"></h6>
-									<h6 id="tableResultGround"></h6>
-									<h5 id="tableResult"></h5>
-									<table class="table auto_font_size">
-										<colgroup>
-											<col width="100px"/>
-											<col width="100px"/>
-											<col width="100px"/>
-											<col width="100px"/>
-											<col width="100px"/>
-											<col width="100px"/>
-										</colgroup>
-										<thead>
-											<tr>
-												<td>MATCH_DATE</td>
-												<td>PLAYERs</td>
-												<td>WINs</td>
-												<td>TEAM_A</td>
-												<td>TEAM_B</td>
-												<td>GOAL/ASST</td>
-											</tr>
-										</thead>
-										<tbody id="tableBody"></tbody>
-									</table>
-								</div>
-							</td>
-						</tr>
-					</table>
+					<div class="align-top TABLE_INNER_DIV" style="width:100%; text-align:center;">
+						<h5 id="tableResultPlayers"></h5>
+						<h6 id="tableResultDate"></h6>
+						<h6 id="tableResultGround"></h6>
+						<h5 id="tableResult"></h5>
+						<table class="table table-sm auto_font_size">
+							<colgroup>
+								<col width="10%"/>
+								<col width="10%"/>
+								<col width="10%"/>
+								<col width="10%"/>
+								<col width="10%"/>
+								<col width="10%"/>
+							</colgroup>
+							<thead>
+								<tr>
+									<td>MATCH_DATE</td>
+									<td>PLAYERs</td>
+									<td>WINs</td>
+									<td>TEAM_A</td>
+									<td>TEAM_B</td>
+									<td>GOAL/ASST</td>
+								</tr>
+							</thead>
+							<tbody id="tableBody"></tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 			<div class="row">&nbsp;</div>
