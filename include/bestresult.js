@@ -202,6 +202,7 @@ function setFormationInput(htmlTarget, datas, target){
 }
 
 var MatchCnt = 0;
+var MIN_PER = 60;
 function getTopScore(from, to, cnt){
 	MatchCnt = 0;
 	$.ajax({
@@ -302,7 +303,7 @@ function getTopList(from, to, max){
 				var win_per = parseInt(parseFloat(data[i]["win_cnt"])
 						/ parseFloat(tmpPlay) * 100);
 				var play_per = parseFloat(tmpPlay) / MatchCnt * 100;
-				if(play_per >= 60){
+				if(play_per >= MIN_PER){
 					var tmpName = data[i]["player_name"];
 					var tmpValue = win_per;
 					setHtml(tmpName, tmpValue + " ("+data[i]["win_cnt"]+")", (winperCnt+1), "VIEW_BEST_WINPER_TBODY");
