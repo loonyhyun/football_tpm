@@ -201,66 +201,152 @@ function setFormationInput(htmlTarget, datas, target){
 	pos_cnt[target] = value;
 }
 
+var MatchCnt = 0;
 function getTopScore(from, to, cnt){
+	MatchCnt = 0;
 	$.ajax({
+		async : false,
 		type : "post",
-		url : '/football_tpm/get_bestvote.php',
+		url : '/football_tpm/get.php',
 		data : {
-			cmd : "top",
+			cmd : "play_cnt",
 			id : 1,
-			cnt : cnt,
-			from: from, to: to
+			st : from,
+			ed : to
 		},
 		dataType : "json",
 		success : function(data) {
-			var chk1 = 0, chk2 = 0, chk3 = 0, chk4 = 0, chk5 = 0;
-			for (var i = 0; i < data.length; i++) {
-				var tmpType = data[i]["type"];
-				var tmpName = data[i]["player_name"];
-				if(tmpType == "play"){
-					$("#VIEW_BEST_PLAY_TBODY").append("<tr>"
-						+"<td>"+(chk1+1)+"</td>"
-						+"<td>"+tmpName+"</td>"
-						+"<td>"+data[i]["play_cnt"]+"</td>"
-						+"</tr>");
-					chk1++;
-				}
-				else if(tmpType == "goal"){
-					$("#VIEW_BEST_GOAL_TBODY").append("<tr>"
-						+"<td>"+(chk2+1)+"</td>"
-						+"<td>"+tmpName+"</td>"
-						+"<td>"+data[i]["goal_cnt"]+"</td>"
-						+"</tr>");
-					chk2++;
-				}
-				else if(tmpType == "asst"){
-					$("#VIEW_BEST_ASST_TBODY").append("<tr>"
-						+"<td>"+(chk3+1)+"</td>"
-						+"<td>"+tmpName+"</td>"
-						+"<td>"+data[i]["asst_cnt"]+"</td>"
-						+"</tr>");
-					chk3++;
-				}
-				else if(tmpType == "pts"){
-					$("#VIEW_BEST_PTS_TBODY").append("<tr>"
-						+"<td>"+(chk4+1)+"</td>"
-						+"<td>"+tmpName+"</td>"
-						+"<td>"+data[i]["pts"]+"</td>"
-						+"</tr>");
-					chk4++;
-				}
-				else if(tmpType == "def"){
-					$("#VIEW_BEST_DEF_TBODY").append("<tr>"
-						+"<td>"+(chk5+1)+"</td>"
-						+"<td>"+tmpName+"</td>"
-						+"<td>"+data[i]["ls_cnt"]+"</td>"
-						+"</tr>");
-					chk5++;
-				}
-			}
+			MatchCnt = data[0]["total_cnt"];
+			$("#match_cnt").html(from + " ~ " + to + " 결산 <br/> 경기 수 : " + MatchCnt);
 		},
 		error : function(err) {
 			alert("오류발생 관리자에게 문의하세요.")
 		}
 	});
+
+	getTopList(from, to, 5);
+}
+
+function getTopList(from, to, max){
+	$.ajax({
+		type : "post",
+		url : '/football_tpm/get.php',
+		data : {
+			cmd : "tpm_view_search",
+			id : 1,
+			st : from,
+			ed : to
+		},
+		dataType : "json",
+		success : function(data) {
+			$(".VIEW_BEST_TBODY").each(function(){
+				$(this).html("");
+			})
+			var i = 0;
+			if(data.length < max){
+				max = data.length;
+			}
+			//출석율
+			data.sort(function(a,b){
+				return sortDesc(a["play_cnt"], b["play_cnt"])
+			});
+			for(i=0; i<max; i++){
+				var tmpName = data[i]["player_name"];
+				var tmpValue = data[i]["play_cnt"];
+				setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_PLAY_TBODY");
+			}
+			//골
+			data.sort(function(a,b){
+				return sortDesc(a["goal_cnt"], b["goal_cnt"])
+			});
+			for(i=0; i<max; i++){
+				var goal = data[i]["goal_cnt"];
+				var play = data[i]["play_cnt"];
+				var goal_per = parseInt( parseFloat(goal) / parseFloat(play) * 100 ) / 100.0;
+				var tmpName = data[i]["player_name"];
+				var tmpValue = goal + " ("+goal_per+")";
+				setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_GOAL_TBODY");
+			}
+			//어시
+			data.sort(function(a,b){
+				return sortDesc(a["asst_cnt"], b["asst_cnt"])
+			});
+			for(i=0; i<max; i++){
+				var asst = data[i]["asst_cnt"];
+				var play = data[i]["play_cnt"];
+				var asst_per = parseInt( parseFloat(asst) / parseFloat(play) * 100 ) / 100.0;
+				var tmpName = data[i]["player_name"];
+				var tmpValue = asst + " ("+asst_per+")";
+				setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_ASST_TBODY");
+			}
+			//승점
+			data.sort(function(a,b){
+				return sortDesc(a["pts"], b["pts"])
+			});
+			for(i=0; i<max; i++){
+				var tmpName = data[i]["player_name"];
+				var tmpValue = data[i]["pts"];
+				setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_PTS_TBODY");
+			}
+			//승률
+			data.sort(function(a,b){
+				var win_per_a = parseInt(parseFloat(a["win_cnt"])
+						/ parseFloat(a["play_cnt"]) * 100);
+				var win_per_b = parseInt(parseFloat(b["win_cnt"])
+						/ parseFloat(b["play_cnt"]) * 100);
+				return sortDesc(win_per_a, win_per_b)
+			});
+			var winperCnt = 0;
+			for(i=0; i<data.length && winperCnt < max; i++){
+				var tmpPlay = data[i]["play_cnt"];
+				var win_per = parseInt(parseFloat(data[i]["win_cnt"])
+						/ parseFloat(tmpPlay) * 100);
+				var play_per = parseFloat(tmpPlay) / MatchCnt * 100;
+				if(play_per >= 60){
+					var tmpName = data[i]["player_name"];
+					var tmpValue = win_per;
+					setHtml(tmpName, tmpValue + " ("+data[i]["win_cnt"]+")", (winperCnt+1), "VIEW_BEST_WINPER_TBODY");
+					winperCnt++;
+				}
+			}
+			//수비
+			$.ajax({
+				type : "post",
+				url : '/football_tpm/get_defence.php',
+				data : {
+					cmd : "player_scoreless",
+					id : 1,
+					st : from,
+					ed : to
+				},
+				dataType: "json",
+				success : function(ddata, textStatus, jqXHR) {
+					for(i=0; i<max; i++){
+						var tmpName = ddata[i]["player_name"];
+						var tmpValue = ddata[i]["ls_cnt"];
+						setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_DEF_TBODY");
+					}
+				}
+			});
+		},
+		error : function(err) {
+			alert("오류발생 관리자에게 문의하세요.")
+		}
+	});
+}
+
+function sortDesc(a, b){
+	a = parseFloat(a);
+	b = parseFloat(b);
+	if(a > b) return -1;
+	if(a === b) return 0;
+	if(a < b) return 1;			
+}
+
+function setHtml(name, value, idx, target){
+	$("#"+target).append("<tr>"
+	+"<td>"+idx+"</td>"
+	+"<td>"+name+"</td>"
+	+"<td>"+value+"</td>"
+	+"</tr>");
 }
