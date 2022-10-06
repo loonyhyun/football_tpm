@@ -34,6 +34,12 @@
 			});
 		}
 	}
+
+	function setSearchYear(year){
+		$("#searchStartDate").val(year + ".01.01");
+		$("#searchEndDate").val(year + ".12.31");
+		getPlayerSearch();
+	}
 </script>
 <style>
 </style>
@@ -68,6 +74,19 @@
 				<input class="form-check-input" type="checkbox" id="view6" value="6" checked onchange="funcViewChecked(this);">
 				<label class="form-check-label" for="view6">PTS</label>
 			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<script>
+				var st = 2021;
+				var ed = new Date().getFullYear();
+				var tmp = "";
+				for(var i=st; i<=ed; i++){
+					tmp = "<button class=\"btn btn-outline-primary\" style='margin-right:5px;' onclick='setSearchYear("+i+")'>"+i+"</button>";
+					document.write(tmp);
+				}
+			</script>
 		</div>
 	</div>
 	<div class="input-group" style="margin-top:5px;">
