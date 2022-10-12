@@ -764,6 +764,79 @@ else if($pcmd == "ground_attend_player"){
         }
     }
 }
+else if($pcmd == "team_sta"){
+    if($conn){
+        $sql1 = "SELECT tt.player_name
+        , goal_score
+        , ROUND((goal_score / plays), 2) goal_per_game
+        , lost_score
+        , ROUND((lost_score / plays), 2) lost_per_game
+        , goal_score - lost_score as goallost
+        , ROUND(goal_score / plays - lost_score / plays, 2) goallost_per_game
+        , plays
+        , win
+        , draw
+        , lose
+        , win * 3 + draw as pts
+        , goals
+        , ROUND(goals/plays, 2) AS goal_per_play
+        , assts
+        , ROUND(assts/plays, 2) AS asst_per_play
+    FROM 
+    (
+    SELECT
+        t2.player_name
+        , SUM(play_yn) plays
+        , SUM(goal_cnt) goals
+        , SUM(asst_cnt) assts
+        , SUM(case when win_yn = 1 then 1 ELSE 0 END) win
+        , SUM(case when win_yn = 0.5 then 1 ELSE 0 END) draw
+        , SUM(case when win_yn = 0 then 1 ELSE 0 END) lose
+        , SUM(case when team_a_yn = 1 then a_goal ELSE 0 END + case when team_b_yn = 1 then b_goal ELSE 0 END) goal_score
+        , SUM(case when team_a_yn = 1 then b_goal ELSE 0 END + case when team_b_yn = 1 then a_goal ELSE 0 END) lost_score
+    FROM 
+    (
+        SELECT match_date
+            , SUM(case when team_a_yn = 1 then goal_cnt ELSE 0 END) a_goal
+            , SUM(case when team_b_yn = 1 then goal_cnt ELSE 0 END) b_goal
+        FROM football_tpm_view
+    GROUP BY match_date
+    ) t1, (
+        SELECT *
+        FROM football_tpm_view
+        WHERE team_id = ".$pid."
+            AND play_yn = 1
+            AND player_name NOT LIKE '_용병%'
+    ) t2
+    WHERE t1.match_date = t2.match_date
+    AND t1.match_date like '".$_REQUEST["searchYear"].".%'
+    GROUP BY player_id, player_name
+    ) tt
+    ORDER BY pts desc";
+        $result = mysqli_query($conn, $sql1);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_name'=>$row['player_name']
+                ,'goal_score'=>$row['goal_score']
+                ,'goal_per_game'=>$row['goal_per_game']
+                ,'lost_score'=>$row['lost_score']
+                ,'lost_per_game'=>$row['lost_per_game']
+                ,'goallost'=>$row['goallost']
+                ,'goallost_per_game'=>$row['goallost_per_game']
+                ,'plays'=>$row['plays']
+                ,'win'=>$row['win']
+                ,'draw'=>$row['draw']
+                ,'lose'=>$row['lose']
+                ,'pts'=>$row['pts']
+                ,'goals'=>$row['goals']
+                ,'goal_per_play'=>$row['goal_per_play']
+                ,'assts'=>$row['assts']
+                ,'asst_per_play'=>$row['asst_per_play']
+                )
+            );
+        }
+    }
+}
 else{
     
 }
