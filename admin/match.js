@@ -439,7 +439,7 @@ function setPlayerList(data){
     for (var i = 0; i < data.length; i++) {
         var playerId = data[i]["player_id"];
         var playerName = data[i]["player_name"]
-        str = "<p class='mgb5'>" + data[i]["player_name"];
+        str = "<p class='mgb5' id='team_choice_" + playerId + "'>" + playerName;
         str += " <button type='button' class='btn btn-danger btn-sm' onclick=\"setTeamByMatch('A', "
                 + playerId
                 + ", '"
@@ -499,6 +499,7 @@ function setTeamByMatch(team, id, name) {
         str += "  </td>";
         str += "</tr>";
         $("#team_a_tbody").append(str);
+        $("#team_choice_" + id).css("background-color", "#ff7070");
     } else if (team == "B") {
         array_B.push(id);
 
@@ -530,6 +531,7 @@ function setTeamByMatch(team, id, name) {
         str += "  </td>";
         str += "</tr>";
         $("#team_b_tbody").append(str);
+        $("#team_choice_" + id).css("background-color", "#7070ff");
     }
 }
 
@@ -548,6 +550,10 @@ function saveMatch() {
     var asstA = "$";
     var asstB = "$";
 
+    var goalAPoint = 0;
+    var goalBPoint = 0;
+    var asstAPoint = 0;
+    var asstBPoint = 0;
     if ($("#input_match_date").val() == "") {
         alert("경기일자를 선택하세요.");
         return;
@@ -564,27 +570,34 @@ function saveMatch() {
             goalA += array_A[i] + "|" + $("#teamAgoal_" + array_A[i]).val()
                     + "$";
         }
+        goalAPoint += parseInt($("#teamAgoal_" + array_A[i]).val());
     }
     for (var i = 0; i < array_B.length; i++) {
         if ($("#teamBgoal_" + array_B[i]).val() != 0) {
             goalB += array_B[i] + "|" + $("#teamBgoal_" + array_B[i]).val()
                     + "$";
         }
+        goalBPoint += parseInt($("#teamBgoal_" + array_B[i]).val());
     }
     for (var i = 0; i < array_A.length; i++) {
         if ($("#teamAasst_" + array_A[i]).val() != 0) {
             asstA += array_A[i] + "|" + $("#teamAasst_" + array_A[i]).val()
                     + "$";
         }
+        asstAPoint += parseInt($("#teamAasst_" + array_A[i]).val());
     }
     for (var i = 0; i < array_B.length; i++) {
         if ($("#teamBasst_" + array_B[i]).val() != 0) {
             asstB += array_B[i] + "|" + $("#teamBasst_" + array_B[i]).val()
                     + "$";
         }
+        asstBPoint += parseInt($("#teamBasst_" + array_B[i]).val());
     }
 
-    if (confirm("경기를 등록하시겠습니까?")) {
+    var confirmStr = "경기를 등록하시겠습니까?";
+    confirmStr += "\n(골 > A팀 " + goalAPoint + ":" + goalBPoint + "  B팀)";
+    confirmStr += "\n(어시스트 > A팀 " + asstAPoint + ":" + asstBPoint + "  B팀)";
+    if (confirm(confirmStr)) {
 
         $.ajax({
             type : "post",
