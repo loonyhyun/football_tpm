@@ -844,7 +844,7 @@ else if($pcmd == "attend2"){
             , team_a, team_b
             , a_q1, a_q2, a_q3, a_q4, a_q5, a_q6
             , b_q1, b_q2, b_q3, b_q4, b_q5, b_q6
-            , outs
+            , outs, hires
         FROM football_attend a
         where match_key = '".$_REQUEST["match_key"]."'
         ";
@@ -868,6 +868,7 @@ else if($pcmd == "attend2"){
                 , 'b_q5'=>$row['b_q5']
                 , 'b_q6'=>$row['b_q6']
                 , 'outs'=>$row['outs']
+                , 'hires'=>$row['hires']
                 )
             );
         }

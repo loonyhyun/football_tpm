@@ -111,7 +111,7 @@
 
 		var str = "<tr class='ATTEND_PLAYERS_"+team+"' id='ATTEND_PLAYER_"+pid+"'>";
 			str += "<td onclick=\"setAttendOut('"+pid+"');\" id='ATTEND_NO_"+pid+"'>"+no+"</td>";
-			str += "<td onclick=\"delAttendPlayer('"+pid+"');\">"+p["player_name"]+"</td>";
+			str += "<td id='ATTEND_NAME_"+pid+"'><span onclick=\"delAttendPlayer('"+pid+"');\" >"+p["player_name"]+"</span<</td>";
 			str += "<td onclick=\"setQ(1, '"+team+"', '"+pid+"');\"></td>";
 			str += "<td onclick=\"setQ(2, '"+team+"', '"+pid+"');\"></td>";
 			str += "<td onclick=\"setQ(3, '"+team+"', '"+pid+"');\"></td>";
@@ -123,6 +123,10 @@
 			$("#ATTEND_TEAM_A").append(str);
 		}else{
 			$("#ATTEND_TEAM_B").append(str);
+		}
+		
+		if(p["player_name"].indexOf("_용병") > -1){
+			$("#ATTEND_NAME_" + pid).append(" <input type='text' class='ATTEND_NAME_TEXT' id='ATTEND_NAME_TEXT_"+pid+"' value='' style='width:50px;'>");
 		}
 	}
 
@@ -273,6 +277,7 @@
 				var b_q5 = tmp["b_q5"];
 				var b_q6 = tmp["b_q6"];
 				var outs = tmp["outs"].split("$");
+				var hires = tmp["hires"].split("$");
 
 				for(var i=0; i<team_a.length; i++){
 					if(team_a[i] != ""){
@@ -306,7 +311,15 @@
 						setAttendOut(o[0]);
 					}
 				}
-				console.log(OUT_PLAYERS)
+				
+				console.log(hires);
+				for(var i=0; i<hires.length; i++){
+					if(hires[i] != ""){
+						console.log(hires[i]);
+						var o = hires[i].split("|");
+						$("#ATTEND_NAME_TEXT_" + o[0]).val(o[1]);
+					}
+				}
 
 				
 				setQuarters(1);
@@ -359,6 +372,7 @@
 		var b_q5 = "$";
 		var b_q6 = "$";
 		var outs = "$";
+		var hires = "$";
 
 		for(var i=0; i<OUT_PLAYERS.length; i++){
 			if(OUT_PLAYERS[i] > 0){
@@ -386,6 +400,11 @@
 			if(tmp[5].innerText == "O"){ b_q4 += pid + "$"; }
 			if(tmp[6].innerText == "O"){ b_q5 += pid + "$"; }
 		});
+		
+		$(".ATTEND_NAME_TEXT").each(function(){
+			var pid = $(this).attr("id").replace("ATTEND_NAME_TEXT_", "");
+			hires += pid + "|" + $(this).val() + "$";
+		});
 
 		$.ajax({
 			async: false,
@@ -410,7 +429,8 @@
 				b_q4 : b_q4,
 				b_q5 : b_q5,
 				b_q6 : b_q6,
-				outs : outs
+				outs : outs,
+				hires : hires
 			},
 			success : function(data) {
 				if(data == "ok"){
