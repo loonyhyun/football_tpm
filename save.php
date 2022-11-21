@@ -461,6 +461,7 @@ else if($pcmd == "attend2"){
             , team_a, team_b
             , a_q1, a_q2, a_q3, a_q4, a_q5, a_q6
             , b_q1, b_q2, b_q3, b_q4, b_q5, b_q6
+            , outs
         )
         VALUES
         (
@@ -472,6 +473,7 @@ else if($pcmd == "attend2"){
             , '".$_REQUEST["b_q1"]."', '".$_REQUEST["b_q2"]."'
             , '".$_REQUEST["b_q3"]."', '".$_REQUEST["b_q4"]."'
             , '".$_REQUEST["b_q5"]."', '".$_REQUEST["b_q6"]."'
+            , '".$_REQUEST["outs"]."'
         )
         ";
 
