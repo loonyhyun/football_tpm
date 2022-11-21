@@ -448,6 +448,42 @@ else if($pcmd == "match_delete"){
         }
     }
 }
+else if($pcmd == "attend2"){
+    if($conn){
+        //기존 삭제
+		$sql = "DELETE FROM football_attend WHERE match_key = '".$_REQUEST["match_key"]."'";
+		mysqli_query($conn, $sql);
+
+        //생성
+		$sql = "INSERT INTO football_attend
+        (
+            match_key, match_date
+            , team_a, team_b
+            , a_q1, a_q2, a_q3, a_q4, a_q5, a_q6
+            , b_q1, b_q2, b_q3, b_q4, b_q5, b_q6
+        )
+        VALUES
+        (
+            '".$_REQUEST["match_key"]."', '".$_REQUEST["match_date"]."'
+            , '".$_REQUEST["team_a"]."', '".$_REQUEST["team_b"]."'
+            , '".$_REQUEST["a_q1"]."', '".$_REQUEST["a_q2"]."'
+            , '".$_REQUEST["a_q3"]."', '".$_REQUEST["a_q4"]."'
+            , '".$_REQUEST["a_q5"]."', '".$_REQUEST["a_q6"]."'
+            , '".$_REQUEST["b_q1"]."', '".$_REQUEST["b_q2"]."'
+            , '".$_REQUEST["b_q3"]."', '".$_REQUEST["b_q4"]."'
+            , '".$_REQUEST["b_q5"]."', '".$_REQUEST["b_q6"]."'
+        )
+        ";
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
 else{
     echo "fail else";
 }

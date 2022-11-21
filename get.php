@@ -837,6 +837,40 @@ else if($pcmd == "team_sta"){
         }
     }
 }
+else if($pcmd == "attend2"){
+    if($conn){
+        $sql = "SELECT 
+            match_key, match_date
+            , team_a, team_b
+            , a_q1, a_q2, a_q3, a_q4, a_q5, a_q6
+            , b_q1, b_q2, b_q3, b_q4, b_q5, b_q6
+        FROM football_attend a
+        where match_key = '".$_REQUEST["match_key"]."'
+        ";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, 
+                array('match_key'=>$row['match_key']
+                , 'match_date'=>$row['match_date']
+                , 'team_a'=>$row['team_a']
+                , 'team_b'=>$row['team_b']
+                , 'a_q1'=>$row['a_q1']
+                , 'a_q2'=>$row['a_q2']
+                , 'a_q3'=>$row['a_q3']
+                , 'a_q4'=>$row['a_q4']
+                , 'a_q5'=>$row['a_q5']
+                , 'a_q6'=>$row['a_q6']
+                , 'b_q1'=>$row['b_q1']
+                , 'b_q2'=>$row['b_q2']
+                , 'b_q3'=>$row['b_q3']
+                , 'b_q4'=>$row['b_q4']
+                , 'b_q5'=>$row['b_q5']
+                , 'b_q6'=>$row['b_q6']
+                )
+            );
+        }
+    }
+}
 else{
     
 }

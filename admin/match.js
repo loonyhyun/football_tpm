@@ -570,27 +570,23 @@ function saveMatch() {
             goalA += array_A[i] + "|" + $("#teamAgoal_" + array_A[i]).val()
                     + "$";
         }
+        if ($("#teamAasst_" + array_A[i]).val() != 0) {
+            asstA += array_A[i] + "|" + $("#teamAasst_" + array_A[i]).val()
+                    + "$";
+        }
         goalAPoint += parseInt($("#teamAgoal_" + array_A[i]).val());
+        asstAPoint += parseInt($("#teamAasst_" + array_A[i]).val());
     }
     for (var i = 0; i < array_B.length; i++) {
         if ($("#teamBgoal_" + array_B[i]).val() != 0) {
             goalB += array_B[i] + "|" + $("#teamBgoal_" + array_B[i]).val()
                     + "$";
         }
-        goalBPoint += parseInt($("#teamBgoal_" + array_B[i]).val());
-    }
-    for (var i = 0; i < array_A.length; i++) {
-        if ($("#teamAasst_" + array_A[i]).val() != 0) {
-            asstA += array_A[i] + "|" + $("#teamAasst_" + array_A[i]).val()
-                    + "$";
-        }
-        asstAPoint += parseInt($("#teamAasst_" + array_A[i]).val());
-    }
-    for (var i = 0; i < array_B.length; i++) {
         if ($("#teamBasst_" + array_B[i]).val() != 0) {
             asstB += array_B[i] + "|" + $("#teamBasst_" + array_B[i]).val()
                     + "$";
         }
+        goalBPoint += parseInt($("#teamBgoal_" + array_B[i]).val());
         asstBPoint += parseInt($("#teamBasst_" + array_B[i]).val());
     }
 
