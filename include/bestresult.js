@@ -23,7 +23,7 @@ function getCount(from, to){
 		url : '/football_tpm/get_bestvote.php',
 		data : {
 			cmd : "count_formation",
-			id : 1
+			id : TEAM_ID
 			, from: from, to: to
 		},
 		dataType : "json",
@@ -50,7 +50,7 @@ function getCountPlayer(from, to){
 		url : '/football_tpm/get_bestvote.php',
 		data : {
 			cmd : "count_player",
-			id : 1
+			id : TEAM_ID
 			, from: from, to: to
 		},
 		dataType : "json",
@@ -143,7 +143,7 @@ function setSelectedPosition(from, to){
 		url : './get_bestvote.php',
 		data : {
 			cmd : "info_formation",
-			id : 1,
+			id : TEAM_ID,
 			formation : val
 			, from: from, to: to
 		},
@@ -211,7 +211,7 @@ function getTopScore(from, to, cnt){
 		url : '/football_tpm/get.php',
 		data : {
 			cmd : "play_cnt",
-			id : 1,
+			id : TEAM_ID,
 			st : from,
 			ed : to
 		},
@@ -234,7 +234,7 @@ function getTopList(from, to, max){
 		url : '/football_tpm/get.php',
 		data : {
 			cmd : "tpm_view_search",
-			id : 1,
+			id : TEAM_ID,
 			st : from,
 			ed : to
 		},
@@ -316,7 +316,7 @@ function getTopList(from, to, max){
 				url : '/football_tpm/get_defence.php',
 				data : {
 					cmd : "player_scoreless",
-					id : 1,
+					id : TEAM_ID,
 					st : from,
 					ed : to
 				},

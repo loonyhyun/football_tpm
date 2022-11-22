@@ -1,10 +1,16 @@
 <?php
+session_start();
 
 include 'setting.php';
 
 $POST_DATA = json_decode(file_get_contents('php://input'), true);
-  
-$pid = !empty($_REQUEST["id"]) ? $_REQUEST["id"] : $POST_DATA["id"];
+
+$pid = 0;
+if(isset($_SESSION["team_id"])){
+    $pid = $_SESSION["team_id"];
+}else{
+    $pid = !empty($_REQUEST["id"]) ? $_REQUEST["id"] : $POST_DATA["id"];
+}
 $pcmd = !empty($_REQUEST["cmd"]) ? $_REQUEST["cmd"] : $POST_DATA["cmd"];
 
 $notinplayer1 = " and id not in ('79','80','81','82','87','88') ";
@@ -13,11 +19,16 @@ $notinplayer = " and player_id not in ('79','80','81','82','87','88') ";
 $array = array();
 if($pcmd == "team"){
     if($conn){
-        $sql = "SELECT team_name, (SELECT COUNT(1) FROM football_match WHERE team_id = t.id) total_cnt
+        $sql = "SELECT id team_id, team_name, (SELECT COUNT(1) FROM football_match WHERE team_id = t.id) total_cnt
+                    , team_img
                 FROM football_team t WHERE id = '".$pid."'";
         $result = mysqli_query($conn, $sql);
         $row = mysqli_fetch_array($result);
         array_push($array, array('team_name'=>$row['team_name'], 'total_cnt'=>$row['total_cnt']));
+        
+        $_SESSION["team_id"] = $row['team_id'];
+        $_SESSION["team_name"] = $row['team_name'];
+        $_SESSION["team_img"] = $row['team_img'];
     }
 }
 else if($pcmd == "play_cnt"){

@@ -125,6 +125,12 @@
 	}
 
 	function getTeam() {
+		if(TEAM_ID != 0 && TEAM_NAME != ''){
+			$("#header_1").text(TEAM_NAME);
+			$("#nav_header").text(TEAM_NAME);
+			getPlayCnt();
+			return;
+		}
 
 		$.ajax({
 			type : "post",
@@ -132,14 +138,38 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "team",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType : "json",
 			success : function(data) {
 				$("#header_logo").html("<img src='/football_tpm/img/LOGO_1.png' style='width:40px;' />");
-				$("#header_1").text(data[0]["team_name"]);
-				$("#nav_header").text(data[0]["team_name"]);
-				$("#total_match_cnt").text("기록 경기 수: " + data[0]["total_cnt"]);
+
+				TEAM_NAME = data[0]["team_name"];
+				PLAY_CNT = data[0]["total_cnt"];
+
+				$("#header_1").text(TEAM_NAME);
+				$("#nav_header").text(TEAM_NAME);
+				$("#total_match_cnt").text("기록 경기 수: " + PLAY_CNT);
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function getPlayCnt(){
+		$.ajax({
+			type : "post",
+			async: false,
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "play_cnt",
+				id : TEAM_ID
+			},
+			dataType : "json",
+			success : function(data) {
+				PLAY_CNT = data[0]["total_cnt"];
+				$("#total_match_cnt").text("기록 경기 수: " + PLAY_CNT);
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
@@ -155,7 +185,7 @@
 			data : {
 				cmd : "player",
 				//cmd : "tpm_view",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType : "json",
 			success : function(data) {
@@ -193,7 +223,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "play_cnt",
-				id : 1,
+				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
 				ed : $("#searchEndDate").val()
 			},
@@ -215,7 +245,7 @@
 			data : {
 				//cmd : "player"
 				cmd : "tpm_view_search",
-				id : 1,
+				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
 				ed : $("#searchEndDate").val()
 			},
@@ -282,7 +312,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "tpm_view_search",
-				id : 1,
+				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
 				ed : $("#searchEndDate").val()
 			},
@@ -314,7 +344,7 @@
 			url : '/football_tpm/save.php',
 			data : {
 				cmd : "player",
-				id : 1,
+				id : TEAM_ID,
 				player_name : $("#player_name").val(),
 				back_no : $("#player_backno").val(),
 				position : $("#player_position").val(),
@@ -341,7 +371,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "player_one",
-				id : 1,
+				id : TEAM_ID,
 				playerId: pid
 			},
 			dataType : "json",
@@ -364,7 +394,7 @@
                     url : '/football_tpm/get.php',
                     data : {
                         cmd : "player_sum",
-                        id : 1,
+                        id : TEAM_ID,
                         playerId: pid
                     },
                     dataType : "json",
@@ -399,7 +429,7 @@
                     url : '/football_tpm/get.php',
                     data : {
                         cmd : "player_matches",
-                        id : 1,
+                        id : TEAM_ID,
                         playerId: pid
                     },
                     dataType : "json",
@@ -429,7 +459,7 @@
 				url : '/football_tpm/save.php',
 				data : {
 					cmd : "player_update",
-					id : 1,
+					id : TEAM_ID,
 					player_id: $("#player_update_id").val(),
 					player_name : $("#player_update_name").val(),
 					back_no : $("#player_update_backno").val(),
@@ -534,7 +564,7 @@
 				url : '/football_tpm/save.php',
 				data : {
 					cmd : "match",
-					id : 1,
+					id : TEAM_ID,
 					match_date : $("#input_match_date").val(),
 					teamA : teamA,
 					teamB : teamB,
@@ -559,7 +589,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "matchlist",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType:"json",
 			success : function(data, textStatus, jqXHR) {
@@ -589,7 +619,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "match",
-				id : 1,
+				id : TEAM_ID,
 				match_id : id
 			},
 			dataType: "json",
@@ -645,7 +675,7 @@
 				url : '/football_tpm/delete.php',
 				data : {
 					cmd : "match",
-					id : 1,
+					id : TEAM_ID,
 					match_id : $("#delete_match_id").val(),
 					match_secret : $("#delete_secret").val()
 				},

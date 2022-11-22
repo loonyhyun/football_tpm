@@ -7,7 +7,7 @@ function getGrounds(){
         url : '/football_tpm/get.php',
         data : {
             cmd : "ground",
-            id : 1
+            id : TEAM_ID
         },
         dataType:"json",
         success : function(data, textStatus, jqXHR) {
@@ -27,7 +27,7 @@ function getMatchHtmlList(){
         url : '/football_tpm/get.php',
         data : {
             cmd : "matchlist",
-            id : 1
+            id : TEAM_ID
         },
         dataType:"json",
         success : function(data, textStatus, jqXHR) {
@@ -110,7 +110,7 @@ function updateMatch(){
             url : '/football_tpm/save.php',
             data : {
                 cmd : "match_update",
-                id : 1,
+                id : TEAM_ID,
                 match_id : selectedIdByMatchHtml,
                 match_date : $("#input_match_date").val(),
                 teamA : teamA,
@@ -141,7 +141,7 @@ function deleteMatch(){
             url : '/football_tpm/save.php',
             data : {
                 cmd : "match_delete",
-                id : 1,
+                id : TEAM_ID,
                 match_id : selectedIdByMatchHtml
             },
             success : function(data, textStatus, jqXHR) {
@@ -164,7 +164,7 @@ function getMatchHtml(mid, mdate, winab){
         url : '/football_tpm/get.php',
         data : {
             cmd : "match",
-            id : 1,
+            id : TEAM_ID,
             match_id : mid
         },
         dataType: "json",
@@ -263,7 +263,7 @@ function getMatchHtmlReply(mid){
         url : '/football_tpm/get.php',
         data : {
             cmd : "match_reply",
-            id : 1,
+            id : TEAM_ID,
             match_id : mid
         },
         dataType:"json",
@@ -296,7 +296,7 @@ function saveReplyText(){
         url : '/football_tpm/save.php',
         data : {
             cmd : "match_reply",
-            id : 1,
+            id : TEAM_ID,
             match_id : selectedIdByMatchHtml,
             reply : $("#reply_input_text").val()
         },
@@ -336,7 +336,7 @@ function match_d_save(){
             url : '/football_tpm/save.php',
             data : {
                 cmd : "match_d",
-                id : 1,
+                id : TEAM_ID,
                 match_id : selectedIdByMatchHtml,
                 cnt : $("#p_quarters").val()
             },
@@ -348,7 +348,7 @@ function match_d_save(){
                         url : '/football_tpm/save.php',
                         data : {
                             cmd : "match_scoreless_init",
-                            id : 1,
+                            id : TEAM_ID,
                             match_id : selectedIdByMatchHtml
                         },
                         dataType: "json",
@@ -381,7 +381,7 @@ function match_d_scoreless(tmpQuarter, team){
             url : '/football_tpm/save.php',
             data : {
                 cmd : "match_scoreless",
-                id : 1,
+                id : TEAM_ID,
                 match_id : selectedIdByMatchHtml,
                 q : tmpQuarter,
                 team : team
@@ -423,7 +423,7 @@ function getPlayerList() {
         data : {
             cmd : "player",
             //cmd : "tpm_view",
-            id : 1
+            id : TEAM_ID
         },
         dataType : "json",
         success : function(data) {
@@ -600,7 +600,7 @@ function saveMatch() {
             url : '/football_tpm/save.php',
             data : {
                 cmd : "match",
-                id : 1,
+                id : TEAM_ID,
                 match_date : $("#input_match_date").val(),
                 teamA : teamA,
                 teamB : teamB,

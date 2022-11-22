@@ -1,10 +1,10 @@
 <?php
-
-include 'setting_html.php';
+session_start();
 
 $PAGE_NAME = $_REQUEST["page"];
 
 echo "<!DOCTYPE html><html>";
+include 'setting_html.php';
 
 //head
 $fp = fopen($SET_DIRECTORY."head.html", "r") or die("no found file.");

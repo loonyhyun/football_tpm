@@ -121,7 +121,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "team",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType : "json",
 			success : function(data) {
@@ -143,7 +143,7 @@
 			data : {
 				//cmd : "player"
 				cmd : "tpm_view_search",
-				id : 1,
+				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
 				ed : $("#searchEndDate").val()
 			},
@@ -211,7 +211,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "tpm_view_search",
-				id : 1,
+				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
 				ed : $("#searchEndDate").val()
 			},
@@ -241,7 +241,7 @@
 			url : '/football_tpm/save.php',
 			data : {
 				cmd : "player",
-				id : 1,
+				id : TEAM_ID,
 				player_name : $("#player_name").val(),
 				back_no : $("#player_backno").val(),
 				position : $("#player_position").val(),
@@ -270,7 +270,7 @@
 				url : '/football_tpm/save.php',
 				data : {
 					cmd : "player_update",
-					id : 1,
+					id : TEAM_ID,
 					player_id: $("#player_update_id").val(),
 					player_name : $("#player_update_name").val(),
 					back_no : $("#player_update_backno").val(),
@@ -292,7 +292,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "matchlist",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType:"json",
 			success : function(data, textStatus, jqXHR) {
@@ -322,7 +322,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "match",
-				id : 1,
+				id : TEAM_ID,
 				match_id : id
 			},
 			dataType: "json",
@@ -378,7 +378,7 @@
 				url : '/football_tpm/delete.php',
 				data : {
 					cmd : "match",
-					id : 1,
+					id : TEAM_ID,
 					match_id : $("#delete_match_id").val(),
 					match_secret : $("#delete_secret").val()
 				},
