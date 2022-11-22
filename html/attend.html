@@ -6,11 +6,11 @@
     <meta name="description" content="Football_Record_Statistics">
     <meta name="author" content="LoonyHyun">
     <meta property="og:url" content="https://loonyhyun.cafe24.com/">
-    <meta property="og:title" content="바론 FC 경기 기록실">
+    <meta property="og:title" content="바론 FC 출석 - 관리">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
     <meta property="og:description" content="바론 FC의 경기 기록실 입니다.">
-    <title>바론 FC 경기 기록실</title>
+    <title>바론 FC 출석 - 관리</title>
     
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
@@ -31,7 +31,6 @@
 <script>
 	$(document).ready(function(){
 		var target_header = "attend";
-		getTeam();
 		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
 		$("#drop_header").text($("#drop_header_" + target_header).text());
 		setLayout();
@@ -140,7 +139,7 @@
 
 		var str = "<tr class='ATTEND_PLAYERS_"+team+"' id='ATTEND_PLAYER_"+pid+"'>";
 			str += "<td onclick=\"setAttendOut('"+pid+"');\" id='ATTEND_NO_"+pid+"'>"+no+"</td>";
-			str += "<td id='ATTEND_NAME_"+pid+"'><span onclick=\"delAttendPlayer('"+pid+"');\" >"+p["player_name"]+"</span<</td>";
+			str += "<td id='ATTEND_NAME_"+pid+"'><span onclick=\"delAttendPlayer('"+pid+"');\" >"+p["player_name"]+"</span></td>";
 			str += "<td onclick=\"setQ(1, '"+team+"', '"+pid+"');\"></td>";
 			str += "<td onclick=\"setQ(2, '"+team+"', '"+pid+"');\"></td>";
 			str += "<td onclick=\"setQ(3, '"+team+"', '"+pid+"');\"></td>";

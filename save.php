@@ -486,6 +486,58 @@ else if($pcmd == "attend2"){
 		}
     }
 }
+else if($pcmd == "attend2_udt"){
+    if($conn){
+		$sql = "SELECT count(1) cnt FROM football_attend
+        WHERE match_key = '".$_REQUEST["match_key"]."'
+        ";
+		$result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_array($result);
+        if($row["cnt"] == 0){
+            //수정
+            $sql = "INSERT INTO football_attend
+            (
+                match_key, match_date
+                , team_a, team_b
+                , a_q1, a_q2, a_q3, a_q4, a_q5, a_q6
+                , b_q1, b_q2, b_q3, b_q4, b_q5, b_q6
+                , outs, hires
+            )
+            VALUES (
+                '".$_REQUEST["match_key"]."'
+                , '".$_REQUEST["match_date"]."'
+                , '".$_REQUEST["team_a"]."', '".$_REQUEST["team_b"]."'
+                , '$', '$'
+                , '$', '$'
+                , '$', '$'
+                , '$', '$'
+                , '$', '$'
+                , '$', '$'
+                , '$', '".$_REQUEST["hires"]."'
+            )
+            ";
+
+        }else{
+            //수정
+            $sql = "UPDATE football_attend SET
+                team_a = '".$_REQUEST["team_a"]."'
+                , team_b = '".$_REQUEST["team_b"]."'
+                , hires = '".$_REQUEST["hires"]."'
+            WHERE match_key = '".$_REQUEST["match_key"]."'
+            ";
+
+        }
+
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
 else{
     echo "fail else";
 }
