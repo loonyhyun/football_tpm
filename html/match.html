@@ -21,7 +21,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "matchlist",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType:"json",
 			success : function(data, textStatus, jqXHR) {
@@ -65,7 +65,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "match",
-				id : 1,
+				id : TEAM_ID,
 				match_id : mid
 			},
 			dataType: "json",
@@ -139,7 +139,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "match_reply",
-				id : 1,
+				id : TEAM_ID,
 				match_id : mid
 			},
 			dataType:"json",
@@ -172,7 +172,7 @@
 			url : '/football_tpm/save.php',
 			data : {
 				cmd : "match_reply",
-				id : 1,
+				id : TEAM_ID,
 				match_id : selectedIdByMatchHtml,
 				reply : $("#reply_input_text").val()
 			},

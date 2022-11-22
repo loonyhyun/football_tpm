@@ -124,7 +124,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "rank",
-				id : 1,
+				id : TEAM_ID,
 				type: type,
 				st: pst, 
 				ed: ped,
@@ -245,7 +245,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "tpm_view_month",
-				id : 1,
+				id : TEAM_ID,
 				type: type,
 				st: pst, 
 				ed: ped,
@@ -265,7 +265,7 @@
 					url : '/football_tpm/get.php',
 					data : {
 						cmd : "tpm_view_month_rank",
-						id : 1,
+						id : TEAM_ID,
 						type: type,
 						st: pst, 
 						ed: ped,
@@ -595,7 +595,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "player",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType:"json",
 			success : function(data, textStatus, jqXHR) {

@@ -94,7 +94,7 @@
             url : './get_best_2021.php',
             data : {
                 cmd : "best2021_cnt",
-                id : 1
+                id : TEAM_ID
             },
             success : function(data) {
 				var tmp = data.split("$");
@@ -110,7 +110,7 @@
 					url : './get_best_2021.php',
 					data : {
 						cmd : "best2021_list",
-						id : 1,
+						id : TEAM_ID,
 						type : "1"
 					},
 					dataType : "json",
@@ -151,7 +151,7 @@
 					url : './get_best_2021.php',
 					data : {
 						cmd : "best2021_list_formation",
-						id : 1
+						id : TEAM_ID
 					},
 					dataType : "json",
 					success : function(data) {
@@ -204,7 +204,7 @@
             url : './get_best_2021.php',
             data : {
                 cmd : "best_2021_result",
-                id : 1
+                id : TEAM_ID
             },
             dataType : "json",
             success : function(data) {

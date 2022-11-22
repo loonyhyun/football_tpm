@@ -23,7 +23,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "player",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType : "json",
 			success : function(data) {
@@ -64,7 +64,7 @@
 			url : './get_bestvote.php',
 			data : {
 				cmd : "info_formation",
-				id : 1,
+				id : TEAM_ID,
 				formation : val
 			},
 			dataType : "json",
@@ -173,7 +173,7 @@
 			url : './get_bestvote.php',
 			data : {
 				cmd : "vote",
-				id : 1
+				id : TEAM_ID
 				, name: name
 				, formation : formation
 				, pos_lw : pos_lw 
