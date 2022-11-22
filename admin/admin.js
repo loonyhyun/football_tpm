@@ -114,6 +114,12 @@
 	}
 
 	function getTeam() {
+		if(TEAM_ID != 0 && TEAM_NAME != ''){
+			$("#header_1").text(TEAM_NAME);
+			$("#nav_header").text(TEAM_NAME);
+			getPlayCnt();
+			return;
+		}
 
 		$.ajax({
 			type : "post",
@@ -128,6 +134,26 @@
 				$("#header_logo").html("<img src='/football_tpm/img/LOGO_1.png' style='width:40px;' />");
 				$("#header_1").text(data[0]["team_name"]);
 				$("#nav_header").text(data[0]["team_name"]);
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function getPlayCnt(){
+		$.ajax({
+			type : "post",
+			async: false,
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "play_cnt",
+				id : TEAM_ID
+			},
+			dataType : "json",
+			success : function(data) {
+				PLAY_CNT = data[0]["total_cnt"];
+				$("#total_match_cnt").text("기록 경기 수: " + PLAY_CNT);
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
