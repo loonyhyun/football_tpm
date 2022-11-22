@@ -12,8 +12,8 @@
 			$(this).css("height", wh - difWindowHeight);
 		});
 
-		getPlayers();
 		getGrounds();
+		getPlayers();
 	});
 
 	$(window).resize(function(){
@@ -34,7 +34,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "player",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType : "json",
 			success : function(data) {
@@ -54,16 +54,51 @@
 				alert("오류발생 관리자에게 문의하세요.")
 			}
 		});
+		
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/get.php',
+			data : {
+				cmd : "match_info",
+				id : TEAM_ID
+			},
+			dataType : "json",
+			success : function(data) {
+				if(data == null){
+					return;
+				}
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					pData[tmp["player_id"]] = tmp;
+
+					if(tmp["team_a_yn"] > 0){
+						setTeam(1, tmp["player_id"]);
+					}else if(tmp["team_b_yn"] > 0){
+						setTeam(2, tmp["player_id"]);
+					}
+					
+					if(i==0){
+						$("#input_match_date").val(tmp["match_date"]);
+						$("#quarters").val(tmp["quarters"]);
+						$("#ground_id").val(tmp["ground_id"]);
+					}
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
 	}
 
 	function getGrounds(){
 		
 		$.ajax({
+			async: false,
 			type : "post",
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "ground",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType:"json",
 			success : function(data, textStatus, jqXHR) {
@@ -103,6 +138,13 @@
 		}
 	}
 
+	function setTeamInit(){
+		team_a = [];
+		team_b = [];
+		$("#team_a_tbody").html("");
+		$("#team_b_tbody").html("");
+	}
+
 	function saveMatchBeforeInfo(){
 		var team_a_str = "$";
 		var team_b_str = "$";
@@ -117,7 +159,7 @@
 			url : '/football_tpm/admin/save.php',
 			data : {
 				cmd : "match_info",
-				id : 1,
+				id : TEAM_ID,
 				match_date: $("#input_match_date").val(),
 				ground_id: $("#ground_id").val(),
 				quarters: $("#quarters").val(),
@@ -156,6 +198,8 @@
 		</div>
 		<div id="CREATE_MATCH_DIV">
 			<h5>[경기등록_info]</h5>
+			<button class="btn btn-outline-danger" onclick="setTeamInit();">팀 초기화</button>
+			<div class="row">&nbsp;</div>
 			<div class="row">
 				<div class="col">
 					<div class="input-group mb-3">
