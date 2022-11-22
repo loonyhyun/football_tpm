@@ -44,6 +44,9 @@
 		$(document.body).css("background-repeat", "");
 		$(document.body).css("background-position", "");
 
+		//var pid = getCookieAttend();
+		//$("#ATTEND_PLAYERS").val(pid);
+
 		$('#ATTEND_PLAYERS').select2();
 		$(".select2-container").css("width", "200px");
 		$(".select2-selection").css("height", "38px");
@@ -93,13 +96,24 @@
 					// if(selectedPlayers.indexOf(data[i]["player_id"]) > -1){
 					// 	style = "display:none;";
 					// }
-					$("#ATTEND_PLAYERS").append("<option value='"+pid+"'>"+data[i]["player_name"]+"</option>");
+					$("#ATTEND_PLAYERS").append("<option id='ATTEND_SELECT_"+pid+"' value='"+pid+"'>"+data[i]["player_name"]+"</option>");
 				}
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
 			}
 		});
+	}
+
+	function setCookieAttend(pid, day){
+        var date = new Date();
+        date.setTime(date.getTime() + day * 60 * 60 * 24 * 1000);
+		document.cookie = 'pid=' + pid +';expires='+date.toUTCString()+';path/';
+	}
+
+	function getCookieAttend(){
+		var value = document.cookie.match('(^|;) ?' + 'pid' + '=([^;]*)(;|$)');
+        return value? value[2] : null;
 	}
 
 	function setAttend(){
@@ -112,11 +126,16 @@
 		}else{
 			setAttendTeam('a', pid);
 		}
+
+		setCookieAttend(pid, 30);
 		saveAttend();
 	}
 
 	function setAttendTeam(team, pid){
 		var p = playersData[pid];
+
+		//출석된자 SELECT OPTION 제거
+		$("#ATTEND_SELECT_" + pid).remove();
 
 		$("#ATTEND_PLAYER_"+pid).remove();
 
