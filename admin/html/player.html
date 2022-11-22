@@ -19,7 +19,7 @@
             url : '/football_tpm/get.php',
             data : {
                 cmd : "players",
-                id : 1
+                id : TEAM_ID
             },
             dataType : "json",
             success : function(data) {
@@ -93,7 +93,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "player_one",
-				id : 1,
+				id : TEAM_ID,
 				playerId: pid
 			},
 			dataType : "json",
@@ -116,7 +116,7 @@
                     url : '/football_tpm/get.php',
                     data : {
                         cmd : "player_sum",
-                        id : 1,
+                        id : TEAM_ID,
                         playerId: pid
                     },
                     dataType : "json",

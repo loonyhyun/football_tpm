@@ -288,7 +288,7 @@
 			url : '/football_tpm/admin/get.php',
 			data : {
 				cmd : "yeyak",
-				id : 1,
+				id : TEAM_ID,
         from: year +"-"+ month + "-01",
         to: year + "-" + month + "-31"
 			},
@@ -315,7 +315,7 @@
 			url : '/football_tpm/admin/save.php',
 			data : {
 				cmd : "yeyak",
-				id : 1,
+				id : TEAM_ID,
         txt : $("#yeyak_txt").val(),
         start : $("#yeyak_start").val(),
         desc : $("#yeyak_desc").val(),
@@ -343,7 +343,7 @@
 			url : '/football_tpm/admin/save.php',
 			data : {
 				cmd : "yeyak_update",
-				id : 1,
+				id : TEAM_ID,
         txt : $("#yeyak_txt").val(),
         start : $("#yeyak_start").val(),
         desc : $("#yeyak_desc").val(),
@@ -371,7 +371,7 @@
         url : '/football_tpm/admin/save.php',
         data : {
           cmd : "yeyak_delete",
-          id : 1,
+          id : TEAM_ID,
           prevId : $("#yeyak_prevId").val()
         },
         success : function(data) {

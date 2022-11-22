@@ -24,7 +24,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "attend",
-				id : 1,
+				id : TEAM_ID,
 			},
 			dataType : "json",
 			success : function(data) {
@@ -136,7 +136,7 @@
 			url : '/football_tpm/get.php',
 			data : {
 				cmd : "attend_quater",
-				id : 1
+				id : TEAM_ID
 			},
 			dataType : "json",
 			success : function(data) {
@@ -335,7 +335,7 @@
 			url : '/football_tpm/save.php',
 			data : {
 				cmd : "attend_quater",
-				id : 1,
+				id : TEAM_ID,
 				team_a : strA,
 				team_b : strB,
 				quarters: $("#QUARTER_NUM").val(),
@@ -780,7 +780,7 @@
 			url : '/football_tpm/save.php',
 			data : {
 				cmd : "match",
-				id : 1,
+				id : TEAM_ID,
 				match_date : todayStr,
 				teamA : team_a,
 				teamB : team_b,
@@ -798,7 +798,7 @@
 						url : '/football_tpm/get.php',
 						data : {
 							cmd : "max_match_id",
-							id : 1
+							id : TEAM_ID
 						},
 						dataType: "json",
 						success : function(data, textStatus, jqXHR) {
@@ -809,7 +809,7 @@
 								url : '/football_tpm/save.php',
 								data : {
 									cmd : "match_d",
-									id : 1,
+									id : TEAM_ID,
 									match_id : mid,
 									cnt : quarters
 								},
@@ -853,7 +853,7 @@
 			url : '/football_tpm/save.php',
 			data : {
 				cmd : "match_scoreless",
-				id : 1,
+				id : TEAM_ID,
 				match_id : mid,
 				q : quarter,
 				team : team
