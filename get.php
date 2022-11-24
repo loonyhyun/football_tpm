@@ -885,6 +885,25 @@ else if($pcmd == "attend2"){
         }
     }
 }
+else if($pcmd == "attend2_set"){
+    if($conn){
+        $sql = "SELECT 
+            *
+        FROM football_attend_set a
+        WHERE id = (SELECT MAX(id) FROM football_attend_set)
+        ";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, 
+                array('g_name'=>$row['g_name']
+                , 'longitude'=>$row['longitude']
+                , 'latitude'=>$row['latitude']
+                , 'range'=>$row['g_range']
+                )
+            );
+        }
+    }
+}
 else{
     
 }

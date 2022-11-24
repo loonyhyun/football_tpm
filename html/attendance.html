@@ -32,6 +32,12 @@
 
 
 <script>
+	var groundInfo = null;
+	var gps_location = null;
+	var gps_distance = -1;
+
+	var g_name, lat, lng, range;
+
 	$(document).ready(function(){
 		getInitAttendPlayer();
 
@@ -48,11 +54,13 @@
 		//$("#ATTEND_PLAYERS").val(pid);
 
 		$('#ATTEND_PLAYERS').select2();
-		$(".select2-container").css("width", "200px");
+		$(".select2-container").css("width", ($("#main_div").outerWidth()-90-58-22) + "px");
 		$(".select2-selection").css("height", "38px");
 		$(".select2-selection__rendered").css("line-height", "38px");
 		$(".select2-selection__rendered").css("height", "38px");
 		$(".select2-selection__arrow").css("height", "36px");
+
+		getAttendSetInfo();
 	});
 
 	function getToday(point){
@@ -74,6 +82,7 @@
 
 	$(window).resize(function(){
 		setLayout();
+		$(".select2-container").css("width", ($("#main_div").outerWidth()-90-58-22) + "px");
 	});
 
 	var playersData = [];
@@ -251,6 +260,69 @@
 		});
 	}
 
+	function getAttendSetInfo(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "attend2_set",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				if(data == null || data.length == 0){
+					return;
+				}
+				var tmp = data[0];
+				g_name = tmp["g_name"];
+				lat = tmp["latitude"];
+				lng = tmp["longitude"];
+				range = tmp["range"];
+				$("#ATTEND_RANGE").val(range + " m");
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function getLocation() {
+		if (lat == null || lng == null || lat == undefined || lng == undefined) {
+			alert("운동장 좌표를 알수 없습니다.");
+			return;
+		}
+		if (!!navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+		} else {
+			alert("이 브라우저는 Geolocation를 지원하지 않습니다");
+		}
+	}
+	function errorCallback(error) {
+		alert(error.message);
+	}
+
+	function successCallback(position) {
+		gps_location = position.coords;
+		var plat = position.coords.latitude;
+		var plng = position.coords.longitude;
+		getDistance(plat, plng, lat, lng);
+	}
+
+	function getDistance(latitude1, longitude1, latitude2, longitude2) {
+		var lat1 = (latitude1 * Math.PI) / 180.0;
+		var lat2 = (latitude2 * Math.PI) / 180.0;
+		var lon1 = (longitude1 * Math.PI) / 180.0;
+		var lon2 = (longitude2 * Math.PI) / 180.0;
+		gps_distance = 6378.137 * Math.acos(
+			Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1) +
+			Math.sin(lat1) * Math.sin(lat2)
+		) * 1000;
+
+		if(gps_distance <= range)
+			setAttend();
+		else
+			alert("반경내에 없습니다.");
+	}
 </script>
 <style>
 </style>
@@ -272,6 +344,14 @@
 				</div>
 			</div>
 		</div>
+		<div class="row">
+			<div class="col">
+				<div class="input-group">
+					<span class="input-group-text" for="ATTEND_RANGE">허용반경</span>
+					<input type="text" readonly id="ATTEND_RANGE" class="form-control" />
+				</div>
+			</div>
+		</div>
 		<div class="row" style="margin-top:15px;">
 			<div class="col">
 				<div class="input-group">
@@ -279,7 +359,7 @@
 					<select id="ATTEND_PLAYERS" class="form-select">
 						<option value="">선택</option>
 					</select>
-					<button class="btn btn-success" onclick="setAttend();">출석</button>
+					<button class="btn btn-success" onclick="getLocation();">출석</button>
 				</div>
 			</div>
 		</div>

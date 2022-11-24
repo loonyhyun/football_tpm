@@ -1,0 +1,219 @@
+
+<head>
+    <meta charset="utf-8">
+	<meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Football_Record_Statistics">
+    <meta name="author" content="LoonyHyun">
+    <meta property="og:url" content="https://loonyhyun.cafe24.com/">
+    <meta property="og:title" content="바론 FC 출석 - 관리(구장설정)">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+    <meta property="og:description" content="바론 FC의 경기 기록실 입니다.">
+    <title>바론 FC 출석 - 관리(구장설정)</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    
+    <script src="/football_tpm/include/bootstrap-datepicker.min.js"></script>
+    <script src="/football_tpm/include/bootstrap-datepicker.ko.min.js"></script>
+    <link href="/football_tpm/include/bootstrap-datepicker.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+    
+	<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=4278b16709ed7fd128195e0398c71edc"></script>
+</head>
+
+
+<script>
+	var GROUNDS = [];
+	var map;
+	var lat = 37.553181;
+	var lng = 126.97257;
+	var marker = null;
+	$(document).ready(function(){
+		$(document.body).css("background-image", "");
+		$(document.body).css("background-repeat", "");
+		$(document.body).css("background-position", "");
+
+		getGrounds();
+		mapResizing();
+		mapSetting();
+		getAttendSetInfo();
+	});
+
+	$(window).resize(function(){
+		mapResizing();
+	});
+
+	function mapResizing(){
+		$("#map").css("width", $(window).width());
+		$("#map").css("height", $(window).height()-114);
+	}
+
+	function mapSetting(){
+		var container = document.getElementById('map'); //지도를 담을 영역의 DOM 레퍼런스
+		var options = { //지도를 생성할 때 필요한 기본 옵션
+			center: new kakao.maps.LatLng(lat, lng), //지도의 중심좌표.
+			level: 3 //지도의 레벨(확대, 축소 정도)
+		};
+
+		map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
+
+		kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+			// 클릭한 위도, 경도 정보를 가져옵니다 
+			var latlng = mouseEvent.latLng;
+
+			$("#latitude").val(latlng.getLat());
+			$("#longitude").val(latlng.getLng());
+
+			lat = $("#latitude").val();
+			lng = $("#longitude").val();
+			
+			createMarker();
+		});
+	}
+
+	function createMarker(){
+		lat = $("#latitude").val();
+		lng = $("#longitude").val();
+		map.setCenter(new kakao.maps.LatLng(lat, lng));
+		if(marker != null){
+			marker.setMap(null);
+		}
+		var markerPosition  = new kakao.maps.LatLng(lat, lng); 
+		marker = new kakao.maps.Marker({
+			position: markerPosition
+		});
+		marker.setMap(map);
+	}
+
+	function getGrounds(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "ground",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				if(data == null || data.length == 0){
+					return;
+				}
+				for(var i=0; i<data.length; i++){
+					var tmpstr = "";
+					GROUNDS[data[i]["ground_id"]] = data[i];
+					if(data[i]["latitude"] == null || data[i]["longitude"] == null){
+						tmpstr = "(좌표없음)";
+					}
+					
+					$("#grounds").append("<option value='"+data[i]["ground_id"]+"'>"+data[i]["name"]+tmpstr+"</option>");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function setGround(){
+		var gid = $("#grounds").val();
+		console.log(GROUNDS[gid]);
+		var g = GROUNDS[gid];
+		if(g["latitude"] != null && g["longitude"] != null){
+			$("#g_name").val(g["name"]);
+			$("#latitude").val(g["latitude"]);
+			$("#longitude").val(g["longitude"]);
+			lat = $("#latitude").val();
+			lng = $("#longitude").val();
+			createMarker();
+		}else{
+			alert("좌표 없음;;");
+			return;
+		}
+	}
+
+	function getAttendSetInfo(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "attend2_set",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				if(data == null || data.length == 0){
+					return;
+				}
+				var tmp = data[0];
+				$("#g_name").val(tmp["g_name"]);
+				$("#latitude").val(tmp["latitude"]);
+				$("#longitude").val(tmp["longitude"]);
+				$("#range").val(tmp["range"]);
+				createMarker();
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function saveAttendSetInfo(){
+
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "attend2_set",
+				id : 1,
+				g_name : $("#g_name").val(),
+				longitude : $("#longitude").val(),
+				latitude : $("#latitude").val(),
+				range : $("#range").val()
+			},
+			success : function(data) {
+				if(data == "ok"){
+					alert("저장되었습니다.");
+				}else{
+					alert("실패하였습니다.");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+</script>
+<style>
+</style>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col">
+				<div class="input-group">
+					<span class="input-group-text">구장바로가기</span>
+					<select id="grounds" class="form-select" onchange="setGround()">
+						<option value="">---------</option>
+					</select>
+				</div>
+				<div class="input-group">
+					<span class="input-group-text">이름</span>
+					<input type="text" id="g_name" class="form-control" value=""/>
+					<span class="input-group-text">반경(m)</span>
+					<input type="text" id="range" class="form-control" value=""/>
+				</div>
+				<div class="input-group">
+					<span class="input-group-text">좌표</span>
+					<input type="number" id="longitude" class="form-control" value="0.0"/>
+					<input type="number" id="latitude" class="form-control" value="0.0"/>
+					<button id="BTN_SAVE" class="btn btn-sm btn-primary" onclick="saveAttendSetInfo();">저장</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="map"></div>
+</body>

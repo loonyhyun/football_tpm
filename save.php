@@ -538,6 +538,32 @@ else if($pcmd == "attend2_udt"){
 		}
     }
 }
+else if($pcmd == "attend2_set"){
+    if($conn){
+        //생성
+		$sql = "INSERT INTO football_attend_set
+        (
+            g_name, longitude, latitude, reg_date, g_range
+        )
+        VALUES
+        (
+            '".$_REQUEST["g_name"]."'
+            , '".$_REQUEST["longitude"]."'
+            , '".$_REQUEST["latitude"]."'
+            , NOW()
+            , ".$_REQUEST["range"]."
+        )
+        ";
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
 else{
     echo "fail else";
 }
