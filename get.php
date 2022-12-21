@@ -904,6 +904,31 @@ else if($pcmd == "attend2_set"){
         }
     }
 }
+else if($pcmd == "tpm_view_all"){
+    if($conn){
+        $sql = "SELECT player_id, player_name, match_date, win_yn
+        FROM football_tpm_view
+        where team_id = '".$pid."'
+        and play_yn = 1
+        ";
+        if( ! empty($_REQUEST["year"]) ){
+            $sql = $sql." and match_date like '".$_REQUEST["year"]."%' ";
+        }
+        $sql = $sql."
+        order by player_id, match_date
+        ";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, 
+                array('player_id'=>$row['player_id']
+                , 'player_name'=>$row['player_name']
+                , 'match_date'=>$row['match_date']
+                , 'win_yn'=>$row['win_yn']
+                )
+            );
+        }
+    }
+}
 else{
     
 }
