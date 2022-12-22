@@ -13,6 +13,78 @@
 	$(window).resize(function(){
 		setLayout();
 	});
+	
+	var BEFORE_SORT_TMP = [];
+	function SortTable_TMP1( div, n, order )
+	{
+		var BEFORE_SORT = 0;
+		if(BEFORE_SORT_TMP[div] != undefined){
+			BEFORE_SORT = BEFORE_SORT_TMP[div];
+		}
+		var BF_SORT_TH = $("#"+div+" > thead > tr").children().eq(BEFORE_SORT);
+		BF_SORT_TH.css("background-color", "");
+		BF_SORT_TH.css("color", "");
+		var SORT_TH = $("#"+div+" > thead > tr").children().eq(n);
+		SORT_TH.css("background-color", "#343400");
+		SORT_TH.css("color", "#ffffff");
+		BEFORE_SORT_TMP[div] = n;
+
+		var table = document.getElementById(div);
+		var tbody = table.tBodies[0];
+		var rows = tbody.getElementsByTagName("tr");
+
+		rows = Array.prototype.slice.call(rows, 0);
+
+		rows.sort(function(row1, row2) {
+			var cell1 = row1.getElementsByTagName("td")[n];
+			var cell2 = row2.getElementsByTagName("td")[n];
+			var value1 = cell1.textContent || cell1.innerText;
+			var value2 = cell2.textContent || cell2.innerText;
+
+			value1 = value1.trim();
+			value2 = value2.trim();
+			if(n < 5){
+				if(value1.indexOf("(") > -1){
+					value1 = (value1.substring(0, value1.indexOf("(")));
+				}
+				if(value2.indexOf("(") > -1){
+					value2 = (value2.substring(0, value2.indexOf("(")));
+				}
+			}else{
+				if(value1.indexOf("%") > -1){
+					value1 = (value1.substring(0, value1.indexOf("%")));
+				}
+				if(value2.indexOf("%") > -1){
+					value2 = (value2.substring(0, value2.indexOf("%")));
+				}
+			}
+			if(!isNaN(value1)){
+				value1 = parseFloat(value1);
+			}
+			if(!isNaN(value2)){
+				value2 = parseFloat(value2);
+			}
+
+			if(order == "DESC"){
+				if (value1 < value2)
+					return 1;
+				if (value1 > value2)
+					return -1;
+			}else{
+				if (value1 < value2)
+					return -1;
+				if (value1 > value2)
+					return 1;
+			}
+
+			return 0;
+		});
+
+		for (var i = 0; i < rows.length; ++i) {
+			rows[i].firstChild.innerHTML = (i+1)
+			tbody.appendChild(rows[i]);
+		}
+	}
 
 	function selectYear(year){
 		searchYear = year;
@@ -49,6 +121,7 @@
 				var max_w = 0;
 				var max_l = 0;
 
+				//max
 				for(var i=0; i<data.length; i++){
 					next = data[i];
 					if(prev != null){
@@ -80,9 +153,16 @@
 							}
 						}
 						else{
+							if(max_w_array[prev.player_id] < max_w){
+								max_w_array[prev.player_id] = max_w;
+							}
+							if(max_l_array[prev.player_id] < max_l){
+								max_l_array[prev.player_id] = max_l;
+							}
 							max_n_array[next.player_id] = next.player_name;
 							max_w_array[next.player_id] = 0;
 							max_l_array[next.player_id] = 0;
+							
 							//console.log(prev.player_name + "/" + max_w + "/" + max_l)
 
 							$("#TABLE_TBODY_TMP1").append("<tr><td>"+prev.player_id+"</td><td>"+prev.player_name+"</td><td>"+max_w+"</td><td>"+max_l+"</td></tr>");
@@ -160,7 +240,7 @@
 							}
 							else{
 								prev_win = next.win_yn;
-								console.log(prev.player_name + "/" + max_w + "/" + max_l + "////"+ prev.win_yn + "/"+next.win_yn)
+								//console.log(prev.player_name + "/" + max_w + "/" + max_l + "////"+ prev.win_yn + "/"+next.win_yn)
 								
 								if(max_w_array2[prev.player_id] < max_w){
 									max_w_array2[prev.player_id] = max_w;
@@ -242,78 +322,6 @@
 		});
 	}
 
-	
-	var BEFORE_SORT_TMP = [];
-	function SortTable_TMP1( div, n, order )
-	{
-		var BEFORE_SORT = 0;
-		if(BEFORE_SORT_TMP[div] != undefined){
-			BEFORE_SORT = BEFORE_SORT_TMP[div];
-		}
-		var BF_SORT_TH = $("#"+div+" > thead > tr").children().eq(BEFORE_SORT);
-		BF_SORT_TH.css("background-color", "");
-		BF_SORT_TH.css("color", "");
-		var SORT_TH = $("#"+div+" > thead > tr").children().eq(n);
-		SORT_TH.css("background-color", "#343400");
-		SORT_TH.css("color", "#ffffff");
-		BEFORE_SORT_TMP[div] = n;
-
-		var table = document.getElementById(div);
-		var tbody = table.tBodies[0];
-		var rows = tbody.getElementsByTagName("tr");
-
-		rows = Array.prototype.slice.call(rows, 0);
-
-		rows.sort(function(row1, row2) {
-			var cell1 = row1.getElementsByTagName("td")[n];
-			var cell2 = row2.getElementsByTagName("td")[n];
-			var value1 = cell1.textContent || cell1.innerText;
-			var value2 = cell2.textContent || cell2.innerText;
-
-			value1 = value1.trim();
-			value2 = value2.trim();
-			if(n < 5){
-				if(value1.indexOf("(") > -1){
-					value1 = (value1.substring(0, value1.indexOf("(")));
-				}
-				if(value2.indexOf("(") > -1){
-					value2 = (value2.substring(0, value2.indexOf("(")));
-				}
-			}else{
-				if(value1.indexOf("%") > -1){
-					value1 = (value1.substring(0, value1.indexOf("%")));
-				}
-				if(value2.indexOf("%") > -1){
-					value2 = (value2.substring(0, value2.indexOf("%")));
-				}
-			}
-			if(!isNaN(value1)){
-				value1 = parseFloat(value1);
-			}
-			if(!isNaN(value2)){
-				value2 = parseFloat(value2);
-			}
-
-			if(order == "DESC"){
-				if (value1 < value2)
-					return 1;
-				if (value1 > value2)
-					return -1;
-			}else{
-				if (value1 < value2)
-					return -1;
-				if (value1 > value2)
-					return 1;
-			}
-
-			return 0;
-		});
-
-		for (var i = 0; i < rows.length; ++i) {
-			rows[i].firstChild.innerHTML = (i+1)
-			tbody.appendChild(rows[i]);
-		}
-	}
 
 </script>
 <style>
