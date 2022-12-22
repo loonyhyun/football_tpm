@@ -262,6 +262,12 @@
 							}
 						}
 						else{
+							if(max_w_array2[prev.player_id] < max_w){
+								max_w_array2[prev.player_id] = max_w;
+							}
+							if(max_l_array2[prev.player_id] < max_l){
+								max_l_array2[prev.player_id] = max_l;
+							}
 							max_n_array2[next.player_id] = next.player_name;
 							max_w_array2[next.player_id] = 0;
 							max_l_array2[next.player_id] = 0;
