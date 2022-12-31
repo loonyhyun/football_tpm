@@ -88,6 +88,9 @@
 
 	function selectYear(year){
 		searchYear = year;
+		if(year == ""){$("#SELECTED_YEAR").html("조회 : 전체");}
+		else{$("#SELECTED_YEAR").html("조회 : " + searchYear);}
+		
 		gets();
 	}
 
@@ -338,6 +341,7 @@
 		<h4>ON&ON</h4>
 		<div class="row">
 			<div class="col">
+				<button class="btn btn-outline-success" style='margin-right:5px;' onclick='selectYear("")'>전체</button>
 				<script>
 					var st = 2021;
 					var ed = new Date().getFullYear();
@@ -350,6 +354,11 @@
 			</div>
 		</div>
 		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<h5 id="SELECTED_YEAR"></h5>
+			</div>
+		</div>
 		<div class="row">
 			<div class="col">
 				<h5>최다</h5>
