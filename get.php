@@ -929,6 +929,71 @@ else if($pcmd == "tpm_view_all"){
         }
     }
 }
+else if($pcmd == "match_duo"){
+    if($conn){
+        $sql = "SELECT tt.*
+                , win_cnt / play_cnt dif
+            FROM (
+                SELECT t2_player player_name
+                    , COUNT(1) play_cnt
+                    , SUM(case when t1_win = 1 then 3 when t1_win = 0.5 then 1 ELSE 0 end) pts
+                    , IFNULL(SUM(case when t1_win = 1 then 1 end), 0) win_cnt
+                    , IFNULL(SUM(case when t1_win = 0.5 then 1 END), 0) draw_cnt
+                    , IFNULL(SUM(case when t1_win = 0 then 1 END), 0) lose_cnt
+                    , IFNULL(SUM(t1_goal + t2_goal), 0) goal_cnt
+                    , IFNULL(SUM(t1_asst + t2_asst), 0) asst_cnt
+                FROM (
+                SELECT t1.player_name t1_player, t1.match_date, t2.player_name t2_player
+                , t1.win_yn t1_win, t2.win_yn t2_win
+                , t1.goal_cnt t1_goal, t2.goal_cnt t2_goal
+                , t1.asst_cnt t1_asst, t2.asst_cnt t2_asst
+                , case when t1.team_a_yn = 1 then 'a'
+                    when t1.team_b_yn = 1 then 'b'
+                    END t1_team
+                , case when t2.team_a_yn = 1 then 'a'
+                    when t2.team_b_yn = 1 then 'b'
+                    END t2_team
+                , case when t1.team_a_yn = t2.team_a_yn then 1
+                    when t1.team_b_yn = t2.team_b_yn then 1
+                    ELSE 0 END team_yn
+                FROM football_tpm_view t1, football_tpm_view t2
+                WHERE 1=1
+                AND t1.player_id = '".$_REQUEST["player_id"]."'
+                AND t1.match_date = t2.match_date
+                AND t1.player_id <> t2.player_id
+                AND t1.play_yn = 1
+                AND t2.play_yn = 1
+                AND t2.player_name NOT LIKE '_용병%'";
+                
+        if( ! empty($_REQUEST["from"]) ){
+            $pfrom = $_REQUEST["from"];
+            $sql = $sql." AND t1.match_date >= '".$pfrom."' ";
+        }
+        if( ! empty($_REQUEST["to"]) ){
+            $pto = $_REQUEST["to"];
+            $sql = $sql." AND t1.match_date <= '".$pto."' ";
+        }
+        $sql = $sql.") t
+                WHERE team_yn = 1
+                GROUP BY t2_player
+            ) tt
+            ORDER BY pts DESC";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, 
+                array('player_name'=>$row['player_name']
+                , 'play_cnt'=>$row['play_cnt']
+                , 'pts'=>$row['pts']
+                , 'win_cnt'=>$row['win_cnt']
+                , 'draw_cnt'=>$row['draw_cnt']
+                , 'lose_cnt'=>$row['lose_cnt']
+                , 'goal_cnt'=>$row['goal_cnt']
+                , 'asst_cnt'=>$row['asst_cnt']
+                )
+            );
+        }
+    }
+}
 else{
     
 }
