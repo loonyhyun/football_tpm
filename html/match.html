@@ -284,24 +284,29 @@
 				</table>
 			</div>
 			<div class="col-sm-4 col-md-3">
-				<table class="table auto_font_size" id="MatchListMainTable">
-					<caption style="caption-side: top; font-weight: bold; color:black;" onclick="MatchListVisible()" id="MatchListCaption">
-						경기 리스트 (보기 / 숨기기)
-					</caption>
-					<colgroup>
-						<col width="15%"/>
-						<col width="25%"/>
-						<col width="25%"/>
-					</colgroup>
-					<thead id="MatchListThead">
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">경기일자</th>
-							<th scope="col">승리팀</th>
-						</tr>
-					</thead>
-					<tbody id="MatchlistTbody"></tbody>
-				</table>
+				<h6 style="margin-top:10px; font-weight: bold; color:black; cursor: pointer;" onclick="MatchListVisible()" id="MatchListCaption">
+					경기 리스트 (보기 / 숨기기)
+				</h6>
+				<div id="MatchListMainDiv" style="height:720px; overflow: hidden;">
+					<table class="table auto_font_size" id="MatchListMainTable">
+						<colgroup>
+							<col width="15%"/>
+							<col width="25%"/>
+							<col width="25%"/>
+						</colgroup>
+						<thead id="MatchListThead">
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">경기일자</th>
+								<th scope="col">승리팀</th>
+							</tr>
+						</thead>
+						<tbody id="MatchlistTbody"></tbody>
+					</table>
+				</div>
+				<div class="d-grid gap-2">
+					<button class="btn btn-warning" onclick="$('#MatchListMainDiv').css('height', '');">전체리스트보기</button>
+				</div>
 			</div>
 		</div>
 

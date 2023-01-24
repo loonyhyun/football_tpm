@@ -16,6 +16,12 @@
 
 		getGrounds();
 
+		if(month < 10){
+			month = "0" + month;
+		}
+		if(date < 10){
+			date = "0" + date;
+		}
 		$("#input_match_date").val(year + "." + month + "." + date);
 	});
 
