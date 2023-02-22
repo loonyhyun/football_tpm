@@ -38,7 +38,8 @@ else if($pcmd == "user_"){
     }
 }
 else{
-    
+  array_push($array, array('result'=>'0'));
+  echo json_encode($array);
 }
 
 
