@@ -23,6 +23,20 @@ if($pcmd == "user"){
         echo ''.$row['cnt'].'';
     }
 }
+else if($pcmd == "user_"){
+    if($conn){
+        $puid = $_REQUEST["user_id"];
+        $pupwd = $_REQUEST["user_pwd"];
+        $sql = "SELECT count(1) cnt
+                FROM football_user t WHERE user_id = '".$puid."'
+                    and user_pwd = '".$pupwd."'";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_array($result);
+        array_push($array, array('result'=>''.$row['cnt']));
+        echo json_encode($array);
+        //echo ''.$row['cnt'].'';
+    }
+}
 else{
     
 }
