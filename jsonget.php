@@ -15,5 +15,5 @@ $__getData = array(json_decode($__rawBody)); // 데이터를 변수에 넣고
 */
  
 echo json_encode(array('result_code' => '200', 'result'=>$__getData));
- 
+  
 ?>

@@ -34,7 +34,6 @@ else if($pcmd == "user_"){
         $row = mysqli_fetch_array($result);
         array_push($array, array('result'=>''.$row['cnt']));
         echo json_encode($array);
-        //echo ''.$row['cnt'].'';
     }
 }
 else{
