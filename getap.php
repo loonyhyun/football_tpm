@@ -36,6 +36,28 @@ else if($pcmd == "user_"){
         echo json_encode($array);
     }
 }
+else if($pcmd == "player"){
+    if($conn){
+        $pname = $_REQUEST["playerName"];
+        $sql = "SELECT *
+                FROM football_player t WHERE player_name = '".$pname."' and team_id = 1";
+        $result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_array($result);
+        array_push($array, 
+            array('id'=>$row['id']
+            , 'team_id'=>$row['team_id']
+            , 'player_name'=>$row['player_name']
+            , 'back_no'=>$row['back_no']
+            , 'input'=>$row['input']
+            , 'position'=>$row['position']
+            , 'recommand_pos'=>$row['recommand_pos']
+            , 'age'=>$row['age']
+            )
+        );
+        echo json_encode($array);
+        //echo ''.$row['cnt'].'';
+    }
+}
 else{
   array_push($array, array('result'=>'0'));
   echo json_encode($array);
