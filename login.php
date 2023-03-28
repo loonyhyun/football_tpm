@@ -23,6 +23,7 @@ if(!empty($_REQUEST["id"]) && !empty($_REQUEST["pwd"])){
                 echo 'expired user';
             }
             else if($row['permission_yn'] == 'Y'){
+                $array = array();
                 array_push($array, array(
                     'id'=>$row['id']
                     ,'team_id'=>$row['team_id']
