@@ -9,6 +9,7 @@ if(!empty($_REQUEST["id"]) && !empty($_REQUEST["pwd"])){
         , t.permission_yn
         , u.permission_ymd ymd
         , CURDATE() cur
+        , t.team_img
         FROM football_team t, football_user u
         WHERE t.id = u.team_id
             AND user_id = '".$_REQUEST["id"]."'
@@ -29,6 +30,7 @@ if(!empty($_REQUEST["id"]) && !empty($_REQUEST["pwd"])){
                     ,'team_id'=>$row['team_id']
                     ,'team_name'=>$row['team_name']
                     ,'session_ymd'=>$row['cur']
+                    ,'img'=>$row['team_img']
                     )
                 );
                 echo json_encode($array);
