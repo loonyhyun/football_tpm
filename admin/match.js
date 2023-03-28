@@ -179,6 +179,12 @@ function getMatchHtml(mid, mdate, winab){
                     g_name = data[0]["g_name"];
                 if(data[0]["win_ab"] != undefined && data[0]["win_ab"] != null)
                     $("#win_ab").val(data[0]["win_ab"])
+                if(data[0]["quarters"] != undefined && data[0]["quarters"] != null)
+                    $("#p_quarters").val(data[0]["quarters"])
+                if(data[0]["a_q"] != undefined && data[0]["a_q"] != null)
+                    $("#p_team_a").val(data[0]["a_q"])
+                if(data[0]["b_q"] != undefined && data[0]["b_q"] != null)
+                    $("#p_team_b").val(data[0]["b_q"])
             }
             $("#ground_id").children().each(function(){
                 if(g_name == $(this).text()){

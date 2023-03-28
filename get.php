@@ -490,13 +490,20 @@ else if($pcmd == "match"){
         $pmatchid = $_REQUEST["match_id"];
         $sql1 = "SELECT win_ab
                     , (select name from football_ground where id = ground_id) g_name
-                FROM football_match
+                    , quarters
+                    , (SELECT GROUP_CONCAT(m_quarter SEPARATOR  ';') FROM football_match_scoreless WHERE match_id = m.id AND team_ab = 'a') a_q
+                    , (SELECT GROUP_CONCAT(m_quarter SEPARATOR  ';') FROM football_match_scoreless WHERE match_id = m.id AND team_ab = 'b') b_q
+                FROM football_match m
                 WHERE id = '".$pmatchid."'";
         $result1 = mysqli_query($conn, $sql1);
         $row1 = mysqli_fetch_array($result1);
         $win_ab = $row1["win_ab"];
         $g_name = $row1["g_name"];
-        array_push($array, array('win_ab'=>$win_ab, 'g_name'=>$g_name));
+        array_push($array, array('win_ab'=>$win_ab, 'g_name'=>$g_name
+        ,'quarters'=>$row1["quarters"]
+        ,'a_q'=>$row1["a_q"]
+        ,'b_q'=>$row1["b_q"]
+        ));
         
         $sql = "SELECT *
                 FROM football_tpm_view
