@@ -23,12 +23,14 @@ if(!empty($_REQUEST["id"]) && !empty($_REQUEST["pwd"])){
                 echo 'expired user';
             }
             else if($row['permission_yn'] == 'Y'){
-                $_SESSION["id"] = $_REQUEST["id"];
-                $_SESSION["team_id"] = $row['team_id'];
-                $_SESSION["team_name"] = $row['team_name'];
-                $_SESSION["session_ymd"] = $row['cur'];
-        
-                echo 'ok';
+                array_push($array, array(
+                    'id'=>$row['id']
+                    ,'team_id'=>$row['team_id']
+                    ,'team_name'=>$row['team_name']
+                    ,'session_ymd'=>$row['cur']
+                    )
+                );
+                echo json_encode($array);
             }
             else{
                 echo 'permission denied';
