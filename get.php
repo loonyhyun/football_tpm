@@ -96,6 +96,21 @@ else if($pcmd == "player_sum"){
         FROM football_tpm_view
         where team_id = '".$pid."' 
         and player_id = '".$playerId."'";
+        
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $pst = $_REQUEST["st"];
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND match_date BETWEEN '".$pst."' AND '".$ped."' ";
+        }
+        else if( ! empty($_REQUEST["st"]) ){
+            $pst = $_REQUEST["st"];
+            $sql = $sql." AND match_date >= '".$pst."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND match_date <= '".$ped."' ";
+        }
+        
         $result = mysqli_query($conn, $sql);
         //$row = mysqli_fetch_array($result);
         while($row = mysqli_fetch_array($result)){
