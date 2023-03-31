@@ -33,6 +33,7 @@ if(!empty($_REQUEST["id"]) && !empty($_REQUEST["pwd"])){
                     ,'session_ymd'=>$row['cur']
                     ,'img'=>$row['team_img']
                     ,'manager_yn'=>$row['manager_yn']
+                    ,'ret'=>'ok'
                     )
                 );
                 echo json_encode($array);
@@ -41,7 +42,12 @@ if(!empty($_REQUEST["id"]) && !empty($_REQUEST["pwd"])){
                 echo 'permission denied';
             }
         }else{
-            echo 'fail';
+            $array = array();
+            array_push($array, array(
+                'ret'=>'fail'
+                )
+            );
+            echo json_encode($array);
         }
     }
     else{
