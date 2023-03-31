@@ -38,22 +38,43 @@ else if($pcmd == "user_"){
 }
 else if($pcmd == "player"){
     if($conn){
-        $pname = $_REQUEST["playerName"];
+        $pid = $_REQUEST["id"];
         $sql = "SELECT *
-                FROM football_player t WHERE player_name = '".$pname."' and team_id = 1";
+                FROM football_player t WHERE  team_id = ".$pid."";
+        if( ! empty($_REQUEST["playerName"]) ){
+            $pname = $_REQUEST["playerName"];
+            $sql = $sql." and player_name = '".$pname."' ";
+        }
         $result = mysqli_query($conn, $sql);
-        $row = mysqli_fetch_array($result);
-        array_push($array, 
-            array('id'=>$row['id']
-            , 'team_id'=>$row['team_id']
-            , 'player_name'=>$row['player_name']
-            , 'back_no'=>$row['back_no']
-            , 'input'=>$row['input']
-            , 'position'=>$row['position']
-            , 'recommand_pos'=>$row['recommand_pos']
-            , 'age'=>$row['age']
-            )
-        );
+        if( ! empty($_REQUEST["playerName"]) ){
+            $row = mysqli_fetch_array($result);
+            array_push($array, 
+                array('id'=>$row['id']
+                , 'team_id'=>$row['team_id']
+                , 'player_name'=>$row['player_name']
+                , 'back_no'=>$row['back_no']
+                , 'input'=>$row['input']
+                , 'position'=>$row['position']
+                , 'recommand_pos'=>$row['recommand_pos']
+                , 'age'=>$row['age']
+                )
+            );
+        }
+        else{
+            while($row = mysqli_fetch_array($result)){
+                array_push($array,
+                    array('id'=>$row['id']
+                    , 'team_id'=>$row['team_id']
+                    , 'player_name'=>$row['player_name']
+                    , 'back_no'=>$row['back_no']
+                    , 'input'=>$row['input']
+                    , 'position'=>$row['position']
+                    , 'recommand_pos'=>$row['recommand_pos']
+                    , 'age'=>$row['age']
+                    )
+                );
+            }
+        }
         echo json_encode($array);
         //echo ''.$row['cnt'].'';
     }
