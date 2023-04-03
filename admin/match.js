@@ -564,6 +564,10 @@ function saveMatch() {
         alert("경기일자를 선택하세요.");
         return;
     }
+    if ($("#p_quarters").val() == ""){
+        alert("경기 쿼터수를 입력하세요.");
+        return;
+    }
 
     for (var i = 0; i < array_A.length; i++) {
         teamA += array_A[i] + "$";
@@ -600,6 +604,20 @@ function saveMatch() {
     confirmStr += "\n(골 > A팀 " + goalAPoint + ":" + goalBPoint + "  B팀)";
     confirmStr += "\n(어시스트 > A팀 " + asstAPoint + ":" + asstBPoint + "  B팀)";
     if (confirm(confirmStr)) {
+        var mid = 0;
+        $.ajax({
+            async : false,
+            type : "post",
+            url : '/football_tpm/get.php',
+            data : {
+                cmd : "match_nextid",
+                id : TEAM_ID
+            },
+            dataType: "json",
+            success : function(data, textStatus, jqXHR) {
+                mid = data[0]["match_id"];
+            }
+        });
 
         $.ajax({
             type : "post",
@@ -619,8 +637,42 @@ function saveMatch() {
             },
             success : function(data, textStatus, jqXHR) {
                 if (data == "ok") {
+                    
+                    var tmpA = $("#p_team_a").val().split(";");
+                    var tmpB = $("#p_team_b").val().split(";");
+                    for(var i = 0; i < tmpA.length; i++){
+                        var tmpQuarter = tmpA[i];
+                        match_d_scoreless2(mid, tmpQuarter, 'a');
+                    }
+                    for(var i = 0; i < tmpB.length; i++){
+                        var tmpQuarter = tmpB[i];
+                        match_d_scoreless2(mid, tmpQuarter, 'b');
+                    }
+
                     alert("등록되었습니다.");
                     location.reload();
+                }
+            }
+        });
+    }
+}
+
+function match_d_scoreless2(mid, tmpQuarter, team){
+    if(tmpQuarter.trim() != ""){
+        $.ajax({
+            async : false,
+            type : "post",
+            url : '/football_tpm/save.php',
+            data : {
+                cmd : "match_scoreless",
+                id : TEAM_ID,
+                match_id : mid,
+                q : tmpQuarter,
+                team : team
+            },
+            success : function(data, textStatus, jqXHR) {
+                if(data != "ok"){
+                    alert("수비 기록 실패.");
                 }
             }
         });

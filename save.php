@@ -104,6 +104,60 @@ else if($pcmd == "match"){
         }
     }
 }
+else if($pcmd == "match_nextid"){
+    if($conn){
+        $sql = "SELECT auto_increment
+        FROM information_schema.tables
+        WHERE TABLE_NAME = 'football_match'";
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo mysqli_fetch_row($result)[0];
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
+else if($pcmd == "match2"){
+    if($conn){
+        $pDate = $_REQUEST["match_date"];
+        $pWinAB = $_REQUEST["winAB"];
+        $pTeamA = $_REQUEST["teamA"];
+        $pTeamB = $_REQUEST["teamB"];
+        $pGoalA = $_REQUEST["goalA"];
+        $pGoalB = $_REQUEST["goalB"];
+        $pAsstA = $_REQUEST["asstA"];
+        $pAsstB = $_REQUEST["asstB"];
+
+        $pGround = $_REQUEST["groundId"];
+        $pQuarters = $_REQUEST["quarters"];
+        
+        $sql = "INSERT INTO football_match
+        (team_id, match_date, team_a, team_b, win_ab, goal_a, goal_b, asst_a, asst_b, ground_id, quarters)
+        values (
+		".$pid.",
+		'".$pDate."',
+		'".$pTeamA."',
+		'".$pTeamB."',
+        '".$pWinAB."',
+		'".$pGoalA."',
+		'".$pGoalB."',
+		'".$pAsstA."',
+		'".$pAsstB."',
+        '".$pGround."',
+        '".$pQuarters."'
+        )";
+        
+        $result = mysqli_query($conn, $sql);
+        if($result){
+            echo "ok";
+        }
+        else{
+            echo "fail";
+        }
+    }
+}
 else if($pcmd == "match_d"){
     if($conn){
         $pmid = $_REQUEST["match_id"];

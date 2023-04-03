@@ -537,6 +537,33 @@ else if($pcmd == "match"){
         }
     }
 }
+else if($pcmd == "match_nextid"){
+    if($conn){
+        $sql = "SELECT auto_increment
+        FROM information_schema.tables
+        WHERE TABLE_NAME = 'football_match'";
+        
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array('match_id'=>$row[0]));
+        }
+    }
+}
+else if($pcmd == "match_scoreless"){
+    if($conn){
+        $sql = "SELECT team_ab, m_quarter
+        FROM football_match_scoreless
+        WHERE match_id = ".$_REQUEST["match_id"]."";
+        
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'team_ab'=>$row['team_ab']
+                ,'quarter'=>$row['m_quarter']
+            ));
+        }
+    }
+}
 else if($pcmd == "match_reply"){
     if($conn){
         $pmatchid = $_REQUEST["match_id"];

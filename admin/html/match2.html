@@ -1,0 +1,191 @@
+<script>
+	var difWindowHeight = 320;
+
+	$(document).ready(function(){
+		var targetHeader = 3;
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+		getPlayerList();
+
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			$(this).css("height", wh - difWindowHeight);
+		});
+
+		getGrounds();
+
+		if(month < 10){
+			month = "0" + month;
+		}
+		if(date < 10){
+			date = "0" + date;
+		}
+		$("#input_match_date").val(year + "." + month + "." + date);
+	});
+
+	$(window).resize(function(){
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			$(this).css("height", wh - difWindowHeight);
+		})
+	});
+
+</script>
+<style>
+	@media (max-width:861px) {
+		.PLUS_MINUS {
+			display: none;
+		}
+		.VALUE_INPUT {
+			width: 100%!important;
+		}
+	}
+</style>
+	<div class="container" style="max-width:100%;">
+		<div class="row">&nbsp;</div>
+		<div id="CREATE_MATCH_BUTTON" style="display:none;">
+			<div class="row">
+				<div class="col">
+					<button class="btn btn-warning" onclick="showCreateMatch();">CREATE MATCH</button>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+			<div class="row" style="border-top: 1px solid #333;">&nbsp;</div>
+		</div>
+		<div id="CREATE_MATCH_DIV">
+			<h5>[경기등록]</h5>
+			<div class="row">
+				<div class="col">
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="input_match_date">경기일자</label>
+						<input type="text" class="form-control" id="input_match_date">
+					</div>
+				</div>
+				<div class="col">
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="win_ab">승리팀</label>
+						<select id="win_ab" class="form-select">
+							<option value="-">무승부</option>
+							<option value="a">A팀 (RED)</option>
+							<option value="b">B팀 (BLUE)</option>
+						</select>
+					</div>
+				</div>
+				<div class="col">
+					<div class="input-group mb-3">
+						<label class="input-group-text" for="ground_id">구장</label>
+						<select id="ground_id" class="form-select">
+							<option value="">Unknown</option>
+						</select>
+					</div>
+				</div>
+				<div class="col">
+					<div class="d-grid">
+						<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+					</div>
+				</div>
+			</div>
+			<h5>[수비 기록 작성]</h5>
+			<div class="row">
+			  <div class="col-md-3">
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="quarters_group" style="width: 74px">쿼터 수</span>
+				  <input type="text" id="p_quarters" class="form-control" placeholder="쿼터 수" aria-label="쿼터 수"
+					aria-describedby="quarters_group" />
+				</div>
+			  </div>
+			  <div class="col-md-3">
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="ateam_group" style="width: 54px">A팀</span>
+				  <input type="text" id="p_team_a" class="form-control" placeholder="1;2;3;" aria-label="1;2;3;"
+					aria-describedby="ateam_group" />
+				</div>
+			  </div>
+			  <div class="col-md-3">
+				<div class="input-group mb-3">
+				  <span class="input-group-text" id="bteam_group" style="width: 54px">B팀</span>
+				  <input type="text" id="p_team_b" class="form-control" placeholder="1;2;3;" aria-label="1;2;3;"
+					aria-describedby="bteam_group" />
+				</div>
+			  </div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<p>
+					</p>
+					<table class="table auto_font_size" style="width:100%; text-align:center;">
+						<colgroup>
+							<col width="130px"/>
+							<col width="300px"/>
+							<col width="300px"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">선수리스트</th>
+								<th scope="col" style="background-color:#ffa2a2;">A팀(RED)</th>
+								<th scope="col" style="background-color:#9d9dff;">B팀(BLUE)</th>
+							</tr>
+						</thead>
+						<tbody style="font-size:12px;">
+							<tr>
+								<td>
+									<div class="TABLE_INNER_DIV" style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;" id="team_choice">
+									</div>
+								</td>
+								<td>
+									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
+										<table class="table auto_font_size">
+											<colgroup>
+												<col width="100px"/>
+												<col width="100px"/>
+												<col width="100px"/>
+											</colgroup>
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>Goal</td>
+													<td>Asst</td>
+												</tr>
+											</thead>
+											<tbody id="team_a_tbody"></tbody>
+										</table>
+									</div>
+								</td>
+								<td>
+									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
+										<table class="table auto_font_size">
+											<colgroup>
+												<col width="100px"/>
+												<col width="100px"/>
+												<col width="100px"/>
+											</colgroup>
+											<thead>
+												<tr>
+													<td>선수명</td>
+													<td>Goal</td>
+													<td>Asst</td>
+												</tr>
+											</thead>
+											<tbody id="team_b_tbody"></tbody>
+										</table>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+            <!-- <div class="row">
+                <div class="col">
+					<button type="button" class="btn btn-secondary" onclick="hideCreateMatch();">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+                </div>
+            </div>
+			<div class="row">&nbsp;</div> -->
+			<div class="row" style="border-top: 1px solid #333;">&nbsp;</div>
+		</div>
+    </div>
+	
