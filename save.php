@@ -622,6 +622,13 @@ else{
     echo "fail else";
 }
 
+$dateString = date("Ymd", time());
+$timeString =date("Y-m-d H:i:s", time());
+$filepath = "./logs/save_".$dateString.".log";
+$logfile = fopen($filepath, "a");
+fwrite($logfile, "[team=".$pid."][cmd=".$pcmd."]".$timeString."\n");
+fclose($logfile);
+
 #$sql = "SELECT * FROM pubg_match";
 #$rows = mysqli_query($conn, $sql);
 #if($conn){
