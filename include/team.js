@@ -247,7 +247,8 @@
 				cmd : "tpm_view_search",
 				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
-				ed : $("#searchEndDate").val()
+				ed : $("#searchEndDate").val(),
+				ground_id : $("#ground_id").val()
 			},
 			dataType : "json",
 			success : function(data) {
@@ -314,7 +315,8 @@
 				cmd : "tpm_view_search",
 				id : TEAM_ID,
 				st : $("#searchStartDate").val(),
-				ed : $("#searchEndDate").val()
+				ed : $("#searchEndDate").val(),
+				ground_id : $("#ground_id").val()
 			},
 			dataType : "json",
 			success : function(data) {

@@ -207,6 +207,11 @@ WHERE team_id = '".$pid."'";
         $ped = $_REQUEST["ed"];
         $sql = $sql." AND match_date <= '".$ped."' ";
     }
+    
+    if( ! empty($_REQUEST["ground_id"]) ){
+        $pground = $_REQUEST["ground_id"];
+        $sql = $sql." AND ground_id = '".$pground."' ";
+    }
 
         $sql = $sql." ".$notinplayer."
 GROUP BY player_id) p,
