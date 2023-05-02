@@ -1,0 +1,352 @@
+<script>
+	var difWindowHeight = 320;
+
+	$(document).ready(function(){
+		var target_header = "9";
+		getTeam();
+		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_" + target_header).text());
+
+		getPlayers();
+
+		tableResize();
+		
+		$('#searchStartDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
+		$('#searchEndDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
+
+		
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "ground",
+				id : TEAM_ID
+			},
+			dataType:"json",
+			success : function(data, textStatus, jqXHR) {
+				var select = $("#ground_id");
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					select.append("<option value='"+tmp["ground_id"]+"'>"+ tmp["name"]+"</option>");
+				}
+
+			}
+		});
+	});
+
+	$(window).resize(function(){
+		tableResize();
+	});
+
+	function tableResize(){
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			//$(this).css("height", wh - difWindowHeight);
+		})
+	}
+	
+	function getPlayers(){
+		//tableBody
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "player",
+				id : TEAM_ID
+			},
+			dataType : "json",
+			success : function(data) {
+				var diva = $("#player_list_div_a");
+				var divb = $("#player_list_div_b");
+				diva.html("");
+				divb.html("");
+				for(var i=0; i<data.length; i++){
+					var str = "<button class='btn btn-outline-primary btn-sm' id='p_a_"+data[i]["player_id"]+"'";
+						str += " onclick='selectPlayerRecord(\"a\", "+data[i]["player_id"]+", \""+data[i]["player_name"]+"\")'>";
+						str += "" + data[i]["player_name"];
+						str += "</button>";
+					diva.append(str);
+					var str2 = "<button class='btn btn-outline-primary btn-sm' id='p_b_"+data[i]["player_id"]+"'";
+						str2 += " onclick='selectPlayerRecord(\"b\", "+data[i]["player_id"]+", \""+data[i]["player_name"]+"\")'>";
+						str2 += "" + data[i]["player_name"];
+						str2 += "</button>";
+					divb.append(str2);
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	var selectedPlayersA = [];
+	var selectedPlayersB = [];
+	function selectPlayerRecord(team, pid, pname){
+		var target = $("#SELECTED_PLAYERS_A");
+		var selected = selectedPlayersA;
+		var p = $("#p_a_" + pid);
+		if(team == 'b'){
+			target = $("#SELECTED_PLAYERS_B");
+			selected = selectedPlayersB;
+			p = $("#p_b_" + pid);
+		}
+		if(selected.indexOf(pid) > -1){
+			selected.splice(selected.indexOf(pid), 1);
+			p.removeClass("btn-warning").addClass("btn-outline-primary");
+			target.text(target.text().replace("[" + pname + "]", ""));
+		}
+		else{
+			selected.push(pid);
+			p.addClass("btn-warning").removeClass("btn-outline-primary");
+			target.append("[" + pname + "]");
+		}
+		if(team == 'a'){
+			selectedPlayersA = selected;
+		}else{
+			selectedPlayersB = selected;
+		}
+	}
+
+	function clearTogether(){
+		var body = $("#tableBody");
+		body.html("");
+		selectedPlayers = [];
+		$("#SELECTED_PLAYERS").html("");
+	}
+
+	function getMatchVS(){
+		var tmpA = "";
+		var tmpB = "";
+		for(var i=0; i<selectedPlayersA.length; i++){
+			tmpA += selectedPlayersA[i] + ',';
+		}
+		tmpA = tmpA.substring(0, tmpA.length-1);
+		for(var i=0; i<selectedPlayersB.length; i++){
+			tmpB += selectedPlayersB[i] + ',';
+		}
+		tmpB = tmpB.substring(0, tmpB.length-1);
+
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "match_together_vs",
+				id : TEAM_ID,
+				players_a: tmpA,
+				players_b: tmpB,
+				cnt_a: selectedPlayersA.length,
+				cnt_b: selectedPlayersB.length,
+				from: $("#searchStartDate").val(),
+				to: $("#searchEndDate").val(),
+				groundId: $("#ground_id option:selected").val()
+			},
+			dataType : "json",
+			success : function(data) {
+				var body = $("#tableBody");
+				body.html("");
+
+				var plays = data.length;
+				var winsA = 0;
+				var winsB = 0;
+				var winsN = 0;
+				var playersA = selectedPlayersA.length;
+				var playersB = selectedPlayersB.length;
+				var goalsA = 0;
+				var goalsB = 0;
+				var asstsA = 0;
+				var asstsB = 0;
+				
+				for(var i=0; i<data.length; i++){
+					var bgColor = "#FFFFFF";
+					var str = "";
+					str += "<td>"+data[i]["match_date"]+"</td>";
+					if(data[i]["win_ab"] == 'a'){
+						str += "<td>A승</td>";
+						bgColor = "#ff9999";
+						winsA++;
+					}else if(data[i]["win_ab"] == 'b'){
+						str += "<td>B승</td>";
+						bgColor = "#9999ff";
+						winsB++;
+					}else{
+						str += "<td>무</td>";
+						winsN++;
+					}
+					str += "<td>"+data[i]["a_goal"]+"/"+data[i]["a_asst"]
+						+" vs "+data[i]["b_goal"]+"/"+data[i]["b_asst"]+"</td>";
+
+					goalsA += parseInt(data[i]["a_goal"]);
+					goalsB += parseInt(data[i]["b_goal"]);
+					asstsA += parseInt(data[i]["a_asst"]);
+					asstsB += parseInt(data[i]["b_asst"]);
+
+					body.append("<tr style='background-color:"+bgColor+"'>" + str + "</tr>");
+				}
+
+				var playerA = "";
+				var playerB = "";
+				for(var i=0; i<selectedPlayersA.length; i++){
+					if(playerA != ""){
+						playerA += ", ";
+					}
+					playerA += $("#p_a_" + selectedPlayersA[i]).text();
+				}
+				for(var i=0; i<selectedPlayersB.length; i++){
+					if(playerB != ""){
+						playerB += ", ";
+					}
+					playerB += $("#p_b_" + selectedPlayersB[i]).text();
+				}
+				$("#tableResultPlayers").text(playerA + " vs " + playerB);
+				var from = $("#searchStartDate").val();
+				var to = $("#searchEndDate").val();
+				var dateStr = "";
+				if(from != ""){
+					dateStr = from + " ~ ";
+				}
+				if(to != ""){
+					if(dateStr == ""){
+						dateStr += " ~ ";
+					}
+					dateStr += to;
+				}
+				var ground = $("#ground_id option:selected").text();
+				if(ground == "-"){
+					ground = "";
+				}
+				$("#tableResultDate").text(dateStr);
+				$("#tableResultGround").text(ground);
+				$("#tableResult").html(plays + "전 " + winsA + "승 vs " + winsB + "승, " + winsN + "무");
+				$("#tableResult").append("<br>" + goalsA + "골 / " + asstsA + "어시 vs " + goalsB + "골 / " + asstsB + "어시");
+
+				location.href = '#TABLE_RESULT_DIV';
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	$(window).scroll(function(){
+		console.log($(window).scrollTop() + " " + $(".TABLE_INNER_DIV").offset().top);
+	});
+</script>
+<style>
+	@media (max-width:861px) {
+		.PLUS_MINUS {
+			display: none;
+		}
+		.VALUE_INPUT {
+			width: 100%!important;
+		}
+	}
+</style>
+	<div class="container" style="max-width:100%;">
+		<div class="row">&nbsp;</div>
+		<div id="">
+			<h5>[상대 궁합 별 기록]
+				<div class="input-group" style="margin-top:5px;">
+					<span class="input-group-text">기간</span>
+					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
+					<span class="input-group-text">~</span>
+					<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
+				</div>
+				<div class="input-group" style="margin-top:5px;">
+					<select class="form-select" id="ground_id">
+						<option value="">-</option>
+					</select>
+					<button class="btn btn-primary" onclick="getMatchVS();">VIEW</button>
+				</div>
+
+			</h5>
+			<div class="row">
+				<div class="col">
+					<table class="table auto_font_size" style="width:100%; text-align:center;">
+						<thead>
+							<tr>
+								<th scope="col" colspan="2" style="min-width: 130px;">선수리스트</th>
+							</tr>
+							<tr>
+								<th scope="col" style="background-color:#ff6666">A팀</th>
+								<th scope="col" style="background-color:#6666ff">B팀</th>
+							</tr>
+							<tr>
+								<th scope="col" id="SELECTED_PLAYERS_A"></th>
+								<th scope="col" id="SELECTED_PLAYERS_B"></th>
+							</tr>
+						</thead>
+						<tbody style="font-size:12px;">
+							<tr id="VIEW_PLAYER_SELECT">
+								<td>
+									<div class="TABLE_INNER_DIV" 
+									style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;" 
+									id="player_list_div_a">
+									</div>
+								</td>
+								<td>
+									<div class="TABLE_INNER_DIV" 
+									style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;" 
+									id="player_list_div_b">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2">
+									<div class="d-grid gap-2">
+										<button class="btn btn-primary" 
+										onclick="$('#VIEW_PLAYER_SELECT').is(':visible') ? $('#VIEW_PLAYER_SELECT').hide() : $('#VIEW_PLAYER_SELECT').show();"
+										>선수리스트 보기/숨기기</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row" id="TABLE_RESULT_DIV">
+				<div class="col">
+					<div class="align-top TABLE_INNER_DIV" style="width:100%; text-align:center;">
+						<h5 id="tableResultPlayers"></h5>
+						<h6 id="tableResultDate"></h6>
+						<h6 id="tableResultGround"></h6>
+						<h5 id="tableResult"></h5>
+						<table class="table table-sm auto_font_size">
+							<colgroup>
+								<col width="10%"/>
+								<col width="10%"/>
+								<col width="10%"/>
+							</colgroup>
+							<thead>
+								<tr>
+									<td>MATCH_DATE</td>
+									<td>WINs</td>
+									<td>GOAL/ASST</td>
+								</tr>
+							</thead>
+							<tbody id="tableBody"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+            <!-- <div class="row">
+                <div class="col">
+					<button type="button" class="btn btn-secondary" onclick="hideCreateMatch();">Close</button>
+					<button type="button" class="btn btn-primary" onclick="saveMatch();">SAVE</button>
+                </div>
+            </div>
+			<div class="row">&nbsp;</div> -->
+			<div class="row" style="border-top: 1px solid #333;">&nbsp;</div>
+		</div>
+    </div>
+	

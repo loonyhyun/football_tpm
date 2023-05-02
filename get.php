@@ -1048,6 +1048,70 @@ else if($pcmd == "match_duo"){
         }
     }
 }
+else if($pcmd == "match_together_vs"){
+    if($conn){
+        $sql = "
+        SELECT m.match_date, m.win_ab
+            , a_cnt, b_cnt
+            , t1.goal_cnt a_goal
+            , t2.goal_cnt b_goal
+            , t1.asst_cnt a_asst
+            , t2.asst_cnt b_asst
+        FROM (
+            SELECT match_date
+                , SUM(team_a_yn) a_cnt
+                , SUM(goal_cnt) goal_cnt
+                , SUM(asst_cnt) asst_cnt
+            FROM football_tpm_view
+            WHERE player_id IN (".$_REQUEST["players_a"].")
+            AND play_yn = 1
+            GROUP BY match_date
+        ) t1,(
+            SELECT match_date
+                , SUM(team_b_yn) b_cnt
+                , SUM(goal_cnt) goal_cnt
+                , SUM(asst_cnt) asst_cnt
+            FROM football_tpm_view
+            WHERE player_id IN (".$_REQUEST["players_b"].")
+            AND play_yn = 1
+            GROUP BY match_date
+        ) t2,
+        football_match m
+        WHERE 1=1
+        AND a_cnt = ".$_REQUEST["cnt_a"]."
+        AND b_cnt = ".$_REQUEST["cnt_b"]."
+        ";
+        if( ! empty($_REQUEST["from"]) ){
+            $pfrom = $_REQUEST["from"];
+            $sql = $sql." AND m.match_date >= '".$pfrom."' ";
+        }
+        if( ! empty($_REQUEST["to"]) ){
+            $pto = $_REQUEST["to"];
+            $sql = $sql." AND m.match_date <= '".$pto."' ";
+        }
+        if( ! empty($_REQUEST["groundId"]) ){
+            $pGround = $_REQUEST["groundId"];
+            $sql = $sql." AND m.ground_id = '".$pGround."' ";
+        }
+        $sql = $sql."
+        AND m.match_date = t1.match_date 
+        AND m.match_date = t2.match_date
+        ORDER BY m.match_date desc
+        ";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'match_date'=>$row['match_date']
+                ,'win_ab'=>$row['win_ab']
+                ,'a_goal'=>$row['a_goal']
+                ,'b_goal'=>$row['b_goal']
+                ,'a_asst'=>$row['a_asst']
+                ,'b_asst'=>$row['b_asst']
+                )
+            );
+        }
+    }
+}
 else{
     
 }
