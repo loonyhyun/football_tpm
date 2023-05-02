@@ -207,7 +207,9 @@
 					}
 					playerB += $("#p_b_" + selectedPlayersB[i]).text();
 				}
-				$("#tableResultPlayers").text(playerA + " vs " + playerB);
+				$("#tableResultPlayersA").text(playerA);
+				$("#tableResultGoalA").text("("+goalsA+"골"+asstsA+"어시)");
+				$("#tableResultPlayersB").text("vs " + playerB + "("+goalsB+"골"+asstsB+"어시)");
 				var from = $("#searchStartDate").val();
 				var to = $("#searchEndDate").val();
 				var dateStr = "";
@@ -226,8 +228,7 @@
 				}
 				$("#tableResultDate").text(dateStr);
 				$("#tableResultGround").text(ground);
-				$("#tableResult").html(plays + "전<br>" + winsA + " 대 " + winsB + " " + (winsN > 0 ? "<br>" + winsN + "무" : ""));
-				$("#tableResult").append("<br>" + goalsA + "골 / " + asstsA + "어시 vs " + goalsB + "골 / " + asstsB + "어시");
+				$("#tableResult").html(plays + "전<br>" + winsA + "승 " + (winsN > 0 ? "" + winsN + "무 " : "") + winsB + "패");
 
 				location.href = '#TABLE_RESULT_DIV';
 			},
@@ -316,10 +317,14 @@
 			<div class="row" id="TABLE_RESULT_DIV">
 				<div class="col">
 					<div class="align-top TABLE_INNER_DIV" style="width:100%; text-align:center;">
-						<h5 id="tableResultPlayers"></h5>
-						<h6 id="tableResultDate"></h6>
-						<h6 id="tableResultGround"></h6>
-						<h5 id="tableResult"></h5>
+						<div style="">
+							<h4 id="tableResultPlayersA"></h4>
+							<h5 id="tableResultGoalA" style="margin-top:-10px;"></h5>
+							<h5 id="tableResultPlayersB"></h5>
+							<h6 id="tableResultDate"></h6>
+							<h6 id="tableResultGround"></h6>
+							<h5 id="tableResult"></h5>
+						</div>
 						<table class="table table-sm auto_font_size">
 							<colgroup>
 								<col width="10%"/>
