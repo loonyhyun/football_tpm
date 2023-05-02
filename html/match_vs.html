@@ -226,7 +226,7 @@
 				}
 				$("#tableResultDate").text(dateStr);
 				$("#tableResultGround").text(ground);
-				$("#tableResult").html(plays + "전 " + winsA + "승 vs " + winsB + "승, " + winsN + "무");
+				$("#tableResult").html(plays + "전<br>" + winsA + " 대 " + winsB + " " + (winsN > 0 ? "<br>" + winsN + "무" : ""));
 				$("#tableResult").append("<br>" + goalsA + "골 / " + asstsA + "어시 vs " + goalsB + "골 / " + asstsB + "어시");
 
 				location.href = '#TABLE_RESULT_DIV';
