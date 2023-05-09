@@ -633,7 +633,9 @@ function saveMatch() {
                 asstA : asstA,
                 asstB : asstB,
                 winAB : $("#win_ab").val(),
-                groundId : $("#ground_id option:selected").val()
+                groundId : $("#ground_id option:selected").val(),
+                matchYn : $("#match_yn").val(),
+                quarters : $("#p_quarters").val()
             },
             success : function(data, textStatus, jqXHR) {
                 if (data == "ok") {
