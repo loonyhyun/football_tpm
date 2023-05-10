@@ -1159,6 +1159,103 @@ else if($pcmd == "match_together_vs"){
         }
     }
 }
+else if($pcmd == "play_week"){
+    if($conn){
+        $sql = "SELECT 
+            player_id
+            , player_name
+            , round(avg(play_cnt), 2) avg_cnt
+            , sum(total_cnt) total_cnt
+        FROM (
+            SELECT v.player_id, v.player_name
+                , myear, mweek
+                , sum(v.play_yn) play_cnt
+                , count(1) total_cnt
+            FROM football_tpm_view v,
+            (
+                SELECT fm.*
+                    , STR_TO_DATE(match_date, '%Y.%m.%d') mdate
+                    , WEEKOFYEAR(STR_TO_DATE(match_date, '%Y.%m.%d')) mweek
+                    , SUBSTRING(match_date, 1, 4) myear
+                FROM football_match fm
+                WHERE team_id = '".$pid."'
+        ";
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["st"]."' AND '".$_REQUEST["ed"]."' ";
+        }
+        else if( ! empty($_REQUEST["st"])  ){
+            $sql = $sql." AND match_date >= '".$_REQUEST["st"]."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $sql = $sql." AND match_date <= '".$_REQUEST["ed"]."' ";
+        }
+        $sql = $sql.") m
+            WHERE m.id = v.match_id
+            group by v.player_id, v.player_name, myear, mweek
+        ) t
+        group by player_id, player_name
+        order by avg_cnt desc, player_name
+        ";
+        $result = mysqli_query($conn, $sql);
+        //$row = mysqli_fetch_array($result);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_id'=>$row['player_id'],
+                'player_name'=>$row['player_name'],
+                'avg_cnt'=>$row['avg_cnt'],
+                'total_cnt'=>$row['total_cnt']
+            ));
+        }
+    }
+}
+else if($pcmd == "play_month"){
+    if($conn){
+        $sql = "SELECT 
+            player_id
+            , player_name
+            , round(avg(play_cnt), 2) avg_cnt
+            , sum(total_cnt) total_cnt
+        FROM (
+            SELECT v.player_id, v.player_name
+                , mmonth
+                , sum(v.play_yn) play_cnt
+                , count(1) total_cnt
+            FROM football_tpm_view v,
+            (
+                SELECT fm.*
+                    , STR_TO_DATE(match_date, '%Y.%m.%d') mdate
+                    , SUBSTRING(match_date, 1, 7) mmonth
+                FROM football_match fm
+                WHERE team_id = '".$pid."'
+        ";
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["st"]."' AND '".$_REQUEST["ed"]."' ";
+        }
+        else if( ! empty($_REQUEST["st"])  ){
+            $sql = $sql." AND match_date >= '".$_REQUEST["st"]."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $sql = $sql." AND match_date <= '".$_REQUEST["ed"]."' ";
+        }
+        $sql = $sql.") m
+            WHERE m.id = v.match_id
+            group by v.player_id, v.player_name, mmonth
+        ) t
+        group by player_id, player_name
+        order by avg_cnt desc, player_name
+        ";
+        $result = mysqli_query($conn, $sql);
+        //$row = mysqli_fetch_array($result);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_id'=>$row['player_id'],
+                'player_name'=>$row['player_name'],
+                'avg_cnt'=>$row['avg_cnt'],
+                'total_cnt'=>$row['total_cnt']
+            ));
+        }
+    }
+}
 else{
     
 }

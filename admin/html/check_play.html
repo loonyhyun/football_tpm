@@ -1,0 +1,186 @@
+<script>
+	var difWindowHeight = 320;
+
+	$(document).ready(function(){
+		var targetHeader = 'check_play';
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+		getSearch()
+
+		$('#searchStartDate, #searchEndDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
+	});
+
+	$(window).resize(function(){ });
+
+	function setSearchYear(year){
+		$("#searchStartDate").val(year + ".01.01");
+		$("#searchEndDate").val(year + ".12.31");
+		getSearch();
+	}
+	function getSearch(){
+		$("#loadingDiv").show();
+		$.ajax({
+			//async: false, 
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "play_week",
+				id : 1,
+				st : $("#searchStartDate").val(),
+				ed : $("#searchEndDate").val()
+			},
+			dataType : "json",
+			success : function(data) {
+				var tbody = $("#WEEK_DATA_TBODY");
+				tbody.html("");
+				if(data.length > 0){
+					$("#total_cnt").text("총 경기: " + data[0]["total_cnt"]);
+				}
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var pid = tmp["player_id"];
+					var pname = tmp["player_name"];
+					var avg = tmp["avg_cnt"];
+					tbody.append("<tr>"
+						+"<td>"+(i+1)+"</td>"
+						+"<td>"+pname+"</td>"
+						+"<td>"+avg+"</td>"
+						+"</tr>"
+					);
+				}
+				$.ajax({
+					//async: false, 
+					type : "post",
+					url : '/football_tpm/get.php',
+					data : {
+						cmd : "play_month",
+						id : 1,
+						st : $("#searchStartDate").val(),
+						ed : $("#searchEndDate").val()
+					},
+					dataType : "json",
+					success : function(data) {
+						var tbody = $("#MONTH_DATA_TBODY");
+						tbody.html("");
+						for(var i=0; i<data.length; i++){
+							var tmp = data[i];
+							var pid = tmp["player_id"];
+							var pname = tmp["player_name"];
+							var avg = tmp["avg_cnt"];
+							tbody.append("<tr>"
+								+"<td>"+(i+1)+"</td>"
+								+"<td>"+pname+"</td>"
+								+"<td>"+avg+"</td>"
+								+"</tr>"
+							);
+						}
+						$("#loadingDiv").hide();
+					},
+					error : function(err) {
+						alert("오류발생 관리자에게 문의하세요.")
+						$("#loadingDiv").hide();
+					}
+				});
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+				$("#loadingDiv").hide();
+			}
+		});
+	}
+</script>
+<style>
+</style>
+	<div class="container" style="max-width:100%;">
+		<div class="row">&nbsp;</div>
+		<div id="CREATE_MATCH_DIV">
+			<h5>[참석 횟수 체크]</h5>
+			<div class="row">
+				<div class="col">
+					<script>
+						var st = 2021;
+						var ed = new Date().getFullYear();
+						var tmp = "";
+						for(var i=st; i<=ed; i++){
+							tmp = "<button class=\"btn btn-outline-primary\" style='margin-right:5px;' onclick='setSearchYear("+i+")'>"+i+"</button>";
+							document.write(tmp);
+						}
+					</script>
+				</div>
+			</div>
+			<div class="row" style="margin-top: 10px;">
+				<div class="col">
+					<div class="input-group">
+						<span class="input-group-text">기간</span>
+						<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
+						<span class="input-group-text">~</span>
+						<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
+						<button type="button" class="btn btn-success" onclick="getSearch();">SEARCH</button>
+					</div>
+				</div>
+			</div>
+			<h5 id="total_cnt" style="margin-top: 10px;">총 경기 : </h5>
+			<div class="row" style="margin-top: 10px;">
+				<div class="col">
+					<h5>주간</h5>
+					<table class="table auto_font_size" style="width:100%; text-align:center;">
+						<colgroup>
+							<col width="20%"/>
+							<col width="50%"/>
+							<col width="30%"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">선수명</th>
+								<th scope="col">참석 횟수</th>
+							</tr>
+						</thead>
+						<tbody id="WEEK_DATA_TBODY">
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="col">
+					<h5>월간</h5>
+					<table class="table auto_font_size" style="width:100%; text-align:center;">
+						<colgroup>
+							<col width="20%"/>
+							<col width="50%"/>
+							<col width="30%"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">선수명</th>
+								<th scope="col">참석 횟수</th>
+							</tr>
+						</thead>
+						<tbody id="MONTH_DATA_TBODY">
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row">&nbsp;</div>
+		</div>
+    </div>
+	<div id="loadingDiv" style="display:none; width:100%;height:100%;position:absolute;left:0;top:0;z-index:100; background-color:white; opacity: 0.5;">
+		<div style="text-align:center; margin-top:40%; font-size:22px; font-weight:bold;">LOADING...</div>
+	</div>
+	
