@@ -1256,6 +1256,77 @@ else if($pcmd == "play_month"){
         }
     }
 }
+else if($pcmd == "play_days"){
+    if($conn){
+        $sql = "SELECT 
+            player_id
+            , player_name
+            , round(week0/cnt0 * 100, 2) week0
+            , round(week1/cnt1 * 100, 2) week1
+            , round(week2/cnt2 * 100, 2) week2
+            , round(week3/cnt3 * 100, 2) week3
+            , round(week4/cnt4 * 100, 2) week4
+            , round(week5/cnt5 * 100, 2) week5
+            , round(week6/cnt6 * 100, 2) week6
+            , total_cnt
+        FROM (
+            SELECT v.player_id, v.player_name
+                , sum(case when mweekday = 0 then v.play_yn end) week0
+                , sum(case when mweekday = 1 then v.play_yn end) week1
+                , sum(case when mweekday = 2 then v.play_yn end) week2
+                , sum(case when mweekday = 3 then v.play_yn end) week3
+                , sum(case when mweekday = 4 then v.play_yn end) week4
+                , sum(case when mweekday = 5 then v.play_yn end) week5
+                , sum(case when mweekday = 6 then v.play_yn end) week6
+                , sum(case when mweekday = 0 then 1 end) cnt0
+                , sum(case when mweekday = 1 then 1 end) cnt1
+                , sum(case when mweekday = 2 then 1 end) cnt2
+                , sum(case when mweekday = 3 then 1 end) cnt3
+                , sum(case when mweekday = 4 then 1 end) cnt4
+                , sum(case when mweekday = 5 then 1 end) cnt5
+                , sum(case when mweekday = 6 then 1 end) cnt6
+                , count(1) total_cnt
+            FROM football_tpm_view v,
+            (
+                SELECT fm.*
+                    , weekday(STR_TO_DATE(match_date, '%Y.%m.%d')) mweekday
+                FROM football_match fm
+                WHERE team_id = '".$pid."'
+        ";
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["st"]."' AND '".$_REQUEST["ed"]."' ";
+        }
+        else if( ! empty($_REQUEST["st"])  ){
+            $sql = $sql." AND match_date >= '".$_REQUEST["st"]."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $sql = $sql." AND match_date <= '".$_REQUEST["ed"]."' ";
+        }
+        $sql = $sql.") m
+            WHERE m.id = v.match_id
+                ".$notinplayer."
+            group by v.player_id, v.player_name
+        ) t
+        order by player_name
+        ";
+        $result = mysqli_query($conn, $sql);
+        //$row = mysqli_fetch_array($result);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_id'=>$row['player_id'],
+                'player_name'=>$row['player_name'],
+                'week0'=>$row['week0'],
+                'week1'=>$row['week1'],
+                'week2'=>$row['week2'],
+                'week3'=>$row['week3'],
+                'week4'=>$row['week4'],
+                'week5'=>$row['week5'],
+                'week6'=>$row['week6'],
+                'total_cnt'=>$row['total_cnt']
+            ));
+        }
+    }
+}
 else{
     
 }
