@@ -62,6 +62,13 @@
       ctx.fillStyle = '#000000';
       ctx.fillRect(target.width()/2 - 24/2, target.height() - 300, 50, 50);
 
+      var cc = ctx.getImageData(imgX+12, imgY+9, 1, 1);
+      if(cc.data[0] < 10 && cc.data[1] < 10 && cc.data[2] < 10){
+        moveValue = 1;
+      }else{
+        moveValue = 5;
+      }
+
       if(left){ //left
         left = false;
         imgX -= moveValue;
@@ -79,16 +86,21 @@
         imgY += moveValue;
       }
 
-      drawCarImage(imgX, imgY, 24, 19);
+      //console.log(cc.data[0], cc.data[1], cc.data[2], cc.data[3])
 
-      //var cc = ctx.getImageData(imgX, imgY+100, 1, 1).data;
-      //console.log(cc.data)
+      if(cc.data[0] < 10 && cc.data[1] < 10 && cc.data[2] < 10){
+        ctx.drawImage(img_not, imgX, imgY, 24, 19);
+      }else{
+        ctx.drawImage(img, imgX, imgY, 24, 19);
+      }
     }
 
     let imgX = parseInt(canvas.width/2 - 24/2);
     let imgY = parseInt(canvas.height * (2/3) - 19/2);
     let img = new Image();
     img.src = "./line_run.png";
+    let img_not = new Image();
+    img_not.src = "./line_notrun.png";
     function drawCarImage(x, y, w, h){
       // img.onload = function() {
       //   ctx.drawImage(img, x, y, w, h);
