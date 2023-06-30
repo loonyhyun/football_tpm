@@ -14,8 +14,9 @@
 		$("#drop_header").text($("#drop_header_" + target_header).text());
 		setLayout();
 		var from = '2023.01.01';
-		var to = '2023.6.30';
+		var to = '2023.06.30';
 		getCount(from, '2023.06.30');
+		MIN_PER = 50;
 		getTopScore(from, to, 10);
 	});
 
