@@ -45,7 +45,7 @@
 						str += "<td>"+(i+1)+"</td>";
 						str += "<td>"+match_date + (match_yn == 'Y' ? '(M)' : '') +"</td>";
 						if(match_yn == 'Y'){
-							str += "<td>"+ (tmp["win_ab"] == 'a' ? '승' : '패') +"</td>";
+							str += "<td>"+ (tmp["win_ab"] == 'a' ? '승' : tmp["win_ab"] == 'b' ? '패' : 'DRAW') +"</td>";
 						}else{
 							str += "<td>"+win_ab+"</td>";
 						}
