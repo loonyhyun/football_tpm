@@ -463,6 +463,19 @@ function setPlayerList(data){
 
 var array_A = [];
 var array_B = [];
+function delTeamByMatch(id){
+    var aidx = array_A.indexOf(id);
+    var bidx = array_B.indexOf(id);
+    if (aidx > -1) {
+        array_A.splice(aidx, 1);
+        $("#teamA_" + id).remove();
+    }
+    if (bidx > -1) {
+        array_B.splice(aidx, 1);
+        $("#teamB_" + id).remove();
+    }
+    $("#team_choice_" + id).css("background-color", "");
+}
 function setTeamByMatch(team, id, name) {
     var aidx = array_A.indexOf(id);
     var bidx = array_B.indexOf(id);
@@ -503,6 +516,7 @@ function setTeamByMatch(team, id, name) {
         str += " <button class='PLUS_MINUS btn btn-sm btn-primary' style='padding:0 0.25rem; width:24px; height:24px;' onclick=\"plusValueMatch('teamAasst_"+id+"');\">+</button>";
         str += " <button class='PLUS_MINUS btn btn-sm btn-danger' style='padding:0 0.25rem; width:24px; height:24px;' onclick=\"minusValueMatch('teamAasst_"+id+"');\">-</button>";
         str += "  </td>";
+        str += "  <td><button class='btn btn-sm' onclick='delTeamByMatch(" + id + ")'>X</button></td>";
         str += "</tr>";
         $("#team_a_tbody").append(str);
         $("#team_choice_" + id).css("background-color", "#ff7070");
@@ -535,6 +549,7 @@ function setTeamByMatch(team, id, name) {
         str += " <button class='PLUS_MINUS btn btn-sm btn-primary' style='padding:0 0.25rem; width:24px; height:24px;' onclick=\"plusValueMatch('teamBasst_"+id+"');\">+</button>";
         str += " <button class='PLUS_MINUS btn btn-sm btn-danger' style='padding:0 0.25rem; width:24px; height:24px;' onclick=\"minusValueMatch('teamBasst_"+id+"');\">-</button>";
         str += "  </td>";
+        str += "  <td><button class='btn btn-sm' onclick='delTeamByMatch(" + id + ")'>X</button></td>";
         str += "</tr>";
         $("#team_b_tbody").append(str);
         $("#team_choice_" + id).css("background-color", "#7070ff");
