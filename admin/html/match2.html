@@ -9,6 +9,8 @@
 
 		getPlayerList();
 
+		//difWindowHeight = $("#CREATE_MATCH_DIV_HEADER").height()+$("#CREATE_MATCH_DIV_HEADER").offset().top;
+		
 		var wh = $(window).height();
 		$(".TABLE_INNER_DIV").each(function(){
 			$(this).css("height", wh - difWindowHeight);
@@ -55,6 +57,7 @@
 			<div class="row" style="border-top: 1px solid #333;">&nbsp;</div>
 		</div>
 		<div id="CREATE_MATCH_DIV">
+		<div id="CREATE_MATCH_DIV_HEADER">
 			<h5>[경기등록]</h5>
 			<div class="row">
 				<div class="col">
@@ -119,6 +122,7 @@
 					aria-describedby="bteam_group" />
 				</div>
 			  </div>
+			</div>
 			</div>
 			<div class="row">
 				<div class="col">
