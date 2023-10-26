@@ -138,16 +138,20 @@ function deleteMatch(){
 
         $.ajax({
             type : "post",
-            url : '/football_tpm/save.php',
+            url : '/football_tpm/delete.php',
             data : {
-                cmd : "match_delete",
+                cmd : "match",
                 id : TEAM_ID,
-                match_id : selectedIdByMatchHtml
+                match_id : selectedIdByMatchHtml,
+                match_secret : $("#delete_secret").val()
             },
             success : function(data, textStatus, jqXHR) {
                 if (data == "ok") {
-                    alert("삭제되었습니다.");
+                    alert("삭제 되었습니다.");
                     location.reload();
+                }
+                else if(data == "fail secret"){
+                    alert("SECRET FAIL");
                 }
             }
         });

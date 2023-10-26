@@ -396,7 +396,7 @@
 		});
 	}
 	
-	function deleteMatch(){
+	function deleteMatchAdmin(){
 		if(confirm("경기 기록을 삭제하시겠습니까?\n복구할 수 없습니다.")){
 
 			$.ajax({

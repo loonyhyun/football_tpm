@@ -75,8 +75,15 @@
           </div>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="updateMatch()">수정</button>
-      <button class="btn btn-secondary" onclick="deleteMatch()">삭제</button>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="input-group mb-3">
+            <button class="btn btn-primary" onclick="updateMatch()">수정</button>
+            <button class="btn btn-secondary" onclick="deleteMatch()">삭제</button>
+            <input type="password" placeholder="비밀번호" aria-label="비밀번호" class="form-control" id="delete_secret" value="" />
+          </div>
+        </div>
+      </div>
       <table class="table auto_font_size" id="MatchInfoMainTable">
         <caption style="caption-side: top; font-weight: bold; color: black" id="MatchInfoDesc">
           경기 정보
