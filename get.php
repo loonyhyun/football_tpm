@@ -194,13 +194,14 @@ FROM
     , SUM(case when t.team_a_yn = 1 then s_cnt_a
         when t.team_b_yn = 1 then s_cnt_b
         else 0 end) s_cnt
-FROM football_tpm_view t, (
+FROM football_tpm_view t LEFT OUTER JOIN (
     SELECT match_id
     	, sum(case when team_ab = 'a' then 1 ELSE 0 END) s_cnt_a
     	, sum(case when team_ab = 'b' then 1 ELSE 0 END) s_cnt_b
     FROM football_match_scoreless
     GROUP BY match_id
 ) s
+ON t.match_id = s.match_id
 WHERE team_id = '".$pid."'";
     
     if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
@@ -223,7 +224,6 @@ WHERE team_id = '".$pid."'";
     }
 
         $sql = $sql." ".$notinplayer."
-    AND t.match_id = s.match_id
 GROUP BY player_id) p,
 (SELECT COUNT(1) match_total_cnt FROM football_match WHERE team_id = '".$pid."' ";
 
