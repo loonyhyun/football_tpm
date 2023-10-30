@@ -81,7 +81,7 @@
 
 			value1 = value1.trim();
 			value2 = value2.trim();
-			if(n < 5){
+			if(n < 6){
 				if(value1.indexOf("(") > -1){
 					value1 = (value1.substring(0, value1.indexOf("(")));
 				}
@@ -281,6 +281,8 @@
 			if (isNaN(win_per)) { win_per = 0; }
 			if (isNaN(goal_per)) { goal_per = 0; }
 			if (isNaN(asst_per)) { asst_per = 0; }
+			var ga = parseInt(goal) + parseInt(asst);
+			var ga_per = parseInt((parseFloat(goal_per) + parseFloat(asst_per)) * 100) / 100.0;
 
 			var playerId = data[i]["player_id"];
 			var playerName = data[i]["player_name"]
@@ -291,6 +293,7 @@
 			str += "<td>" + play + " ( " + play_per + " % )</td>";
 			str += "<td>" + goal + " ( " + goal_per + " )</td>";
 			str += "<td>" + asst + " ( "+ asst_per + " )</td>";
+			str += "<td>" + ga + " ( "+ ga_per + " )</td>";
 			//str += "<td>" + wins + " ( " + win_per + " % )</td>";
 			str += "<td>" + win_per + " % ( " + wins + " )</td>";
 			str += "<td>" + parseInt(data[i]["pts"]) + "</td>";
