@@ -191,13 +191,15 @@ FROM
     , SUM(play_yn) play_cnt
     , SUM(win_yn) win_cnt, SUM(goal_cnt) goal_cnt, SUM(asst_cnt) asst_cnt
     , SUM(case when win_yn = 1.0 then 3 when win_yn = 0.5 then 1 else 0 end) pts
-    , SUM(case when t.team_a_yn = 1 and team_ab = 'a' then s_cnt
-        when t.team_b_yn = 1 and team_ab = 'b' then s_cnt
+    , SUM(case when t.team_a_yn = 1 then s_cnt_a
+        when t.team_b_yn = 1 then s_cnt_b
         else 0 end) s_cnt
 FROM football_tpm_view t, (
-    SELECT match_id, team_ab, count(1) s_cnt
+    SELECT match_id
+    	, sum(case when team_ab = 'a' then 1 ELSE 0 END) s_cnt_a
+    	, sum(case when team_ab = 'b' then 1 ELSE 0 END) s_cnt_b
     FROM football_match_scoreless
-    GROUP BY match_id, team_ab
+    GROUP BY match_id
 ) s
 WHERE team_id = '".$pid."'";
     

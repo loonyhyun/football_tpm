@@ -283,7 +283,8 @@
 			if (isNaN(goal_per)) { goal_per = 0; }
 			if (isNaN(asst_per)) { asst_per = 0; }
 			var ga = parseInt(goal) + parseInt(asst);
-			var ga_per = parseInt((parseFloat(goal_per) + parseFloat(asst_per)) * 100) / 100.0;
+			var ga_per = parseInt( ( parseFloat(goal) + parseFloat(asst) ) / parseFloat(play) * 100 ) / 100.0;
+			if (isNaN(ga_per)) { ga_per = 0; }
 
 			var playerId = data[i]["player_id"];
 			var playerName = data[i]["player_name"]
