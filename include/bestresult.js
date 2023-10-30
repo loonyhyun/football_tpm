@@ -311,6 +311,15 @@ function getTopList(from, to, max){
 				}
 			}
 			//수비
+			data.sort(function(a,b){
+				return sortDesc(a["s_cnt"], b["s_cnt"])
+			});
+			for(i=0; i<max; i++){
+				var tmpName = data[i]["player_name"];
+				var tmpValue = data[i]["s_cnt"];
+				setHtml(tmpName, tmpValue, (i+1), "VIEW_BEST_DEF_TBODY");
+			}
+			/*
 			$.ajax({
 				type : "post",
 				url : '/football_tpm/get_defence.php',
@@ -329,6 +338,7 @@ function getTopList(from, to, max){
 					}
 				}
 			});
+			*/
 		},
 		error : function(err) {
 			alert("오류발생 관리자에게 문의하세요.")

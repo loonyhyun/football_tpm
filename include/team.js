@@ -269,6 +269,7 @@
 			var play = data[i]["play_cnt"];
 			var goal = data[i]["goal_cnt"];
 			var asst = data[i]["asst_cnt"];
+			var s_cnt = data[i]["s_cnt"];
 			var play_per = parseInt(parseFloat(play)
 					/ parseFloat(data[i]["match_total_cnt"])
 					* 100);
@@ -297,6 +298,7 @@
 			//str += "<td>" + wins + " ( " + win_per + " % )</td>";
 			str += "<td>" + win_per + " % ( " + wins + " )</td>";
 			str += "<td>" + parseInt(data[i]["pts"]) + "</td>";
+			str += "<td>" + s_cnt + "</td>";
 			str += "</tr>";
 			$("#playerTbody").append(str);
 		}

@@ -191,7 +191,14 @@ FROM
     , SUM(play_yn) play_cnt
     , SUM(win_yn) win_cnt, SUM(goal_cnt) goal_cnt, SUM(asst_cnt) asst_cnt
     , SUM(case when win_yn = 1.0 then 3 when win_yn = 0.5 then 1 else 0 end) pts
-FROM football_tpm_view
+    , SUM(case when t.team_a_yn = 1 and team_ab = 'a' then s_cnt
+        when t.team_b_yn = 1 and team_ab = 'b' then s_cnt
+        else 0 end) s_cnt
+FROM football_tpm_view t, (
+    SELECT match_id, team_ab, count(1) s_cnt
+    FROM football_match_scoreless
+    GROUP BY match_id, team_ab
+) s
 WHERE team_id = '".$pid."'";
     
     if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
@@ -214,6 +221,7 @@ WHERE team_id = '".$pid."'";
     }
 
         $sql = $sql." ".$notinplayer."
+    AND t.match_id = s.match_id
 GROUP BY player_id) p,
 (SELECT COUNT(1) match_total_cnt FROM football_match WHERE team_id = '".$pid."' ";
 
@@ -245,6 +253,7 @@ ORDER BY player_name";
                     , 'asst_cnt'=>$row['asst_cnt']
                     , 'match_total_cnt'=>$row['match_total_cnt']
                     , 'pts'=>$row['pts']
+                    , 's_cnt'=>$row['s_cnt']
                 )
                 );
         }
