@@ -1,0 +1,274 @@
+
+<script>
+	var YANG_STA = [];
+	var YANG_STA_NAME = [];
+	$(document).ready(function(){
+		var targetHeader = 'yang';
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+
+		getMatchAndPlayers();
+
+		getYang();
+	});
+
+	$(window).resize(function(){
+		
+	});
+
+	function getMatchAndPlayers(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			dataType : "json",
+			data : {
+				cmd : "matchlist",
+				id : TEAM_ID
+			},
+			success : function(data, textStatus, jqXHR) {
+				var target = $("#match_id");
+				for(var i=0; i<data.length; i++){
+					target.append("<option value='"+data[i]["match_id"]+"'>"+data[i]["match_date"]+"</option>");
+				}
+			}
+		});
+		$.ajax({
+			async: false,
+			type : "post",
+			url : '/football_tpm/get.php',
+			dataType : "json",
+			data : {
+				cmd : "players",
+				id : TEAM_ID
+			},
+			success : function(data, textStatus, jqXHR) {
+				var target = $("#player_id");
+				for(var i=0; i<data.length; i++){
+					target.append("<option value='"+data[i]["player_id"]+"'>"+data[i]["player_name"]+"</option>");
+					
+					YANG_STA[data[i]["player_id"]] = 0;
+					YANG_STA_NAME[data[i]["player_id"]] = data[i]["player_name"];
+				}
+			}
+		});
+	}
+
+	function getYang(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/get.php',
+			dataType : "json",
+			data : {
+				cmd : "yang",
+				id : TEAM_ID
+			},
+			success : function(data, textStatus, jqXHR) {
+				for(var i=0; i<YANG_STA.length; i++){
+					YANG_STA[i] = 0;
+				}
+				$("#ViewTbody").html("");
+				$("#ViewTbodySta").html("");
+				var target = $("#ViewTbody");
+				var targetsta = $("#ViewTbodySta");
+				for(var i=0; i<data.length; i++){
+					var str = "<tr>";
+						str += "<td>"+(i+1)+"</td>";
+						str += "<td>"+data[i]["match_date"]+"</td>";
+						str += "<td>"+data[i]["player_name"]+"</td>";
+						str += "<td><a style='color:black;' href='javascript:delYang("+data[i]["player_id"]+", "+data[i]["match_id"]+")'><i class=\"bi bi-x-square-fill\"></i></a></td>";
+						str += "</tr>";
+					target.append(str);
+					YANG_STA[data[i]["player_id"]] += 1;
+				}
+
+				for(var i=0, idx=0; i<YANG_STA.length; i++){
+					if(YANG_STA[i] > 0){
+						idx++;
+						var str = "<tr>";
+							str += "<td>"+(idx)+"</td>";
+							str += "<td>"+YANG_STA_NAME[i]+"</td>";
+							str += "<td>"+YANG_STA[i]+"</td>";
+							str += "</tr>";
+						targetsta.append(str);
+					}
+				}
+
+				SortTableYangSta(1, 'ASC')
+			}
+		});
+	}
+
+	function saveYang(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/save.php',
+			data : {
+				cmd : "yang",
+				id : TEAM_ID,
+				pid : $("#player_id").val(),
+				mid : $("#match_id").val()
+			},
+			success : function(data, textStatus, jqXHR) {
+				if (data == "ok") {
+					alert("등록 되었습니다.");
+					getYang();
+				}
+				else if(data == "fail secret"){
+					alert("SECRET FAIL");
+				}
+			}
+		});
+	}
+	function delYang(pid, mid){
+		if(confirm("삭제하시겠습니까? 복구할 수 없습니다.")){
+			$.ajax({
+			type : "post",
+			url : '/football_tpm/admin/save.php',
+			data : {
+				cmd : "yang_delete",
+				id : TEAM_ID,
+				pid : pid,
+				mid : mid
+			},
+			success : function(data, textStatus, jqXHR) {
+				if (data == "ok") {
+					alert("삭제 되었습니다.");
+					getYang();
+				}
+				else if(data == "fail secret"){
+					alert("SECRET FAIL");
+				}
+			}
+		});
+		}
+	}
+
+	
+	function SortTableYangSta( n, order )
+	{
+		var BF_SORT_TH = $("#ViewTableSta > thead > tr").children().eq(BEFORE_SORT);
+		BF_SORT_TH.css("background-color", "");
+		BF_SORT_TH.css("color", "");
+		var SORT_TH = $("#ViewTableSta > thead > tr").children().eq(n);
+		SORT_TH.css("background-color", "#343400");
+		SORT_TH.css("color", "#ffffff");
+		BEFORE_SORT = n;
+
+		var table = document.getElementById("ViewTableSta");
+		var tbody = table.tBodies[0];
+		var rows = tbody.getElementsByTagName("tr");
+
+		rows = Array.prototype.slice.call(rows, 0);
+
+		rows.sort(function(row1, row2) {
+			var cell1 = row1.getElementsByTagName("td")[n];
+			var cell2 = row2.getElementsByTagName("td")[n];
+			var value1 = cell1.textContent || cell1.innerText;
+			var value2 = cell2.textContent || cell2.innerText;
+
+			value1 = value1.trim();
+			value2 = value2.trim();
+			if(n < 2){
+				if(value1.indexOf("(") > -1){
+					value1 = (value1.substring(0, value1.indexOf("(")));
+				}
+				if(value2.indexOf("(") > -1){
+					value2 = (value2.substring(0, value2.indexOf("(")));
+				}
+			}else{
+				if(value1.indexOf("%") > -1){
+					value1 = (value1.substring(0, value1.indexOf("%")));
+				}
+				if(value2.indexOf("%") > -1){
+					value2 = (value2.substring(0, value2.indexOf("%")));
+				}
+			}
+			if(!isNaN(value1)){
+				value1 = parseFloat(value1);
+			}
+			if(!isNaN(value2)){
+				value2 = parseFloat(value2);
+			}
+
+			if(order == "DESC"){
+				if (value1 < value2)
+					return 1;
+				if (value1 > value2)
+					return -1;
+			}else{
+				if (value1 < value2)
+					return -1;
+				if (value1 > value2)
+					return 1;
+			}
+
+			return 0;
+		});
+
+		for (var i = 0; i < rows.length; ++i) {
+			rows[i].firstChild.innerHTML = (i+1)
+			tbody.appendChild(rows[i]);
+		}
+	}
+
+</script>
+
+    <div id="headers"></div>
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<h2>양치기 기록</h2>
+		<div class="row">
+			<div class="col">
+				<select class="form-select" id="match_id">
+					<option value="">매치일자</option>
+				</select>
+			</div>
+			<div class="col">
+				<select class="form-select" id="player_id">
+					<option value="">선수명</option>
+				</select>
+			</div>
+			<div class="col">
+				<button class="btn btn-warning" onclick="saveYang();">저장</button>
+			</div>
+		</div>
+		<div class="row" style="margin-top:15px;">
+			<div class="col">
+				<table class="table auto_font_size" id="ViewTable">
+					<colgroup>
+						<col width="15%" />
+						<col width="25%" />
+						<col width="25%" />
+						<col width="5%" />
+					</colgroup>
+					<thead id="ViewThead">
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">경기일자</th>
+							<th scope="col">선수명</th>
+							<th scope="col">x</th>
+						</tr>
+					</thead>
+					<tbody id="ViewTbody"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table auto_font_size" id="ViewTableSta">
+					<colgroup>
+						<col width="15%" />
+						<col width="25%" />
+						<col width="25%" />
+					</colgroup>
+					<thead id="ViewTheadSta">
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col" onclick="SortTableYangSta(1, 'ASC')">선수명</th>
+							<th scope="col" onclick="SortTableYangSta(2, 'DESC')">횟수</th>
+						</tr>
+					</thead>
+					<tbody id="ViewTbodySta"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>

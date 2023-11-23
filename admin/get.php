@@ -108,6 +108,27 @@ else if($pcmd == "yeyak"){
         }
     }
 }
+else if($pcmd == "yang"){
+    if($conn){
+        $sql = "SELECT yang.*, p.player_name, m.match_date
+        FROM football_yang yang, football_player p, football_match m
+        WHERE yang.player_id = p.id
+        AND yang.match_id = m.id
+        AND p.team_id = ".$pid."
+        ORDER BY match_date desc, player_name asc";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'id'=>$row['id']
+                ,'player_id'=>$row['player_id']
+                ,'player_name'=>$row['player_name']
+                ,'match_date'=>$row['match_date']
+                ,'match_id'=>$row['match_id']
+                )
+            );
+        }
+    }
+}
 else{
     
 }

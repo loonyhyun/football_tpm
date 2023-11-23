@@ -130,6 +130,34 @@ else if($pcmd == "yeyak_delete"){
 		}
     }
 }
+else if($pcmd == "yang"){
+    if($conn){
+		$sql = "INSERT INTO football_yang (player_id, match_id)
+		values (".$_REQUEST["pid"].", ".$_REQUEST["mid"].")";
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
+else if($pcmd == "yang_delete"){
+    if($conn){
+		$sql = "DELETE FROM football_yang
+		WHERE player_id = ".$_REQUEST["pid"]." AND match_id = ".$_REQUEST["mid"]."";
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
 else{
     echo "fail else";
 }
