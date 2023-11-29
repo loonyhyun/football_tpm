@@ -8,6 +8,21 @@
 		$("#header_" + targetHeader).addClass("fw-bold");
 		$("#drop_header").text($("#drop_header_" + targetHeader).text());
 
+		$("#searchStartDate").val(DEFAULT_START_MATCH_DATE);
+		
+		$('#searchStartDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
+		$('#searchEndDate').datepicker({
+			format: "yyyy.mm.dd",
+			autoclose: true,
+			todayHighlight: true,
+			language: "ko"
+		});
+
 		getMatchAndPlayers();
 
 		getYang();
@@ -61,7 +76,9 @@
 			dataType : "json",
 			data : {
 				cmd : "yang",
-				id : TEAM_ID
+				id : TEAM_ID,
+				st : $("#searchStartDate").val(),
+				ed: $("#searchEndDate").val()
 			},
 			success : function(data, textStatus, jqXHR) {
 				for(var i=0; i<YANG_STA.length; i++){
@@ -212,6 +229,11 @@
 		}
 	}
 
+	function setSearchYear(year){
+		$("#searchStartDate").val(year + ".01.01");
+		$("#searchEndDate").val(year + ".12.31");
+		getYang();
+	}
 </script>
 
     <div id="headers"></div>
@@ -232,6 +254,26 @@
 			<div class="col">
 				<button class="btn btn-warning" onclick="saveYang();">저장</button>
 			</div>
+		</div>
+		<div class="row" style="margin-top:15px;">
+			<div class="col">
+				<script>
+					var st = 2023;
+					var ed = new Date().getFullYear();
+					var tmp = "";
+					for(var i=st; i<=ed; i++){
+						tmp = "<button class=\"btn btn-outline-primary\" style='margin-right:5px;' onclick='setSearchYear("+i+")'>"+i+"</button>";
+						document.write(tmp);
+					}
+				</script>
+			</div>
+		</div>
+		<div class="input-group" style="margin-top:5px;">
+			<span class="input-group-text">기간</span>
+			<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchStartDate" value=""/>
+			<span class="input-group-text">~</span>
+			<input type="text" class="form-control auto_font_size" readonly="readonly" id="searchEndDate" value=""/>
+			<button type="button" class="btn btn-success" onclick="getYang();">SEARCH</button>
 		</div>
 		<div class="row" style="margin-top:15px;">
 			<div class="col">

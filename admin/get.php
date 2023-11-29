@@ -114,7 +114,23 @@ else if($pcmd == "yang"){
         FROM football_yang yang, football_player p, football_match m
         WHERE yang.player_id = p.id
         AND yang.match_id = m.id
-        AND p.team_id = ".$pid."
+        AND p.team_id = ".$pid."";
+
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $pst = $_REQUEST["st"];
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND m.match_date between '".$pst."' AND '".$ped."' ";
+        }
+        else if( ! empty($_REQUEST["st"]) ){
+            $pst = $_REQUEST["st"];
+            $sql = $sql." AND m.match_date >= '".$pst."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND m.match_date <= '".$ped."' ";
+        }
+        
+        $sql = $sql."
         ORDER BY match_date desc, player_name asc";
         $result = mysqli_query($conn, $sql);
         while($row = mysqli_fetch_array($result)){
