@@ -50,9 +50,9 @@
 		$("#match_a_tbody").css("max-height", $(window).height() - 383);
 		$("#match_b_tbody").css("max-height", $(window).height() - 383);
 		
-		$(document.body).css("background-image", "url(/football_tpm/img/background.png)");
-		$(document.body).css("background-repeat", "repeat-y");
-		$(document.body).css("background-position", "center");
+		//$(document.body).css("background-image", "url(/football_tpm/img/background.png)");
+		//$(document.body).css("background-repeat", "repeat-y");
+		//$(document.body).css("background-position", "center");
 		//$(".container").css("background-color", "white");
 	}
 
