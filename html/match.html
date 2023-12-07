@@ -79,11 +79,33 @@
 					winab = "무승부";
 				}
 				var g_name = "-";
+				var otherTeam = "-";
+				var ownGoalA = 0;
+				var ownGoalB = 0;
+				var matchYn = "N";
+
 				if(data.length > 0){
 					if(data[0]["g_name"] != undefined && data[0]["g_name"] != null)
 						g_name = data[0]["g_name"];
 				}
+                if(data[0]["own_goal_a"] != undefined && data[0]["own_goal_a"] != null){
+                    ownGoalA = data[0]["own_goal_a"];
+                    $("#own_goal_a").text(ownGoalA)
+                }
+                if(data[0]["own_goal_b"] != undefined && data[0]["own_goal_b"] != null){
+                    ownGoalB = data[0]["own_goal_b"];
+                    $("#own_goal_b").text(ownGoalB)
+                }
+                if(data[0]["other_team"] != undefined && data[0]["other_team"] != null){
+                    otherTeam = data[0]["other_team"];
+                }
+                if(data[0]["match_yn"] != undefined && data[0]["match_yn"] != null){
+                    matchYn = data[0]["match_yn"];
+                }
 				$("#MatchInfoDesc").text("경기일자: " + mdate + ", " + winab + ", " + g_name);
+				if(matchYn == "Y" && otherTeam != "-"){
+					$("#MatchInfoDesc").append(", 상대팀: " + otherTeam);
+				}
 				var targetA = $("#MatchInfoTbodyA");
 				var targetB = $("#MatchInfoTbodyB");
 				targetA.html("");
@@ -107,6 +129,9 @@
 						goalB += parseInt(tmp["goal_cnt"]);
 					}
 				}
+
+				goalA += parseInt(ownGoalA);
+				goalB += parseInt(ownGoalB);
 
 				$("#MatchInfoDesc").append(" (" + goalA + " : " + goalB + ")");
 
@@ -254,6 +279,24 @@
 									<tbody id="MatchInfoTbodyB"></tbody>
 								</table>
 							</td>
+						</tr>
+						<tr>
+						  <td>
+							<table class="table">
+							  <tr>
+								<th scope="col">상대자책</th>
+								<td scope="col" id="own_goal_a">0</td>
+							  </tr>
+							</table>
+						  </td>
+						  <td>
+							<table class="table">
+							  <tr>
+								<th scope="col">상대자책</th>
+								<td scope="col" id="own_goal_b">0</td>
+							  </tr>
+							</table>
+						  </td>
 						</tr>
 						<tr>
 							<td colspan="2">
