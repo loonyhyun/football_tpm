@@ -73,6 +73,37 @@ else if($pcmd == "player_scoreless"){
         }
     }
 }
+else if($pcmd == "player_one_scoreless"){
+    if($conn){
+        $sql = "SELECT player_id, player_name
+                    , sum(quarters) t_cnt
+                    , sum(ls_cnt) ls_cnt
+                FROM football_tpm_scoreless
+                WHERE team_id = '".$pid."' and player_id = '".$_REQUEST["playerId"]."'";
+        if( ! empty($_REQUEST["st"]) && ! empty($_REQUEST["ed"]) ){
+            $pst = $_REQUEST["st"];
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND match_date between '".$pst."' and '".$ped."' ";
+        }
+        else if( ! empty($_REQUEST["st"]) ){
+            $pst = $_REQUEST["st"];
+            $sql = $sql." AND match_date >= '".$pst."' ";
+        }
+        else if( ! empty($_REQUEST["ed"]) ){
+            $ped = $_REQUEST["ed"];
+            $sql = $sql." AND match_date <= '".$ped."' ";
+        }
+        $sql = $sql." GROUP BY player_id, player_name
+            ORDER BY ls_cnt desc, player_name";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array('player_id'=>$row['player_id']
+            ,'player_name'=>$row['player_name']
+            ,'t_cnt'=>$row['t_cnt']
+            ,'ls_cnt'=>$row['ls_cnt']));
+        }
+    }
+}
 else{
     
 }

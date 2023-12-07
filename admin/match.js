@@ -39,6 +39,7 @@ function getMatchHtmlList(){
                 var match_id = tmp["match_id"];
                 var match_date = tmp["match_date"];
                 var win_ab = tmp["win_ab"];
+                var match_yn = tmp["match_yn"];
                 if(win_ab == 'a'){
                     win_ab = "A팀 (RED)";
                 }else if(win_ab == 'b'){
@@ -48,7 +49,7 @@ function getMatchHtmlList(){
                 }
                 var str = "<tr id='matchlist_"+match_id+"' onclick='getMatchHtml("+match_id+", \""+match_date+"\", \""+win_ab+"\");'>";
                     str += "<td>"+(i+1)+"</td>";
-                    str += "<td>"+match_date+"</td>";
+                    str += "<td>"+match_date + (match_yn == 'Y' ? '(M)' : '') +"</td>";
                     str += "<td>"+win_ab+"</td>";
                     str += "</tr>";
                 target.append(str);
@@ -120,7 +121,9 @@ function updateMatch(){
                 asstA : asstA,
                 asstB : asstB,
                 winAB : $("#win_ab").val(),
-                groundId : $("#ground_id option:selected").val()
+                groundId : $("#ground_id option:selected").val(),
+                ownGoalA : $("#own_goal_a").val(),
+                ownGoalB : $("#own_goal_b").val()
             },
             success : function(data, textStatus, jqXHR) {
                 if (data == "ok") {
@@ -178,6 +181,9 @@ function getMatchHtml(mid, mdate, winab){
                 winab = "무승부";
             }
             var g_name = "-";
+            var ownGoalA = 0;
+            var ownGoalB = 0;
+            
             if(data.length > 0){
                 if(data[0]["g_name"] != undefined && data[0]["g_name"] != null)
                     g_name = data[0]["g_name"];
@@ -189,6 +195,14 @@ function getMatchHtml(mid, mdate, winab){
                     $("#p_team_a").val(data[0]["a_q"])
                 if(data[0]["b_q"] != undefined && data[0]["b_q"] != null)
                     $("#p_team_b").val(data[0]["b_q"])
+                if(data[0]["own_goal_a"] != undefined && data[0]["own_goal_a"] != null){
+                    ownGoalA = data[0]["own_goal_a"];
+                    $("#own_goal_a").val(ownGoalA)
+                }
+                if(data[0]["own_goal_b"] != undefined && data[0]["own_goal_b"] != null){
+                    ownGoalB = data[0]["own_goal_b"];
+                    $("#own_goal_b").val(ownGoalB)
+                }
             }
             $("#ground_id").children().each(function(){
                 if(g_name == $(this).text()){
@@ -201,6 +215,7 @@ function getMatchHtml(mid, mdate, winab){
             var targetB = $("#MatchInfoTbodyB");
             targetA.html("");
             targetB.html("");
+
 
             var goalA = 0;
             var goalB = 0;
@@ -234,6 +249,9 @@ function getMatchHtml(mid, mdate, winab){
                     goalB += parseInt(tmp["goal_cnt"]);
                 }
             }
+
+            goalA += parseInt(ownGoalA);
+            goalB += parseInt(ownGoalB);
 
             $("#MatchInfoDesc").append(" (" + goalA + " : " + goalB + ")");
 
@@ -618,6 +636,8 @@ function saveMatch() {
         goalBPoint += parseInt($("#teamBgoal_" + array_B[i]).val());
         asstBPoint += parseInt($("#teamBasst_" + array_B[i]).val());
     }
+    goalAPoint += parseInt($("#own_goal_a").val());
+    goalBPoint += parseInt($("#own_goal_b").val());
 
     var confirmStr = "경기를 등록하시겠습니까?";
     confirmStr += "\n(골 > A팀 " + goalAPoint + ":" + goalBPoint + "  B팀)";
@@ -654,7 +674,10 @@ function saveMatch() {
                 winAB : $("#win_ab").val(),
                 groundId : $("#ground_id option:selected").val(),
                 matchYn : $("#match_yn").val(),
-                quarters : $("#p_quarters").val()
+                otherTeam : $("#other_team").val(),
+                quarters : $("#p_quarters").val(),
+                ownGoalA : $("#own_goal_a").val(),
+                ownGoalB : $("#own_goal_b").val()
             },
             success : function(data, textStatus, jqXHR) {
                 if (data == "ok") {

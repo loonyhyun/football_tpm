@@ -85,8 +85,17 @@ else if($pcmd == "match"){
         if( ! empty($_REQUEST["matchYn"]) ){
             $sql = $sql.", match_yn";
         }
+        if( ! empty($_REQUEST["otherTeam"]) ){
+            $sql = $sql.", other_team";
+        }
         if( ! empty($_REQUEST["quarters"]) ){
             $sql = $sql.", quarters";
+        }
+        if( ! empty($_REQUEST["ownGoalA"]) ){
+            $sql = $sql.", own_goal_a";
+        }
+        if( ! empty($_REQUEST["ownGoalB"]) ){
+            $sql = $sql.", own_goal_b";
         }
         $sql = $sql.")
         values (
@@ -104,8 +113,17 @@ else if($pcmd == "match"){
         if( ! empty($_REQUEST["matchYn"]) ){
             $sql = $sql.", '".$_REQUEST["matchYn"]."'";
         }
+        if( ! empty($_REQUEST["otherTeam"]) ){
+            $sql = $sql.", '".$_REQUEST["otherTeam"]."'";
+        }
         if( ! empty($_REQUEST["quarters"]) ){
             $sql = $sql.", '".$_REQUEST["quarters"]."'";
+        }
+        if( ! empty($_REQUEST["ownGoalA"]) ){
+            $sql = $sql.", ".$_REQUEST["ownGoalA"]."";
+        }
+        if( ! empty($_REQUEST["ownGoalB"]) ){
+            $sql = $sql.", ".$_REQUEST["ownGoalB"]."";
         }
         $sql = $sql."
         )";
@@ -477,6 +495,8 @@ else if($pcmd == "match_update"){
         $pGoalB = $_REQUEST["goalB"];
         $pAsstA = $_REQUEST["asstA"];
         $pAsstB = $_REQUEST["asstB"];
+        $pOwnGoalA = $_REQUEST["ownGoalA"];
+        $pOwnGoalB = $_REQUEST["ownGoalB"];
 
         $pGround = $_REQUEST["groundId"];
         
@@ -490,6 +510,8 @@ else if($pcmd == "match_update"){
         , asst_a = '".$pAsstA."'
         , asst_b = '".$pAsstB."'
         , ground_id = '".$pGround."'
+        , own_goal_a = '".$pOwnGoalA."'
+        , own_goal_b = '".$pOwnGoalB."'
         WHERE id = ".$pMid." AND team_id = ".$pid;
         
         $result = mysqli_query($conn, $sql);

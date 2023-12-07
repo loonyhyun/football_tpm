@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Football_Record_Statistics">
+<meta name="author" content="LoonyHyun">
+<meta property="og:url" content="https://loonyhyun.cafe24.com/">
+<meta property="og:title" content="바론 FC - 플레이어">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+<meta property="og:description" content="바론 FC-ver.PLAYER.">
+<title>바론 FC - 플레이어</title>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<script src="/football_tpm/include/bootstrap-datepicker.min.js"></script>
+<script src="/football_tpm/include/bootstrap-datepicker.ko.min.js"></script>
+<link href="/football_tpm/include/bootstrap-datepicker.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<script src="/football_tpm/player/js/player.js"></script>
+<style>
+    .mgr_10 {margin-right:10px;}
+</style>
+<script>
+    $(document).ready(function(){
+        getTeam();
+        //$("#pageTitle").text(TEAM_NAME + " - PLAYER (총 경기수: " + PLAY_CNT + ")");
+        $("#pageTitle").text(TEAM_NAME + " - PLAYER");
+        getPlayerList();
+        sets();
+    });
+	$(window).resize(function(){
+		//setLayout();
+	});
+
+    function sets(){
+        var target = $("#selectPlayer1");
+        target.html("");
+        for(var i=0; i<PLAYER_LIST.length; i++){
+            var p = PLAYER_LIST[i];
+            if(p.player_name.indexOf("_용병") > -1){
+                continue;
+            }
+            var str = "<span class=\"badge rounded-pill text-bg-primary mgr_10\" onclick=\"funcSelectPlayer("+p.player_id+", this);\"> ";
+                str += p.player_name;
+                str += "</span>";
+            target.append(str);
+        }
+    }
+    
+    var SELECTED_VIEW = 0;
+    function gets(){
+        var thead = "";
+        var tbody = "";
+        
+        $("#VIEW_TABLE").hide();
+        $(".viewinfo").hide();
+
+        if(SELECTED_VIEW == 0){
+            $("#viewinfo_YEAR").show();
+            var info = viewDateInfo($("#hiddenYear").val() + ".01.01", $("#hiddenYear").val() + ".12.31");
+            var str = "<h4>"+$("#hiddenYear").val()+"년</h4>";
+            str += getInfoString(info);
+            $("#viewinfo" + SELECTED_VIEW).html(str);
+        }else if(SELECTED_VIEW == 1){
+            $("#viewinfo_MONTH").show();
+            selectMonth();
+        }else if(SELECTED_VIEW == 2){
+            $("#VIEW_TABLE").show();
+            $("#viewinfo_YEAR").show();
+        }else if(SELECTED_VIEW == 3){
+            $("#VIEW_TABLE").show();
+            $("#viewinfo_YEAR").show();
+        }else if(SELECTED_VIEW == 4){
+            $("#VIEW_TABLE").show();
+            $("#viewinfo_YEAR").show();
+        }else if(SELECTED_VIEW == 5){
+            $("#VIEW_TABLE").show();
+            $("#viewinfo_YEAR").show();
+        }else if(SELECTED_VIEW == 6){
+            
+        }
+
+        $("#viewinfo" + SELECTED_VIEW).show();
+    }
+
+    function viewSelectPlayer(){
+        var target= $("#selectPlayer1");
+        if(target.is(":visible")){
+            target.hide();
+        }else{
+            target.show();
+        }
+    }
+    function funcSelectPlayer(pid, obj){
+        if(SELECTED_PLAYER != null){
+            $(SELECTED_OBJECT).text(SELECTED_PLAYER.player_name);
+            $(SELECTED_OBJECT).removeClass("text-bg-success");
+            $(SELECTED_OBJECT).addClass("text-bg-primary");
+        }
+        if(SELECTED_PLAYER != null && SELECTED_PLAYER.player_id == pid){
+            SELECTED_PLAYER = null;
+            SELECTED_OBJECT = null;
+        }else{
+            for(var i=0; i<PLAYER_LIST.length; i++){
+                var p = PLAYER_LIST[i];
+                if(p.player_id == pid){
+                    SELECTED_PLAYER = p;
+                    break;
+                }
+            }
+            $(obj).append(" <i class=\"bi bi-x-circle-fill\"></i>");
+            $(obj).addClass("text-bg-success");
+            $(obj).removeClass("text-bg-primary");
+            SELECTED_OBJECT = obj;
+            $("#selectedPlayer1").text("[" + p.player_name + "]");
+            $("#selectPlayer1").hide();
+            SELECTED_PLAYER_INFO = getPlayer(SELECTED_PLAYER.player_id);
+            setSeletedPlayerInfo();
+            gets();
+        }
+    }
+
+    function setSeletedPlayerInfo(){
+        console.log(SELECTED_PLAYER_INFO)
+        var target = $("#DEFAULT_RECORD_DIV");
+        target.text("");
+        if(SELECTED_PLAYER_INFO != null){
+            var str = "";
+            var play_cnt = parseInt(SELECTED_PLAYER_INFO[1].play_cnt);
+            var win_cnt  = parseInt(SELECTED_PLAYER_INFO[1].win_cnt );
+            var tie_cnt  = parseInt(SELECTED_PLAYER_INFO[1].tie_cnt );
+            var lose_cnt = play_cnt - win_cnt - tie_cnt;
+            var pts = win_cnt * 3 + tie_cnt;
+            var goal_cnt = parseInt(SELECTED_PLAYER_INFO[1].goal_cnt);
+            var asst_cnt = parseInt(SELECTED_PLAYER_INFO[1].asst_cnt);
+            var per_win = parseInt(100 * (win_cnt + (tie_cnt*0.5)) / play_cnt);
+            str += "<pre style='white-space: pre-wrap;'>"+SELECTED_PLAYER_INFO[0].desc+"";
+            str += "\n" + play_cnt + "전 " + win_cnt + "승 "+ tie_cnt + "무 " + lose_cnt + "패";
+            str += "" + " (" + getPercent(per_win, 2) + "%)";
+            str += "\n" + goal_cnt + "골 " + asst_cnt + "어시";
+            var ls_cnt = parseInt(SELECTED_PLAYER_INFO[2].ls_cnt);
+            var t_cnt = parseInt(SELECTED_PLAYER_INFO[2].t_cnt);
+            var per_cleanquarter = 100 * ls_cnt / t_cnt;
+            str += "\n클린쿼터: " + ls_cnt + "/" + t_cnt + " (" + getPercent(per_cleanquarter, 2) + "%)</pre>";
+            target.html(str);
+        }
+    }
+
+    function viewInfo(tid){
+        $(".viewbtn").removeClass("text-bg-success");
+        $(".viewbtn").removeClass("text-bg-dark");
+        $(".viewbtn").addClass("text-bg-dark");
+        $("#viewbtn" + tid).removeClass("text-bg-dark");
+        $("#viewbtn" + tid).addClass("text-bg-success");
+        SELECTED_VIEW = tid;
+        gets();
+    }
+
+    function setSearchYear(year, tid){
+        $("#hiddenYear").val(year);
+        gets();
+    }
+	function selectPrevMonth(){
+		var tmpMonth = $("#selectMonth_Month").val();
+		if(tmpMonth == "01"){
+			$("#selectMonth_Year").val(parseInt($("#selectMonth_Year").val()) - 1);
+			$("#selectMonth_Month").val("12");
+		}
+		else if(parseInt(tmpMonth) - 1 < 10){
+			tmpMonth = "0" + (parseInt(tmpMonth) - 1);
+			$("#selectMonth_Month").val(tmpMonth);
+		}
+		else {
+			tmpMonth = (parseInt(tmpMonth) - 1);
+			$("#selectMonth_Month").val(tmpMonth);
+		}
+		selectMonth();
+	}
+	function selectNextMonth(){
+		var tmpMonth = $("#selectMonth_Month").val();
+		if(tmpMonth == "12"){
+			$("#selectMonth_Year").val(parseInt($("#selectMonth_Year").val()) + 1);
+			$("#selectMonth_Month").val("01");
+		}
+		else if(parseInt(tmpMonth) + 1 < 10){
+			tmpMonth = "0" + (parseInt(tmpMonth) + 1);
+			$("#selectMonth_Month").val(tmpMonth);
+		}
+		else {
+			tmpMonth = (parseInt(tmpMonth) + 1);
+			$("#selectMonth_Month").val(tmpMonth);
+		}
+		selectMonth();
+	}
+    function selectMonth(){
+		$("#hiddenMonth_Year").val($("#selectMonth_Year").val());
+		$("#hiddenMonth_Month").val($("#selectMonth_Month").val());
+
+		var from = $("#selectMonth_Year").val() + "." + $("#selectMonth_Month").val() + '.01';
+		var to = $("#selectMonth_Year").val() + "." + $("#selectMonth_Month").val() + '.31';
+        var info = viewDateInfo(from, to);
+        var str = "<h4>"+ $("#selectMonth_Year").val() + "년 " + $("#selectMonth_Month").val()+"월</h4>";
+        str += getInfoString(info);
+        $("#viewinfo" + SELECTED_VIEW).html(str);
+    }
+
+    function getInfoString(info){
+        var str = "";
+        var play_cnt = parseInt(info[0].play_cnt);
+        var win_cnt  = parseInt(info[0].win_cnt );
+        var tie_cnt  = parseInt(info[0].tie_cnt );
+        var lose_cnt = play_cnt - win_cnt - tie_cnt;
+        var pts = win_cnt * 3 + tie_cnt;
+        var goal_cnt = parseInt(info[0].goal_cnt);
+        var asst_cnt = parseInt(info[0].asst_cnt);
+        var per_win = parseInt(100 * (win_cnt + (tie_cnt*0.5)) / play_cnt);
+        str += "<pre style='white-space: pre-wrap;'>";
+        str += "" + play_cnt + "전 " + win_cnt + "승 "+ tie_cnt + "무 " + lose_cnt + "패";
+        str += "" + " (" + getPercent(per_win, 2) + "%)";
+        str += "\n" + goal_cnt + "골 " + asst_cnt + "어시";
+        var ls_cnt = parseInt(info[1].ls_cnt);
+        var t_cnt = parseInt(info[1].t_cnt);
+        var per_cleanquarter = 100 * ls_cnt / t_cnt;
+        str += "\n클린쿼터: " + ls_cnt + "/" + t_cnt + " (" + getPercent(per_cleanquarter, 2) + "%)</pre>";
+        return str;
+    }
+</script>
+</head>
+<body>
+	<div class="container">
+        <h3 id="pageTitle">PLAYER</h3>
+        <div class="row">&nbsp;</div>
+        <div class="row">
+            <div class="col" id="selectedPlayer1" style="font-weight: bold;" onclick="viewSelectPlayer();">
+                선수선택필요
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <div class="col" id="selectPlayer1">
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+            <!--기본기록-->
+            <div class="col" id="DEFAULT_RECORD_DIV">
+            </div>
+        </div>
+        <div class="row" style="margin-bottom: 10px;">
+            <!--기본기록-->
+            <div class="col">
+                <span class="badge rounded-pill text-bg-success viewbtn" id="viewbtn0" onclick="viewInfo(0);">
+                    년별기록
+                </span>
+                <span class="badge rounded-pill text-bg-dark viewbtn" id="viewbtn1" onclick="viewInfo(1);">
+                    월별기록
+                </span>
+                <span class="badge rounded-pill text-bg-dark viewbtn" id="viewbtn2" onclick="viewInfo(2);">
+                    선수궁합
+                </span>
+                <span class="badge rounded-pill text-bg-dark viewbtn" id="viewbtn3" onclick="viewInfo(3);">
+                    상대궁합
+                </span>
+                <span class="badge rounded-pill text-bg-dark viewbtn" id="viewbtn4" onclick="viewInfo(4);">
+                    듀오
+                </span>
+                <span class="badge rounded-pill text-bg-dark viewbtn" id="viewbtn5" onclick="viewInfo(5);">
+                    enemy 듀오
+                </span>
+            </div>
+        </div>
+        <inpu type="hidden" id="hiddenYear" value="" />
+        <inpu type="hidden" id="hiddenMonth_Year" value="" />
+        <inpu type="hidden" id="hiddenMonth_Month" value="" />
+        <div class="row viewinfo" id="viewinfo_YEAR" style="display: none; margin-bottom: 10px;">
+            <div class="col">
+                <script>
+                    var st = 2021;
+                    var ed = new Date().getFullYear();
+                    var tmp = "";
+                    for(var i=st; i<=ed; i++){
+                        tmp = "<button class=\"btn btn-outline-primary\" style='margin-right:5px;' onclick='setSearchYear("+i+", 0)'>"+i+"</button>";
+                        document.write(tmp);
+                    }
+                    $("#hiddenYear").val(ed);
+                </script>
+            </div>
+        </div>
+        <div class="row viewinfo" id="viewinfo_MONTH" style="display: none; margin-bottom: 10px;">
+            <div class="col">
+                <div class="input-group">
+                    <span class="input-group-text">년월</span>
+                    <select class="form-select" id="selectMonth_Year">
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                    <select class="form-select" id="selectMonth_Month">
+                        <option value="01">01</option>
+                        <option value="02">02</option>
+                        <option value="03">03</option>
+                        <option value="04">04</option>
+                        <option value="05">05</option>
+                        <option value="06">06</option>
+                        <option value="07">07</option>
+                        <option value="08">08</option>
+                        <option value="09">09</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                    </select>
+                    <button class="btn btn-primary " onclick="selectMonth();">SEARCH</button>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button class="btn btn-outline-dark" onclick="selectPrevMonth();"><i class="bi bi-box-arrow-left"></i></button>
+                        <button class="btn btn-outline-dark" onclick="selectNextMonth();"><i class="bi bi-box-arrow-right"></i></button>
+                    </div>
+                </div>
+                <script>
+                    $("#selectMonth_Year").val(year);
+                    $("#selectMonth_Month").val(month);
+                </script>
+            </div>
+        </div>
+        <div class="row viewinfo" id="viewinfo0" style="display: none;">
+            <!--년별기록-->
+        </div>
+        <div class="row viewinfo" id="viewinfo1" style="display: none;">
+            <!--월별기록-->
+        </div>
+        <div class="row viewinfo" id="viewinfo2" style="display: none;">
+            <!--선수궁합-->
+        </div>
+        <div class="row viewinfo" id="viewinfo3" style="display: none;">
+            <!--상대궁합-->
+        </div>
+        <div class="row viewinfo" id="viewinfo4" style="display: none;">
+            <!--결산-듀오-->
+        </div>
+        <div class="row viewinfo" id="viewinfo5" style="display: none;">
+            <!--결산-상대-->
+        </div>
+		<table class="table auto_font_size" id="VIEW_TABLE" style="display: none;">
+			<thead>
+				<tr style="background-color:#bbbbbb;" id="VIEW_THEAD">
+					<th scope="col">#</th>
+					<th scope="col">NAME</th>
+				</tr>
+			</thead>
+			<tbody id="VIEW_TBODY"></tbody>
+		</table>
+		<div class="row">&nbsp;</div>
+
+	</div>
+</body>
+</html>

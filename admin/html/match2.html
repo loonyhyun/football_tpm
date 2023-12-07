@@ -84,6 +84,8 @@
 						</select>
 					</div>
 				</div>
+			</div>
+			<div class="row">
 				<div class="col">
 					<div class="input-group mb-3">
 						<label class="input-group-text" for="match_yn">매치여부</label>
@@ -91,6 +93,7 @@
 							<option value="N">N</option>
 							<option value="Y">Y</option>
 						</select>
+						<input type="text" id="other_team" class="form-control" placeholder="매치상대" aria-label="매치상대" value="" />
 					</div>
 				</div>
 				<div class="col">
@@ -166,6 +169,18 @@
 											</thead>
 											<tbody id="team_a_tbody"></tbody>
 										</table>
+										<table class="table">
+										  <tr>
+											<th scope="col">상대자책</th>
+											<td scope="col">
+											  <div class="input-group mb-3">
+												<span class="input-group-text" onclick="funcSet('own_goal_a', '+');">+</span>
+												<input type="text" class="form-control" style='width:25px;' name='own_goal_a' id='own_goal_a' value='0'>
+												<span class="input-group-text" onclick="funcSet('own_goal_a', '-');">-</span>
+											  </div>
+											</td>
+										  </tr>
+										</table>
 									</div>
 								</td>
 								<td>
@@ -186,6 +201,18 @@
 												</tr>
 											</thead>
 											<tbody id="team_b_tbody"></tbody>
+										</table>
+										<table class="table">
+										  <tr>
+											<th scope="col">상대자책</th>
+											<td scope="col">
+											  <div class="input-group mb-3">
+												<span class="input-group-text" onclick="funcSet('own_goal_b', '+');">+</span>
+												<input type="text" class="form-control" style='width:25px;' name='own_goal_b' id='own_goal_b' value='0'>
+												<span class="input-group-text" onclick="funcSet('own_goal_b', '-');">-</span>
+											  </div>
+											</td>
+										  </tr>
 										</table>
 									</div>
 								</td>
