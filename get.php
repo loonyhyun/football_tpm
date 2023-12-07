@@ -522,6 +522,8 @@ else if($pcmd == "match"){
         $sql1 = "SELECT win_ab
                     , (select name from football_ground where id = ground_id) g_name
                     , quarters
+                    , match_yn
+                    , IFNULL(other_team, '-') other_team
                     , IFNULL(own_goal_a, 0) own_goal_a
                     , IFNULL(own_goal_b, 0) own_goal_b
                     , (SELECT GROUP_CONCAT(m_quarter SEPARATOR  ';') FROM football_match_scoreless WHERE match_id = m.id AND team_ab = 'a') a_q
@@ -536,6 +538,8 @@ else if($pcmd == "match"){
         ,'quarters'=>$row1["quarters"]
         ,'a_q'=>$row1["a_q"]
         ,'b_q'=>$row1["b_q"]
+        ,'match_yn'=>$row1["match_yn"]
+        ,'other_team'=>$row1["other_team"]
         ,'own_goal_a'=>$row1["own_goal_a"]
         ,'own_goal_b'=>$row1["own_goal_b"]
         ));

@@ -181,8 +181,10 @@ function getMatchHtml(mid, mdate, winab){
                 winab = "무승부";
             }
             var g_name = "-";
+            var otherTeam = "-";
             var ownGoalA = 0;
             var ownGoalB = 0;
+            var matchYn = "N";
             
             if(data.length > 0){
                 if(data[0]["g_name"] != undefined && data[0]["g_name"] != null)
@@ -203,6 +205,12 @@ function getMatchHtml(mid, mdate, winab){
                     ownGoalB = data[0]["own_goal_b"];
                     $("#own_goal_b").val(ownGoalB)
                 }
+                if(data[0]["other_team"] != undefined && data[0]["other_team"] != null){
+                    otherTeam = data[0]["other_team"];
+                }
+                if(data[0]["match_yn"] != undefined && data[0]["match_yn"] != null){
+                    matchYn = data[0]["match_yn"];
+                }
             }
             $("#ground_id").children().each(function(){
                 if(g_name == $(this).text()){
@@ -211,6 +219,9 @@ function getMatchHtml(mid, mdate, winab){
             })
             $("#input_match_date").val(mdate);
             $("#MatchInfoDesc").text("경기일자: " + mdate + ", " + winab + ", " + g_name);
+            if(matchYn == "Y" && otherTeam != "-"){
+                $("#MatchInfoDesc").append(", 상대팀: " + otherTeam);
+            }
             var targetA = $("#MatchInfoTbodyA");
             var targetB = $("#MatchInfoTbodyB");
             targetA.html("");
