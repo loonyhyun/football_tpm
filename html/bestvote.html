@@ -35,6 +35,8 @@
 					}
 					select.append("<option value='"+data[i]["player_id"]+"'>"+data[i]["player_name"]+"</option>");
 				}
+				
+				setSelectedPosition();
 			},
 			error : function(err) {
 				alert("오류발생 관리자에게 문의하세요.")
@@ -212,7 +214,7 @@
 		<div class="row">&nbsp;</div>
 		<div class="row">
 			<div class="col">
-				<h2>2023년 상반기 BEST 11.</h2>
+				<h2>2023년 하반기 BEST 11.</h2>
 				<div class="row">&nbsp;</div>
 				<div class="input-group">
 					<span class="input-group-text">이름</span>
@@ -223,7 +225,7 @@
 					<span class="input-group-text">포메이션</span>
 					<select id="REG_FORMATION" class="form-select" onchange="setSelectedPosition();">
 						<option value="">선택</option>
-						<option value="433">4-3-3</option>
+						<option value="433" selected>4-3-3</option>
 						<option value="442">4-4-2</option>
 						<option value="424">4-2-4</option>
 						<option value="451">4-5-1</option>
