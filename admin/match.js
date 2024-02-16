@@ -538,7 +538,7 @@ function setTeamByMatch(team, id, name) {
         str += "</p>";*/
 
         str = "<tr id='teamA_"+id+"'>";
-        str += "  <td>" + name + "</td>";
+        str += "  <td class='teamAname' id='teamAname_" + id + "'>" + name + "</td>";
         str += "  <td>";
         str += "<input type='number' class='VALUE_INPUT' name='teamAgoal' id='teamAgoal_" + id + "' value='0' style='width:30px;'>";
         str += " <button class='PLUS_MINUS btn btn-sm btn-primary' style='padding:0 0.25rem; width:24px; height:24px;' onclick=\"plusValueMatch('teamAgoal_"+id+"');\">+</button>";
@@ -571,7 +571,7 @@ function setTeamByMatch(team, id, name) {
         str += "</p>"*/
         
         str = "<tr id='teamB_"+id+"'>";
-        str += "  <td>" + name + "</td>";
+        str += "  <td class='teamBname' id='teamBname_" + id + "'>" + name + "</td>";
         str += "  <td>";
         str += "<input type='number' class='VALUE_INPUT' name='teamBgoal' id='teamBgoal_" + id + "' value='0' style='width:30px;'>";
         str += " <button class='PLUS_MINUS btn btn-sm btn-primary' style='padding:0 0.25rem; width:24px; height:24px;' onclick=\"plusValueMatch('teamBgoal_"+id+"');\">+</button>";

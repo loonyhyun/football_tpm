@@ -67,6 +67,71 @@
 			}
 		}
 	}
+
+	function setGoalText(){
+		var txt = $("#gtext").val();
+		var ws = [];
+		var t1 = txt.split("\n");
+		for(var i=0; i<t1.length; i++){
+			var w = t1[i].split(",");
+			for(var j=0; j<w.length; j++){
+				ws.push(w[j]);
+			}
+		}
+		//console.log(ws);
+		
+		var players = $(".teamAname");
+		for(var wi = 0; wi<ws.length; wi++){
+			var s = ws[wi].trim().split("-");
+			var g = s[0];
+			var a = s[1];
+			for(var i=0; i<players.length; i++){
+				var pname = $(players[i]).text().trim();
+				var gid = $(players[i]).attr("id").replace("teamAname", "teamAgoal");
+				var aid = $(players[i]).attr("id").replace("teamAname", "teamAasst");
+				//console.log(pname, gid, aid)
+				if(pname == g){
+					var tmp = $("#" + gid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+				if(pname == a){
+					var tmp = $("#" + aid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+			}
+		}
+		players = $(".teamBname");
+		for(var wi = 0; wi<ws.length; wi++){
+			var s = ws[wi].trim().split("-");
+			var g = s[0];
+			var a = s[1];
+			for(var i=0; i<players.length; i++){
+				var pname = $(players[i]).text().trim();
+				var gid = $(players[i]).attr("id").replace("teamBname", "teamBgoal");
+				var aid = $(players[i]).attr("id").replace("teamBname", "teamBasst");
+				//console.log(pname, gid, aid)
+				if(pname == g){
+					var tmp = $("#" + gid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+				if(pname == a){
+					var tmp = $("#" + aid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+			}
+		}
+	}
+
+	function setGoalClear(){
+		var ga = $("input[name=teamAgoal]");
+		var gb = $("input[name=teamBgoal]");
+		var aa = $("input[name=teamAasst]");
+		var ab = $("input[name=teamBasst]");
+		for(var i=0; i<ga.length; i++){ $(ga[i]).val(0); }
+		for(var i=0; i<gb.length; i++){ $(gb[i]).val(0); }
+		for(var i=0; i<aa.length; i++){ $(aa[i]).val(0); }
+		for(var i=0; i<ab.length; i++){ $(ab[i]).val(0); }
+	}
 </script>
 <style>
 	@media (max-width:861px) {
@@ -185,6 +250,11 @@
 									<div class="input-group mb-3">
 										<button class="btn btn-outline-primary" type="button" onclick="setTeamText('b');">B팀셋</button>
 										<textarea class="form-control" style="height:100px;" id="btext"></textarea>
+									</div>
+									<div class="input-group mb-3">
+										<button class="btn btn-outline-success" type="button" onclick="setGoalText('b');">GA셋</button>
+										<textarea class="form-control" style="height:100px;" id="gtext"></textarea>
+										<button class="btn btn-outline-success" type="button" onclick="setGoalClear();">초기화</button>
 									</div>
 								</th>
 							</tr>
