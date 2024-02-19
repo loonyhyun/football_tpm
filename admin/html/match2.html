@@ -39,7 +39,14 @@
 	function setTeamText(team){
 		if(team == 'a'){
 			var txt = $("#atext").val();
-			var ws = txt.split(",");
+			var ws = [];
+			var t1 = txt.split("\n");
+			for(var i=0; i<t1.length; i++){
+				var w = t1[i].split(",");
+				for(var j=0; j<w.length; j++){
+					ws.push(w[j]);
+				}
+			}
 			
 			var players = $("#team_choice").children();
 			for(var wi = 0; wi<ws.length; wi++){
@@ -53,7 +60,14 @@
 			}
 		}else{
 			var txt = $("#btext").val();
-			var ws = txt.split(",");
+			var ws = [];
+			var t1 = txt.split("\n");
+			for(var i=0; i<t1.length; i++){
+				var w = t1[i].split(",");
+				for(var j=0; j<w.length; j++){
+					ws.push(w[j]);
+				}
+			}
 			
 			var players = $("#team_choice").children();
 			for(var wi = 0; wi<ws.length; wi++){
