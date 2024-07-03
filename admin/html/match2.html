@@ -11,10 +11,7 @@
 
 		//difWindowHeight = $("#CREATE_MATCH_DIV_HEADER").height()+$("#CREATE_MATCH_DIV_HEADER").offset().top;
 		
-		var wh = $(window).height();
-		$(".TABLE_INNER_DIV").each(function(){
-			$(this).css("height", wh - difWindowHeight);
-		});
+		setLayoutTableInnerDiv();
 
 		getGrounds();
 
@@ -28,12 +25,127 @@
 	});
 
 	$(window).resize(function(){
-		var wh = $(window).height();
-		$(".TABLE_INNER_DIV").each(function(){
-			$(this).css("height", wh - difWindowHeight);
-		})
+		setLayoutTableInnerDiv();
 	});
 
+	function setLayoutTableInnerDiv(){
+		
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			//$(this).css("height", wh - difWindowHeight);
+		});
+	}
+
+	function setTeamText(team){
+		if(team == 'a'){
+			var txt = $("#atext").val();
+			var ws = [];
+			var t1 = txt.split("\n");
+			for(var i=0; i<t1.length; i++){
+				var w = t1[i].split(",");
+				for(var j=0; j<w.length; j++){
+					ws.push(w[j]);
+				}
+			}
+			
+			var players = $("#team_choice").children();
+			for(var wi = 0; wi<ws.length; wi++){
+				for(var i=0; i<players.length; i++){
+					var pname = $(players[i]).text().split(" ")[0];
+					if(pname.trim() == ws[wi].trim()){
+						$(players[i]).children()[0].click();
+						break;
+					}
+				}
+			}
+		}else{
+			var txt = $("#btext").val();
+			var ws = [];
+			var t1 = txt.split("\n");
+			for(var i=0; i<t1.length; i++){
+				var w = t1[i].split(",");
+				for(var j=0; j<w.length; j++){
+					ws.push(w[j]);
+				}
+			}
+			
+			var players = $("#team_choice").children();
+			for(var wi = 0; wi<ws.length; wi++){
+				for(var i=0; i<players.length; i++){
+					var pname = $(players[i]).text().split(" ")[0];
+					if(pname.trim() == ws[wi].trim()){
+						$(players[i]).children()[1].click();
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	function setGoalText(){
+		var txt = $("#gtext").val();
+		var ws = [];
+		var t1 = txt.split("\n");
+		for(var i=0; i<t1.length; i++){
+			var w = t1[i].split(",");
+			for(var j=0; j<w.length; j++){
+				ws.push(w[j]);
+			}
+		}
+		//console.log(ws);
+		
+		var players = $(".teamAname");
+		for(var wi = 0; wi<ws.length; wi++){
+			var s = ws[wi].trim().split("-");
+			var g = s[0];
+			var a = s[1];
+			for(var i=0; i<players.length; i++){
+				var pname = $(players[i]).text().trim();
+				var gid = $(players[i]).attr("id").replace("teamAname", "teamAgoal");
+				var aid = $(players[i]).attr("id").replace("teamAname", "teamAasst");
+				//console.log(pname, gid, aid)
+				if(pname == g){
+					var tmp = $("#" + gid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+				if(pname == a){
+					var tmp = $("#" + aid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+			}
+		}
+		players = $(".teamBname");
+		for(var wi = 0; wi<ws.length; wi++){
+			var s = ws[wi].trim().split("-");
+			var g = s[0];
+			var a = s[1];
+			for(var i=0; i<players.length; i++){
+				var pname = $(players[i]).text().trim();
+				var gid = $(players[i]).attr("id").replace("teamBname", "teamBgoal");
+				var aid = $(players[i]).attr("id").replace("teamBname", "teamBasst");
+				//console.log(pname, gid, aid)
+				if(pname == g){
+					var tmp = $("#" + gid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+				if(pname == a){
+					var tmp = $("#" + aid);
+					tmp.val(parseInt(tmp.val()) + 1);
+				}
+			}
+		}
+	}
+
+	function setGoalClear(){
+		var ga = $("input[name=teamAgoal]");
+		var gb = $("input[name=teamBgoal]");
+		var aa = $("input[name=teamAasst]");
+		var ab = $("input[name=teamBasst]");
+		for(var i=0; i<ga.length; i++){ $(ga[i]).val(0); }
+		for(var i=0; i<gb.length; i++){ $(gb[i]).val(0); }
+		for(var i=0; i<aa.length; i++){ $(aa[i]).val(0); }
+		for(var i=0; i<ab.length; i++){ $(ab[i]).val(0); }
+	}
 </script>
 <style>
 	@media (max-width:861px) {
@@ -143,15 +255,32 @@
 								<th scope="col" style="background-color:#ffa2a2;">A팀(RED)</th>
 								<th scope="col" style="background-color:#9d9dff;">B팀(BLUE)</th>
 							</tr>
+							<tr>
+								<th colspan="3">
+									<div class="input-group mb-3">
+										<button class="btn btn-outline-danger" type="button" onclick="setTeamText('a');">A팀셋</button>
+										<textarea class="form-control" style="height:100px;" id="atext"></textarea>
+									</div>
+									<div class="input-group mb-3">
+										<button class="btn btn-outline-primary" type="button" onclick="setTeamText('b');">B팀셋</button>
+										<textarea class="form-control" style="height:100px;" id="btext"></textarea>
+									</div>
+									<div class="input-group mb-3">
+										<button class="btn btn-outline-success" type="button" onclick="setGoalText('b');">GA셋</button>
+										<textarea class="form-control" style="height:100px;" id="gtext"></textarea>
+										<button class="btn btn-outline-success" type="button" onclick="setGoalClear();">초기화</button>
+									</div>
+								</th>
+							</tr>
 						</thead>
 						<tbody style="font-size:12px;">
 							<tr>
 								<td>
-									<div class="TABLE_INNER_DIV" style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;" id="team_choice">
+									<div class="TABLE_INNER_DIV" style="min-width:150px; width:100%; overflow-x: hidden; overflow-y: auto;" id="team_choice">
 									</div>
 								</td>
 								<td>
-									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto; max-height:1000px;">
+									<div class="align-top TABLE_INNER_DIV" style="width:100%; overflow-x: hidden; overflow-y: auto;">
 										<table class="table auto_font_size">
 											<colgroup>
 												<col width="100px"/>

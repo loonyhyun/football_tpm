@@ -61,6 +61,14 @@
 	}
 </script>
 <style>
+@media screen and (max-width: 400px) {
+	.playerTheadMin {display: table-row;}
+	.playerThead {display: none;}
+}
+@media screen and (min-width: 400px) {
+	.playerThead {display: table-row;}
+	.playerTheadMin {display: none;}
+}
 </style>
 
 <div id="headers"></div>
@@ -131,7 +139,7 @@
 			테이블 검색: <input type="text" id="searchPlayerName" value="" onkeyup="searchTablePlayer();"/>
 		</caption>
 		<thead>
-			<tr style="background-color:#bbbbbb;" id="playerThead">
+			<tr style="background-color:#bbbbbb;"  class="playerThead" id="playerThead">
 				<th scope="col">#</th>
 				<th scope="col" onclick="SortTable(1, 'ASC')">NAME</th>
 				<th scope="col" onclick="SortTable(2, 'DESC')">PLAY</th>
@@ -141,6 +149,17 @@
 				<th scope="col" onclick="SortTable(6, 'DESC')">WIN</th>
 				<th scope="col" onclick="SortTable(7, 'DESC')">PTS</th>
 				<th scope="col" onclick="SortTable(8, 'DESC')">DEF</th>
+			</tr>
+			<tr style="background-color:#bbbbbb;" class="playerTheadMin" id="playerTheadMin">
+				<th scope="col">#</th>
+				<th scope="col" onclick="SortTable(1, 'ASC')">Nm</th>
+				<th scope="col" onclick="SortTable(2, 'DESC')">Pl</th>
+				<th scope="col" onclick="SortTable(3, 'DESC')">G</th>
+				<th scope="col" onclick="SortTable(4, 'DESC')">A</th>
+				<th scope="col" onclick="SortTable(5, 'DESC')">G+A</th>
+				<th scope="col" onclick="SortTable(6, 'DESC')">W</th>
+				<th scope="col" onclick="SortTable(7, 'DESC')">Pts</th>
+				<th scope="col" onclick="SortTable(8, 'DESC')">Def</th>
 			</tr>
 		</thead>
 		<tbody id="playerTbody"></tbody>
