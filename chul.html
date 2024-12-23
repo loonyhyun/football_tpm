@@ -1,0 +1,454 @@
+<html>
+	
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Football_Record_Statistics">
+    <meta name="author" content="LoonyHyun">
+    <meta property="og:url" content="https://loonyhyun.cafe24.com/">
+    <meta property="og:title" content="바론 FC 출석판">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+    <meta property="og:description" content="바론 FC 출석판">
+    <title>바론 FC 출석판</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    
+    <script src="/football_tpm/include/bootstrap-datepicker.min.js"></script>
+    <script src="/football_tpm/include/bootstrap-datepicker.ko.min.js"></script>
+    <link href="/football_tpm/include/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    
+    <link href="/football_tpm/include/team.css" rel="stylesheet">
+    <script src="/football_tpm/admin/admin.js"></script>
+    <link href="/football_tpm/admin/admin.css" rel="stylesheet">
+    <script src="/football_tpm/admin/match.js"></script>
+
+
+<script>
+	var TEAM_ID = 1;
+	var TEAM_NAME = '';
+	$(document).ready(function(){
+		getTeam();
+
+		getPlayerListByAttend();
+		getInitAttend();
+	});
+
+	$(window).resize(function(){
+		
+	});
+
+	var selectedPlayers = [];
+	var attendPlayers = [];
+	var yongPlayers = [];
+	function getPlayerListByAttend() {
+		$.ajax({
+			async: false, 
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "player_chul",
+				id : 1
+			},
+			dataType : "json",
+			success : function(data) {
+				var tbody = $("#plist");
+				for(var i=0; i<data.length; i++){
+					var tmp = data[i];
+					var pname = tmp["player_name"];
+					var pid = tmp["player_id"];
+					if(pname.indexOf("_용병") > -1){
+						yongPlayers[pid] = tmp;
+						continue;
+					}
+					attendPlayers[pid] = tmp;
+					tbody.append("<div id='p_"+pid+"' class='plist' onclick='beforeSelectTeam(\""+pid+"\");'>"+pname+"</div>");
+				}
+				console.log(yongPlayers);
+				for(var i=0; i<yongPlayers.length; i++){
+					var tmp = yongPlayers[i];
+					if(tmp == undefined || tmp == null){
+						continue;
+					}
+					console.log(tmp);
+					var pname = tmp["player_name"].replace("_", "");
+					var pid = tmp["player_id"];
+					attendPlayers[pid] = tmp;
+					tbody.append("<div id='p_"+pid+"' class='plist' onclick='beforeSelectTeam(\""+pid+"\");'>"+pname+"</div>");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function setAttendInit(){
+		if(confirm("초기화 시 등록된 인원이 없어집니다. 되돌릴 수 없습니다.\n초기화 하시겠습니까?")){
+			$.ajax({
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "chul_init",
+				id : 1,
+				checker : "baron",
+				md : getmd()
+			},
+			success : function(data) {
+				if(data == "ok"){
+					alert("초기화 완료");
+					location.reload();
+				}else{
+					alert("초기화 실패");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+		}
+	}
+
+
+
+var redcolor = "#ffa2a2";
+var bluecolor = "#9d9dff";
+</script>
+<style>
+	table { font-size: large; font-weight: bold;}
+
+	.th_no { padding: 10px; border-bottom: 2px solid #333; text-align: center; }
+	.th_a  { padding: 10px; border-bottom: 2px solid #333; text-align: center; background-color: #ffa2a2; }
+	.th_b  { padding: 10px; border-bottom: 2px solid #333; text-align: center; background-color: #9d9dff;}
+	.t_row { height:46px; padding:8px; }
+	.bgc { background-color: #ffe581; }
+	.vtop { vertical-align: top; }
+
+	.fullscreen {
+		display:none;
+		position:absolute;
+		top:0; left: 0;
+		width:100%; min-height: 100%;
+		padding:20px;
+		background-color: white;
+	}
+	.finbtn{
+		display:none;
+		position:absolute; top:50px;
+		width:calc(100% - 60px);
+		padding:30px; margin:30px;
+		border: 3px solid #333;
+		text-align: center; font-size:30px; font-weight: bold;
+	}
+	.plist {
+		display: inline-block;
+		border:1px solid #333;
+		border-radius: 10px;
+		background-color: #ccc;
+		font-size: large;
+		font-weight: bold;
+		text-align: center;
+		margin:15px;
+		padding:15px;
+	}
+
+	.fintxt { font-size: 40px; }
+	.btn1 { padding:20px; border: 3px solid #333; margin-top: 20px; background-color: greenyellow; }
+	.btn2 { padding:20px; border: 3px solid #333; margin-top: 20px; background-color: yellow; }
+
+	.yongs { width:70px; }
+
+	.finalert {
+		display: none;
+		position: absolute;
+		top:80px;
+		width:100%;
+		text-align: center;
+		font-size: 40px;
+		background-color: white;
+		text-shadow: 0 0 .1em, 0 0 .3em;
+	}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div id="ATTEND_PLAYERS_DIV">
+			<div class="row">
+				<div class="col">
+					<button type="button" class="btn btn-warning" onclick="setAttendInit();">초기화</button>
+					<button type="button" class="btn btn-warning" onclick="delChul();">하나췻</button>
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-warning" onclick="showSelectTeam();">출석하기</button>
+				</div>
+			</div>
+			<div class="row">
+				<table>
+					<colgroup>
+						<col width="10%"/>
+						<col width="45%"/>
+						<col width="45%"/>
+					</colgroup>
+					<thead><tr>
+						<td class="th_no">No</td>
+						<td class="th_a">A</td>
+						<td class="th_b">B</td>
+					</tr></thead>
+					<tbody>
+						<tr>
+							<td id="pteam_no" class="vtop"></td>
+							<td id="pteam_a" class="vtop"></td>
+							<td id="pteam_b" class="vtop"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="plist" class="fullscreen"></div>
+	<div id="finbtn" class="finbtn">
+		<div id="fintxt" class="fintxt"></div>
+		<div class="btn1" onclick="afterSelectTeam();">출석첵</div>
+		<div class="btn2" onclick="hideSelectTeam();">취소</div>
+	</div>
+	<div id="finalert" class="finalert"></div>
+</body>
+<script>
+	var bpid = "";
+	var t_n = $("#pteam_no");
+	var t_a = $("#pteam_a");
+	var t_b = $("#pteam_b");
+	var plist = $("#plist");
+	var finbtn = $("#finbtn");
+	
+	function hideSelectTeam(){
+		finbtn.hide();
+		plist.hide();
+	}
+	
+	function showSelectTeam(){
+		plist.show();
+	}
+	
+	function beforeSelectTeam(pid){
+		bpid = pid;
+		$("#fintxt").text($("#p_" + pid).text());
+		var cnt_a = t_a.children().length;
+		var cnt_b = t_b.children().length;
+		console.log(cnt_a + "/" + cnt_b)
+		var color = '';
+		if(cnt_a <= cnt_b){
+			color = redcolor;
+		}else{
+			color = bluecolor;
+		}
+			finbtn.css("background-color", color);
+		finbtn.show();
+		$(document).scrollTop(0);
+	}
+	
+	function afterSelectTeam(){
+		$("#infbtn").hide();
+		var cnt_a = t_a.children().length;
+		var cnt_b = t_b.children().length;
+		var addclass = "";
+		var pname = $("#p_"+bpid).text();
+		if(cnt_a <= cnt_b){
+			if(cnt_a%2 == 1){
+				addclass = "bgc";
+			}
+			t_n.append("<div class='t_row "+addclass+"'>"+(cnt_a+1)+"</div>")
+			var str = ("<div class='t_row "+addclass+"' id='ta_"+bpid+"'>"+pname+"")
+			if(pname.indexOf("용병") == 0){
+				str += (" <input type='text' id='txt_"+bpid+"' value='' class='yongs' onchange='saveAttendInfo()'>")
+			}
+			str += ("</div>")
+			t_a.append(str);
+		}else{
+			if(cnt_b%2 == 1){
+				addclass = "bgc";
+			}
+			var str = ("<div class='t_row "+addclass+"' id='tb_"+bpid+"'>"+pname+"")
+			if(pname.indexOf("용병") == 0){
+				str += (" <input type='text' id='txt_"+bpid+"' value='' class='yongs' onchange='saveAttendInfo()'>")
+			}
+			str += ("</div>")
+			t_b.append(str);
+		}
+		hideSelectPlayer(bpid);
+		bpid = "";
+		hideSelectTeam();
+
+		saveAttendInfo();
+	}
+	
+	function hideSelectPlayer(pid){
+		$("#p_" + pid).hide();
+	}
+
+	function getmd(){
+		if(month < 10){
+			month = "0" + month;
+		}
+		if(date < 10){
+			date = "0" + date;
+		}
+		return year + "." + month + "." + date;
+	}
+	function saveAttendInfo(){
+		var team_a = "$";
+		var team_b = "$";
+		var yong_a = "$";
+		var yong_b = "$";
+
+		t_a.children().each(function(){
+			attendPlayers
+			var tid = $(this).attr("id").replace("ta_", "");
+			team_a += tid.replace("ta_", "") + "$";
+			if(attendPlayers[tid]["player_name"].indexOf("_용병") > -1){
+				yong_a += $("#txt_"+tid).val();
+			}
+			yong_a += "$";
+		})
+		t_b.children().each(function(){
+			var tid = $(this).attr("id").replace("tb_", "");
+			team_b += tid + "$";
+			if(attendPlayers[tid]["player_name"].indexOf("_용병") > -1){
+				yong_b += $("#txt_"+tid).val();
+			}
+			yong_b += "$";
+		})
+
+		//console.log(team_a);
+		//console.log(team_b);
+
+		$.ajax({
+			async: false,
+			type : "post",
+			url : '/football_tpm/save.php',
+			data : {
+				cmd : "chul",
+				id : 1,
+				md: getmd(),
+				team_a : team_a,
+				team_b : team_b,
+				yong_a : yong_a,
+				yong_b : yong_b
+			},
+			success : function(data) {
+				if(data == "ok"){
+					finalert("저장 성공");
+				}else{
+					finalert("저장 실패");
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	var falt = $("#finalert")
+	function finalert(txt){
+		var d = new Date();
+		falt.text(txt + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds());
+		falt.show();
+		setTimeout(function(){
+			falt.hide();
+		}, 2000)
+	}
+
+	
+
+	function getInitAttend(){
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "chul",
+				id : 1,
+				md : getmd()
+			},
+			dataType : "json",
+			success : function(data) {
+				console.log(data);
+				for(var i=0; i<data.length; i++){
+					var ta = data[i]["team_a"];
+					var tb = data[i]["team_b"];
+					var ya = data[i]["yong_a"];
+					var yb = data[i]["yong_b"];
+					var aa = ta.split("$");
+					var ab = tb.split("$");
+					var aya = ya.split("$");
+					var ayb = yb.split("$");
+
+					for(var ai = 0; ai < aa.length; ai++){
+						var pid = aa[ai];
+						if(pid == ""){
+							continue;
+						}
+						$("#p_" + pid).hide();
+						
+						var cnt_a = t_a.children().length;
+						var addclass = "";
+						var pname = $("#p_"+pid).text();
+						if(cnt_a%2 == 1){
+							addclass = "bgc";
+						}
+						t_n.append("<div class='t_row "+addclass+"'>"+(cnt_a+1)+"</div>")
+						var str = ("<div class='t_row "+addclass+"' id='ta_"+pid+"'>"+pname+"")
+						if(pname.indexOf("용병") == 0){
+							str += (" <input type='text' id='txt_"+pid+"' value='"+aya[ai]+"' class='yongs' onchange='saveAttendInfo()'>")
+						}
+						str += ("</div>")
+						t_a.append(str);
+					}
+					for(var ai = 0; ai < ab.length; ai++){
+						var pid = ab[ai];
+						if(pid == ""){
+							continue;
+						}
+						$("#p_" + pid).hide();
+						
+						var cnt_b = t_b.children().length;
+						var addclass = "";
+						var pname = $("#p_"+pid).text();
+						if(cnt_b%2 == 1){
+							addclass = "bgc";
+						}
+						var str = ("<div class='t_row "+addclass+"' id='tb_"+pid+"'>"+pname+"")
+						if(pname.indexOf("용병") == 0){
+							str += (" <input type='text' id='txt_"+pid+"' value='"+ayb[ai]+"' class='yongs' onchange='saveAttendInfo()'>")
+						}
+						str += ("</div>")
+						t_b.append(str);
+					}
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+	}
+
+	function delChul(){
+		var cnt_a = t_a.children().length;
+		var cnt_b = t_b.children().length;
+		if(cnt_a == cnt_b){
+			//b remove
+			t_b.children().last().remove();
+		}
+		else{
+			//a remove
+			t_a.children().last().remove();
+			t_n.children().last().remove();
+		}
+		saveAttendInfo();
+	}
+</script>
+</html>

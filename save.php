@@ -655,6 +655,67 @@ else if($pcmd == "attend2_set"){
 		}
     }
 }
+else if($pcmd == "chul"){
+    if($conn){
+		$sql = "SELECT count(1) cnt FROM football_chul
+        WHERE match_date = '".$_REQUEST["md"]."'
+        ";
+		$result = mysqli_query($conn, $sql);
+        $row = mysqli_fetch_array($result);
+        if($row["cnt"] == 0){
+            //생성
+            $sql = "INSERT INTO football_chul
+            (
+                match_date, team_a, team_b, yong_a, yong_b
+            )
+            VALUES
+            (
+                '".$_REQUEST["md"]."'
+                , '".$_REQUEST["team_a"]."'
+                , '".$_REQUEST["team_b"]."'
+                , '".$_REQUEST["yong_a"]."'
+                , '".$_REQUEST["yong_b"]."'
+            )
+            ";
+        }
+        else{
+            //수정
+            $sql = "UPDATE football_chul SET
+                team_a = '".$_REQUEST["team_a"]."'
+                , team_b = '".$_REQUEST["team_b"]."'
+                , yong_a = '".$_REQUEST["yong_a"]."'
+                , yong_b = '".$_REQUEST["yong_b"]."'
+            WHERE match_date = '".$_REQUEST["md"]."'
+            ";
+        }
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
+else if($pcmd == "chul_init"){
+    $pchecker = $_REQUEST["checker"];
+    if($pchecker == "baron"){
+        if($conn){
+            $sql = "DELETE FROM football_chul
+            WHERE match_date = '".$_REQUEST["md"]."'
+            ";
+            
+            $result = mysqli_query($conn, $sql);
+            if($result){
+                echo "ok";
+            }
+            else{
+                echo "fail";
+            }
+        }
+    }
+}
 else{
     echo "fail else";
 }

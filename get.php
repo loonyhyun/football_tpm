@@ -66,6 +66,31 @@ else if($pcmd == "player"){
         }
     }
 }
+else if($pcmd == "player_chul"){
+    if($conn){
+        $sql = "SELECT * FROM football_player where team_id = '".$pid."' 
+        and del_yn = 'N'
+        and chul_yn = 'Y'
+        order by player_name";
+        $result = mysqli_query($conn, $sql);
+        //$row = mysqli_fetch_array($result);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array('player_id'=>$row['id'],'player_name'=>$row['player_name']));
+        }
+    }
+}
+else if($pcmd == "chul"){
+    if($conn){
+        $sql = "SELECT * FROM football_chul where 1=1
+        AND match_date = '".$_REQUEST["md"]."'
+        ";
+        $result = mysqli_query($conn, $sql);
+        //$row = mysqli_fetch_array($result);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array('team_a'=>$row['team_a'],'team_b'=>$row['team_b'],'yong_a'=>$row['yong_a'],'yong_b'=>$row['yong_b']));
+        }
+    }
+}
 else if($pcmd == "player_matches"){
     if($conn){
         $playerId = $_REQUEST["playerId"];
