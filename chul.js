@@ -464,6 +464,7 @@ function delChul(){
     var cnt_b = t_b.children().length;
     if(chultype == 'A'){
         t_a.children().last().remove();
+        t_n.children().last().remove();
         saveAttendInfo();
         return;
     }
