@@ -698,6 +698,31 @@ else if($pcmd == "chul"){
 		}
     }
 }
+else if($pcmd == "chulq"){
+    if($conn){
+        $sql = "UPDATE football_chul SET
+            aq1 = '".$_REQUEST["aq1"]."'
+            , aq2 = '".$_REQUEST["aq2"]."'
+            , aq3 = '".$_REQUEST["aq3"]."'
+            , aq4 = '".$_REQUEST["aq4"]."'
+            , aq5 = '".$_REQUEST["aq5"]."'
+            , bq1 = '".$_REQUEST["bq1"]."'
+            , bq2 = '".$_REQUEST["bq2"]."'
+            , bq3 = '".$_REQUEST["bq3"]."'
+            , bq4 = '".$_REQUEST["bq4"]."'
+            , bq5 = '".$_REQUEST["bq5"]."'
+        WHERE match_date = '".$_REQUEST["md"]."'
+        ";
+
+		$result = mysqli_query($conn, $sql);
+		if($result){
+			echo "ok";
+		}
+		else{
+			echo "fail";
+		}
+    }
+}
 else if($pcmd == "chul_init"){
     $pchecker = $_REQUEST["checker"];
     if($pchecker == "baron"){

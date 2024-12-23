@@ -87,7 +87,12 @@ else if($pcmd == "chul"){
         $result = mysqli_query($conn, $sql);
         //$row = mysqli_fetch_array($result);
         while($row = mysqli_fetch_array($result)){
-            array_push($array, array('team_a'=>$row['team_a'],'team_b'=>$row['team_b'],'yong_a'=>$row['yong_a'],'yong_b'=>$row['yong_b']));
+            array_push($array, array(
+                'team_a'=>$row['team_a'],'team_b'=>$row['team_b']
+                ,'yong_a'=>$row['yong_a'],'yong_b'=>$row['yong_b']
+                ,'aq1'=>$row['aq1'],'aq2'=>$row['aq2'],'aq3'=>$row['aq3'],'aq4'=>$row['aq4'],'aq5'=>$row['aq5']
+                ,'bq1'=>$row['bq1'],'bq2'=>$row['bq2'],'bq3'=>$row['bq3'],'bq4'=>$row['bq4'],'bq5'=>$row['bq5']
+            ));
         }
     }
 }
