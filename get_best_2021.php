@@ -5,8 +5,8 @@ include 'setting.php';
 $pid = $_REQUEST["id"];
 $pcmd = $_REQUEST["cmd"];
 
-$notinplayer1 = " and id not in ('79','80','81','82') ";
-$notinplayer = " and player_id not in ('79','80','81','82') ";
+$notinplayer1 = " and id not in ('79','80','81','82','87','88','128','129','130','131','132','133','134','135','136') ";
+$notinplayer = " and player_id not in ('79','80','81','82','87','88','128','129','130','131','132','133','134','135','136') ";
 
 $array = array();
 if($pcmd == "best2021_cnt"){
