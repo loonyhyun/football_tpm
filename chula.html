@@ -1,0 +1,146 @@
+<html>
+	
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Football_Record_Statistics">
+    <meta name="author" content="LoonyHyun">
+    <meta property="og:url" content="https://loonyhyun.cafe24.com/">
+    <meta property="og:title" content="바론 FC 출석판">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://loonyhyun.cafe24.com/football_tpm/img/main.png">
+    <meta property="og:description" content="바론 FC 출석판">
+    <title>바론 FC 출석판</title>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    
+    <script src="/football_tpm/include/bootstrap-datepicker.min.js"></script>
+    <script src="/football_tpm/include/bootstrap-datepicker.ko.min.js"></script>
+    <link href="/football_tpm/include/bootstrap-datepicker.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    
+    <link href="/football_tpm/include/team.css" rel="stylesheet">
+    <script src="/football_tpm/admin/admin.js"></script>
+    <link href="/football_tpm/admin/admin.css" rel="stylesheet">
+    <script src="/football_tpm/admin/match.js"></script>
+
+
+<script>
+	var TEAM_ID = 1;
+	var TEAM_NAME = '';
+	var chultype = 'A'
+	$(document).ready(function(){
+		getTeam();
+
+		getPlayerListByAttend();
+		getInitAttend();
+	});
+
+	$(window).resize(function(){
+		
+	});
+
+</script>
+<style>
+	table { font-size: large; font-weight: bold;}
+
+	.th_no { padding: 10px; border-bottom: 2px solid #333; text-align: center; }
+	.th_a  { padding: 10px; border-bottom: 2px solid #333; text-align: center; background-color: #ffa2a2; }
+	.th_b  { padding: 10px; border-bottom: 2px solid #333; text-align: center; background-color: #9d9dff;}
+	.t_row { height:46px; padding:8px; }
+	.bgc { background-color: #ffe581; }
+	.vtop { vertical-align: top; }
+
+	.fullscreen {
+		display:none;
+		position:absolute;
+		top:0; left: 0;
+		width:100%; min-height: 100%;
+		padding:20px;
+		background-color: white;
+	}
+	.finbtn{
+		display:none;
+		position:absolute; top:50px;
+		width:calc(100% - 60px);
+		padding:30px; margin:30px;
+		border: 3px solid #333;
+		text-align: center; font-size:30px; font-weight: bold;
+	}
+	.plist {
+		display: inline-block;
+		border:1px solid #333;
+		border-radius: 10px;
+		background-color: #ccc;
+		font-size: large;
+		font-weight: bold;
+		text-align: center;
+		margin:15px;
+		padding:15px;
+	}
+
+	.fintxt { font-size: 40px; }
+	.btn1 { padding:20px; border: 3px solid #333; margin-top: 20px; background-color: greenyellow; }
+	.btn2 { padding:20px; border: 3px solid #333; margin-top: 20px; background-color: yellow; }
+
+	.yongs { width:70px; }
+
+	.finalert {
+		display: none;
+		position: absolute;
+		top:80px;
+		width:100%;
+		text-align: center;
+		font-size: 40px;
+		background-color: white;
+		text-shadow: 0 0 .1em, 0 0 .3em;
+	}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div id="ATTEND_PLAYERS_DIV">
+			<div class="row">
+				<div class="col">
+					<button type="button" class="btn btn-warning" onclick="setAttendInit();">초기화</button>
+					<button type="button" class="btn btn-warning" onclick="delChul();">하나췻</button>
+				</div>
+				<div class="col">
+					<button type="button" class="btn btn-warning" onclick="showSelectTeam();">출석하기</button>
+				</div>
+			</div>
+			<div class="row">
+				<table>
+					<colgroup>
+						<col width="10%"/>
+						<col width="40%"/>
+					</colgroup>
+					<thead><tr>
+						<td class="th_no">No</td>
+						<td class="th_a">A</td>
+					</tr></thead>
+					<tbody>
+						<tr>
+							<td id="pteam_no" class="vtop"></td>
+							<td id="pteam_a" class="vtop"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div id="plist" class="fullscreen"></div>
+	<div id="finbtn" class="finbtn">
+		<div id="fintxt" class="fintxt"></div>
+		<div class="btn1" onclick="afterSelectTeamA();">출석첵</div>
+		<div class="btn2" onclick="hideSelectTeam();">취소</div>
+	</div>
+	<div id="finalert" class="finalert"></div>
+</body>
+
+<script src="/football_tpm/chul.js"></script>
+</html>
