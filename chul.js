@@ -544,6 +544,8 @@ function changeChulQ(pid){
         txt = "O";
     }else if(txt == 'O'){
         txt = "GK";
+    }else{
+        txt = "-";
     }
     $("#" + pid).text(txt);
 }
