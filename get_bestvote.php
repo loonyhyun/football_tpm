@@ -134,7 +134,6 @@ else if($pcmd == "count_player"){
             from football_player
             where 1=1
             and team_id = ".$pid."
-            and del_yn = 'N'
             ".$notinplayer1."
         ) p
         where date_format(f.reg_date, '%Y.%m.%d') between '".$pfrom."' and '".$pto."'
