@@ -462,6 +462,11 @@ function getInitAttend(){
 function delChul(){
     var cnt_a = t_a.children().length;
     var cnt_b = t_b.children().length;
+    if(chultype == 'A'){
+        t_a.children().last().remove();
+        saveAttendInfo();
+        return;
+    }
     if(cnt_a == cnt_b){
         //b remove
         t_b.children().last().remove();
