@@ -68,13 +68,12 @@
 					attendPlayers[pid] = tmp;
 					tbody.append("<div id='p_"+pid+"' class='plist' onclick='beforeSelectTeam(\""+pid+"\");'>"+pname+"</div>");
 				}
-				console.log(yongPlayers);
+				//console.log(yongPlayers);
 				for(var i=0; i<yongPlayers.length; i++){
 					var tmp = yongPlayers[i];
 					if(tmp == undefined || tmp == null){
 						continue;
 					}
-					console.log(tmp);
 					var pname = tmp["player_name"].replace("_", "");
 					var pid = tmp["player_id"];
 					attendPlayers[pid] = tmp;
@@ -240,7 +239,7 @@ var bluecolor = "#9d9dff";
 		$("#fintxt").text($("#p_" + pid).text());
 		var cnt_a = t_a.children().length;
 		var cnt_b = t_b.children().length;
-		console.log(cnt_a + "/" + cnt_b)
+		//console.log(cnt_a + "/" + cnt_b)
 		var color = '';
 		if(cnt_a <= cnt_b){
 			color = redcolor;
@@ -376,7 +375,7 @@ var bluecolor = "#9d9dff";
 			},
 			dataType : "json",
 			success : function(data) {
-				console.log(data);
+				//console.log(data);
 				for(var i=0; i<data.length; i++){
 					var ta = data[i]["team_a"];
 					var tb = data[i]["team_b"];
