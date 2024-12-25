@@ -107,6 +107,7 @@ function showSelectTeam(){
 }
 
 function beforeSelectTeam(pid){
+    getInitAttend();
     bpid = pid;
     $("#fintxt").text($("#p_" + pid).text());
     var cnt_a = t_a.children().length;
@@ -270,6 +271,7 @@ function finalert(txt){
 function getInitAttend(){
     $.ajax({
         type : "post",
+        async: false,
         url : '/football_tpm/get.php',
         data : {
             cmd : "chul",
@@ -293,11 +295,11 @@ function getInitAttend(){
                 var aq3 = data[i]["aq3"];
                 var aq4 = data[i]["aq4"];
                 var aq5 = data[i]["aq5"];
-                var bq1 = data[i]["aq1"];
-                var bq2 = data[i]["aq2"];
-                var bq3 = data[i]["aq3"];
-                var bq4 = data[i]["aq4"];
-                var bq5 = data[i]["aq5"];
+                var bq1 = data[i]["bq1"];
+                var bq2 = data[i]["bq2"];
+                var bq3 = data[i]["bq3"];
+                var bq4 = data[i]["bq4"];
+                var bq5 = data[i]["bq5"];
                 aq1 = aq1 != null ? aq1.split("$") : "";
                 aq2 = aq2 != null ? aq2.split("$") : "";
                 aq3 = aq3 != null ? aq3.split("$") : "";
@@ -308,6 +310,20 @@ function getInitAttend(){
                 bq3 = bq3 != null ? bq3.split("$") : "";
                 bq4 = bq4 != null ? bq4.split("$") : "";
                 bq5 = bq5 != null ? bq5.split("$") : "";
+
+                t_n.html("");
+                t_a.html("");
+                t_b.html("");
+                t_aq1.html("");
+                t_aq2.html("");
+                t_aq3.html("");
+                t_aq4.html("");
+                t_aq5.html("");
+                t_bq1.html("");
+                t_bq2.html("");
+                t_bq3.html("");
+                t_bq4.html("");
+                t_bq5.html("");
 
                 for(var ai = 0; ai < aa.length; ai++){
                     var pid = aa[ai];
