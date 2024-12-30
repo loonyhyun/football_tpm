@@ -8,15 +8,16 @@
 </style>
 <script>
 	$(document).ready(function(){
-		var target_header = "best2024_1";
+		var target_header = "best2024_2";
 		getTeam();
 		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
 		$("#drop_header").text($("#drop_header_" + target_header).text());
 		setLayout();
-		var from = '2024.01.01';
-		var to = '2024.06.30';
-		getCount('2024.07.01', '2024.07.10');
+		var from = '2024.12.01';
+		var to = '2024.12.31';
+		getCount(from, to);
 		MIN_PER = 50;
+		from = '2024.07.01';
 		getTopScore(from, to, 10);
 	});
 
@@ -30,7 +31,7 @@
 	<div class="container">
 		<div class="row">&nbsp;</div>
 		<div class="row">
-			<h2>2024년 상반기 결산 - TOP10</h2>
+			<h2>2024년 하반기 결산 - TOP10</h2>
 			<h5 id="match_cnt"></h5>
 			<div class="col">
 				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
