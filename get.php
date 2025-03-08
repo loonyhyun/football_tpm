@@ -575,7 +575,7 @@ else if($pcmd == "match"){
         ));
         
         $sql = "SELECT *
-                FROM football_tpm_view
+                FROM football_tpm_view2
                 WHERE match_id = '".$pmatchid."' and play_yn = 1 order by player_name";
         $result = mysqli_query($conn, $sql);
         //$row = mysqli_fetch_array($result);
