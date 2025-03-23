@@ -1,0 +1,319 @@
+<style>
+	.VIEW_THEAD > tr {
+		text-align: center;
+		vertical-align: middle;
+	}
+</style>
+<script>
+	$(document).ready(function(){
+		var target_header = "team_total";
+		getTeam();
+		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
+		$("#drop_header").text($("#drop_header_" + target_header).text());
+		$("#dropdown_best").addClass("text-warning").removeClass("text-white");
+		setLayout();
+		
+		var nowDate = new Date();
+		//selectYear(nowDate.getFullYear());
+		selectYear();
+	});
+
+	$(window).resize(function(){
+		setLayout();
+	});
+
+	function selectYear(year){
+		$(".VIEW_TBODY").each(function(){$(this).html("")});
+		/*
+		if(year == undefined || year == null || year == ''){
+			$("#search_date_info").html("전체");
+		}else{
+			$("#search_date_info").html(year + "년");
+		}
+		*/
+		$.ajax({
+			async : false,
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "team_record",
+				id : TEAM_ID,
+				searchYear: year
+			},
+			dataType : "json",
+			success : function(data) {
+				data = data.sort((a,b) => (b.goal_cnt - a.goal_cnt));
+				for(var i=0; i<1; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_GOAL", tmp.player_name, tmp.goal_cnt
+					)
+				}
+				data = data.sort((a,b) => (b.asst_cnt - a.asst_cnt));
+				for(var i=0; i<1; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_ASST", tmp.player_name, tmp.asst_cnt
+					)
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+		$.ajax({
+			async : false,
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "team_record1",
+				id : TEAM_ID,
+				searchYear: year
+			},
+			dataType : "json",
+			success : function(data) {
+				data = data.sort((a,b) => (b.goal_cnt - a.goal_cnt));
+				for(var i=0; i<3; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_G1", tmp.player_name, tmp.match_date, tmp.goal_cnt
+					)
+				}
+				data = data.sort((a,b) => (b.asst_cnt - a.asst_cnt));
+				for(var i=0; i<3; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_A1", tmp.player_name, tmp.match_date, tmp.asst_cnt
+					)
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+		$.ajax({
+			async : false,
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "team_record2",
+				id : TEAM_ID,
+				searchYear: year
+			},
+			dataType : "json",
+			success : function(data) {
+				data = data.sort((a,b) => (b.play_cnt - a.play_cnt));
+				for(var i=0; i<1; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_TPLAY", tmp.match_date, tmp.play_cnt
+					)
+				}
+				data = data.sort((a,b) => (b.goal_cnt - a.goal_cnt));
+				for(var i=0; i<1; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_TGOAL", tmp.match_date, tmp.goal_cnt
+					)
+				}
+				data = data.sort((a,b) => (b.asst_cnt - a.asst_cnt));
+				for(var i=0; i<1; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_TASST", tmp.match_date, tmp.asst_cnt
+					)
+				}
+				data = data.sort((a,b) => (b.team_max_goal - a.team_max_goal));
+				for(var i=0; i<3; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_TG1", tmp.match_date, tmp.team_max_goal
+					)
+				}
+				data = data.sort((a,b) => (b.team_max_asst - a.team_max_asst));
+				for(var i=0; i<3; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_TA1", tmp.match_date, tmp.team_max_asst
+					)
+				}
+				data = data.sort((a,b) => (b.c_goal - a.c_goal));
+				for(var i=0; i<3; i++){
+					var tmp = data[i];
+					setHtml(
+						"VIEW_TBODY_TC1", tmp.match_date, tmp.c_goal
+					)
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+		
+	}
+
+	function sortDesc(a, b){
+		a = parseFloat(a);
+		b = parseFloat(b);
+		if(a > b) return -1;
+		if(a === b) return 0;
+		if(a < b) return 1;			
+	}
+
+	function setHtml(){
+		var str = "";
+		for(var i=1; i<arguments.length; i++){
+			str += "<td>"+arguments[i]+"</td>";
+		}
+		$("#"+arguments[0]).append("<tr>"+str+"</tr>");
+	}
+	
+</script>
+<style>
+</style>
+
+	<div class="container">
+		<div class="row">&nbsp;</div>
+		<div class="row">기네스</div>
+		<!-- <div class="row">
+			<div class="col">
+				<button class="btn btn-outline-primary" style='margin-right:5px;' onclick='selectYear()'>전체</button>
+				<script>
+					var st = 2021;
+					var ed = new Date().getFullYear();
+					var tmp = "";
+					for(var i=st; i<=ed; i++){
+						tmp = "<button class=\"btn btn-outline-primary\" style='margin-right:5px;' onclick='selectYear("+i+")'>"+i+"</button>";
+						document.write(tmp);
+					}
+				</script>
+			</div>
+		</div> -->
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<h5 id="search_date_info"></h5>
+		</div>
+		<div class="row">
+			<h5>개인</h5>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">득점</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_GOAL"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">어시</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_ASST"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">매치일자</th>
+							<th scope="col" onclick="SortTableTbody(3, 'DESC', this)">한경기득점</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_G1"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">매치일자</th>
+							<th scope="col" onclick="SortTableTbody(3, 'DESC', this)">한경기어시</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_A1"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<h5>팀</h5>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">경기일자</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">출석(용병제외)</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_TPLAY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">경기일자</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">득점</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_TGOAL"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">경기일자</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">어시</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_TASST"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">경기일자</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">한팀득점</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_TG1"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">경기일자</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">한팀어시</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_TA1"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">경기일자</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">득실차</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_TC1"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+	</div>

@@ -1447,6 +1447,113 @@ else if($pcmd == "play_days"){
         }
     }
 }
+else if($pcmd == "team_record"){
+    if($conn){
+        $sql = "SELECT player_id, player_name
+        , SUM(IFNULL(play_yn, 0)) play_cnt
+        , SUM(IFNULL(win_yn, 0)) win_cnt
+        , SUM(IFNULL(goal_cnt, 0)) goal_cnt
+        , SUM(IFNULL(asst_cnt, 0)) asst_cnt
+      FROM football_tpm_view2
+      WHERE 1=1
+      AND team_id = 1
+      AND match_date IS NOT NULL
+      AND player_name NOT LIKE '_용병%'
+      ";
+        if( ! empty($_REQUEST["searchYear"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["searchYear"].".01.01' AND '".$_REQUEST["searchYear"].".12.31' ";
+        }
+        $sql = $sql."
+      AND play_yn = 1
+      GROUP BY player_id, player_name";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_name'=>$row['player_name']
+                ,'play_cnt'=>$row['play_cnt']
+                ,'win_cnt'=>$row['win_cnt']
+                ,'goal_cnt'=>$row['goal_cnt']
+                ,'asst_cnt'=>$row['asst_cnt']
+                )
+            );
+        }
+    }
+}
+else if($pcmd == "team_record1"){
+    if($conn){
+        $sql = "SELECT player_id, player_name
+        , match_date
+        , SUM(IFNULL(goal_cnt, 0)) goal_cnt
+        , SUM(IFNULL(asst_cnt, 0)) asst_cnt
+      FROM football_tpm_view2
+      WHERE 1=1
+      AND team_id = 1
+      AND match_date IS NOT NULL
+      ";
+        if( ! empty($_REQUEST["searchYear"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["searchYear"].".01.01' AND '".$_REQUEST["searchYear"].".12.31' ";
+        }
+        $sql = $sql."
+      AND play_yn = 1
+      and player_name not like '_용병%'
+      GROUP BY player_id, player_name, match_date";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'player_name'=>$row['player_name']
+                ,'match_date'=>$row['match_date']
+                ,'goal_cnt'=>$row['goal_cnt']
+                ,'asst_cnt'=>$row['asst_cnt']
+                )
+            );
+        }
+    }
+}
+else if($pcmd == "team_record2"){
+    if($conn){
+        $sql = "SELECT match_date
+        , SUM(case when player_name like '_용병%' then 0 else play_yn end) play_cnt
+        , SUM(team_a_yn) team_a_cnt
+        , SUM(team_b_yn) team_b_cnt
+        , SUM(goal_cnt) goal_cnt
+        , SUM(asst_cnt) asst_cnt
+        , SUM(case when team_a_yn = 1  then goal_cnt ELSE 0 END) team_a_goal
+        , SUM(case when team_b_yn = 1  then goal_cnt ELSE 0 END) team_b_goal
+        , SUM(case when team_a_yn = 1  then asst_cnt ELSE 0 END) team_a_asst
+        , SUM(case when team_b_yn = 1  then asst_cnt ELSE 0 END) team_b_asst
+        , ABS(SUM(case when team_a_yn = 1  then goal_cnt ELSE 0 END) - SUM(case when team_b_yn = 1  then goal_cnt ELSE 0 END)) c_goal
+    FROM football_tpm_view2
+    WHERE 1=1
+    AND team_id = 1
+    AND match_date IS NOT NULL
+      ";
+        if( ! empty($_REQUEST["searchYear"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["searchYear"].".01.01' AND '".$_REQUEST["searchYear"].".12.31' ";
+        }
+        $sql = $sql."
+      AND play_yn = 1
+      GROUP BY match_date";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, array(
+                'match_date'=>$row['match_date']
+                ,'play_cnt'=>$row['play_cnt']
+                ,'team_a_cnt'=>$row['team_a_cnt']
+                ,'team_b_cnt'=>$row['team_b_cnt']
+                ,'goal_cnt'=>$row['goal_cnt']
+                ,'asst_cnt'=>$row['asst_cnt']
+                ,'team_a_goal'=>$row['team_a_goal']
+                ,'team_b_goal'=>$row['team_b_goal']
+                ,'team_a_asst'=>$row['team_a_asst']
+                ,'team_b_asst'=>$row['team_b_asst']
+                ,'c_goal'=>$row['c_goal']
+                ,'team_max_goal'=>$row['team_a_goal']>$row['team_b_goal']?$row['team_a_goal']:$row['team_b_goal']
+                ,'team_max_asst'=>$row['team_a_asst']>$row['team_b_asst']?$row['team_a_asst']:$row['team_b_asst']
+                )
+            );
+        }
+    }
+}
 else{
     
 }
