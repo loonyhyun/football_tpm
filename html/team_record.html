@@ -31,6 +31,246 @@
 			$("#search_date_info").html(year + "년");
 		}
 		*/
+		var VIEW_CNT = 3;
+		$.ajax({
+			async : false,
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "team_record3",
+				id : TEAM_ID,
+				searchYear: year
+			},
+			dataType : "json",
+			success : function(data) {
+				var nm_arr = [];
+				var max_arr = [];
+				var prev = null;
+				var next = null;
+
+				var max = 0;
+				for(var i=0; i<data.length; i++){
+					next = data[i];
+					if(prev != null){
+						if(prev.player_id == next.player_id){
+							if(prev.play_yn == 1 && next.play_yn == 1){
+								max++;
+							}
+							else{
+								if(max_arr[prev.player_id] < max){
+									max_arr[prev.player_id] = max;
+								}
+								max = 0;
+							}
+						}
+						else{
+							//console.log(next)
+							if(max_arr[prev.player_id] < max){
+								max_arr[prev.player_id] = max;
+							}
+							nm_arr[next.player_id] = next.player_name;
+							max_arr[next.player_id] = 0;
+							max = 0;
+							if(next.play_yn > 0){
+								max++;
+							}
+						}
+					}
+					else{
+						nm_arr[next.player_id] = next.player_name;
+						max_arr[next.player_id] = 0;
+						if(next.play_yn > 0){
+							max++;
+						}
+					}
+					prev = next;
+				}
+				if(max_arr[prev.player_id] < max){
+					max_arr[prev.player_id] = max;
+				}
+				
+				var dm = [];
+				var di=0;
+				for(var i=1;i<max_arr.length; i++){
+					//console.log(nm_arr[i] + ": " + max_arr[i])
+					if(nm_arr[i] != undefined){
+						dm[di] = {
+							"nm":nm_arr[i]
+							, "max":max_arr[i]
+						}
+						di++;
+					}
+				}
+				dm = dm.sort((a,b) => (b.max - a.max));
+				//console.log(dm)
+				for(var i=0; i<VIEW_CNT; i++){
+					var tmp = dm[i];
+					setHtml(
+						"VIEW_TBODY_CON1", tmp.nm, tmp.max
+					)
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
+		
+		$.ajax({
+			type : "post",
+			url : '/football_tpm/get.php',
+			data : {
+				cmd : "team_record3",
+				id : TEAM_ID,
+				searchYear: year,
+				searchPlay: 1
+			},
+			dataType:"json",
+			success : function(data) {
+				var nm_arr = [];
+				var max_arr = [];
+				var max2_arr = [];
+				var max3_arr = [];
+
+				var prev = null;
+				var next = null;
+
+				var max = 0;
+				var max2 = 0;
+				var max3 = 0;
+				for(var i=0; i<data.length; i++){
+					next = data[i];
+					if(prev != null){
+						if(prev.player_id == next.player_id){
+							if(prev.goal_cnt > 0 && next.goal_cnt > 0){
+								max++;
+							}
+							else{
+								if(max_arr[prev.player_id] < max){
+									max_arr[prev.player_id] = max;
+								}
+								max = 0;
+							}
+							if(prev.asst_cnt > 0 && next.asst_cnt > 0){
+								max2++;
+							}
+							else{
+								if(max2_arr[prev.player_id] < max2){
+									max2_arr[prev.player_id] = max2;
+								}
+								max2 = 0;
+							}
+							if(
+									(prev.goal_cnt > 0 || prev.asst_cnt > 0)
+								&& (next.goal_cnt > 0 || next.asst_cnt > 0)
+							){
+								max3++;
+							}
+							else{
+								if(max3_arr[prev.player_id] < max3){
+									max3_arr[prev.player_id] = max3;
+								}
+								max3 = 0;
+							}
+						}
+						else{
+							//console.log(next)
+							if(max_arr[prev.player_id] < max){
+								max_arr[prev.player_id] = max;
+							}
+							if(max2_arr[prev.player_id] < max2){
+								max2_arr[prev.player_id] = max2;
+							}
+							if(max3_arr[prev.player_id] < max3){
+								max3_arr[prev.player_id] = max3;
+							}
+							nm_arr[next.player_id] = next.player_name;
+							max_arr[next.player_id] = 0;
+							max2_arr[next.player_id] = 0;
+							max3_arr[next.player_id] = 0;
+							max = 0;
+							max2 = 0;
+							max3 = 0;
+							if(next.goal_cnt > 0){
+								max++;
+							}
+							if(next.asst_cnt > 0){
+								max2++;
+							}
+							if(next.goal_cnt > 0 || next.asst_cnt > 0){
+								max3++;
+							}
+						}
+					}
+					else{
+						nm_arr[next.player_id] = next.player_name;
+						max_arr[next.player_id] = 0;
+						max2_arr[next.player_id] = 0;
+						max3_arr[next.player_id] = 0;
+						if(next.goal_cnt > 0){
+							max++;
+						}
+						if(next.asst_cnt > 0){
+							max2++;
+						}
+						if(next.goal_cnt > 0 || next.asst_cnt > 0){
+							max3++;
+						}
+					}
+					prev = next;
+				}
+				if(max_arr[prev.player_id] < max){
+					max_arr[prev.player_id] = max;
+				}
+				if(max2_arr[prev.player_id] < max2){
+					max2_arr[prev.player_id] = max2;
+				}
+				if(max3_arr[prev.player_id] < max3){
+					max3_arr[prev.player_id] = max3;
+				}
+				
+				var dm = [];
+				var di=0;
+				for(var i=1;i<max_arr.length; i++){
+					//console.log(nm_arr[i] + ": " + max_arr[i])
+					if(nm_arr[i] != undefined){
+						dm[di] = {
+							"nm":nm_arr[i]
+							, "max":max_arr[i]
+							, "max2":max2_arr[i]
+							, "max3":max3_arr[i]
+						}
+						di++;
+					}
+				}
+				dm = dm.sort((a,b) => (b.max - a.max));
+				//console.log(dm)
+				for(var i=0; i<VIEW_CNT; i++){
+					var tmp = dm[i];
+					setHtml(
+						"VIEW_TBODY_CON2", tmp.nm, tmp.max
+					)
+				}
+				dm = dm.sort((a,b) => (b.max2 - a.max2));
+				//console.log(dm)
+				for(var i=0; i<VIEW_CNT; i++){
+					var tmp = dm[i];
+					setHtml(
+						"VIEW_TBODY_CON3", tmp.nm, tmp.max2
+					)
+				}
+				dm = dm.sort((a,b) => (b.max3 - a.max3));
+				//console.log(dm)
+				for(var i=0; i<VIEW_CNT; i++){
+					var tmp = dm[i];
+					setHtml(
+						"VIEW_TBODY_CON4", tmp.nm, tmp.max3
+					)
+				}
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+			}
+		});
 		$.ajax({
 			async : false,
 			type : "post",
@@ -43,14 +283,14 @@
 			dataType : "json",
 			success : function(data) {
 				data = data.sort((a,b) => (b.goal_cnt - a.goal_cnt));
-				for(var i=0; i<1; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_GOAL", tmp.player_name, tmp.goal_cnt
 					)
 				}
 				data = data.sort((a,b) => (b.asst_cnt - a.asst_cnt));
-				for(var i=0; i<1; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_ASST", tmp.player_name, tmp.asst_cnt
@@ -73,14 +313,14 @@
 			dataType : "json",
 			success : function(data) {
 				data = data.sort((a,b) => (b.goal_cnt - a.goal_cnt));
-				for(var i=0; i<3; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_G1", tmp.player_name, tmp.match_date, tmp.goal_cnt
 					)
 				}
 				data = data.sort((a,b) => (b.asst_cnt - a.asst_cnt));
-				for(var i=0; i<3; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_A1", tmp.player_name, tmp.match_date, tmp.asst_cnt
@@ -124,21 +364,21 @@
 					)
 				}
 				data = data.sort((a,b) => (b.team_max_goal - a.team_max_goal));
-				for(var i=0; i<3; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_TG1", tmp.match_date, tmp.team_max_goal
 					)
 				}
 				data = data.sort((a,b) => (b.team_max_asst - a.team_max_asst));
-				for(var i=0; i<3; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_TA1", tmp.match_date, tmp.team_max_asst
 					)
 				}
 				data = data.sort((a,b) => (b.c_goal - a.c_goal));
-				for(var i=0; i<3; i++){
+				for(var i=0; i<VIEW_CNT; i++){
 					var tmp = data[i];
 					setHtml(
 						"VIEW_TBODY_TC1", tmp.match_date, tmp.c_goal
@@ -241,6 +481,55 @@
 						</tr>
 					</thead>
 					<tbody class="VIEW_TBODY" id="VIEW_TBODY_A1"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<h5>연속</h5>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">연속출전</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_CON1"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">출전시연속 공포</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_CON4"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">출전시연속 득점</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_CON2"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table id="VIEW_TABLE" class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead class="VIEW_THEAD">
+						<tr style="background-color:#999;">
+							<th scope="col" onclick="SortTableTbody(1, 'ASC', this)">이름</th>
+							<th scope="col" onclick="SortTableTbody(2, 'DESC', this)">출전시연속 어시</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_TBODY" id="VIEW_TBODY_CON3"></tbody>
 				</table>
 			</div>
 		</div>

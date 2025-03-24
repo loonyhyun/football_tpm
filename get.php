@@ -1554,6 +1554,37 @@ else if($pcmd == "team_record2"){
         }
     }
 }
+else if($pcmd == "team_record3"){
+    if($conn){
+        $sql = "SELECT player_id, player_name, match_date, play_yn, win_yn, goal_cnt, asst_cnt
+        FROM football_tpm_view
+        where team_id = '".$pid."'
+      AND player_name NOT LIKE '_용병%'
+      ";
+        if( ! empty($_REQUEST["searchYear"]) ){
+            $sql = $sql." AND match_date BETWEEN '".$_REQUEST["searchYear"].".01.01' AND '".$_REQUEST["searchYear"].".12.31' ";
+        }
+        if( ! empty($_REQUEST["searchPlay"]) ){
+            $sql = $sql." AND play_yn = 1 ";
+        }
+        $sql = $sql."
+        order by player_id, match_date
+        ";
+        $result = mysqli_query($conn, $sql);
+        while($row = mysqli_fetch_array($result)){
+            array_push($array, 
+                array('player_id'=>$row['player_id']
+                , 'player_name'=>$row['player_name']
+                , 'match_date'=>$row['match_date']
+                , 'play_yn'=>$row['play_yn']
+                , 'win_yn'=>$row['win_yn']
+                , 'goal_cnt'=>$row['goal_cnt']
+                , 'asst_cnt'=>$row['asst_cnt']
+                )
+            );
+        }
+    }
+}
 else{
     
 }
