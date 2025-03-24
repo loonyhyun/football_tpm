@@ -100,7 +100,7 @@
 			}else if(win_ab == "-"){
 				win_ab = "DRAW"
 			}
-			console.log(tmp)
+			//console.log(tmp)
 			if(tmp["other_team"] != undefined && tmp["other_team"] != null){
 				otherTeam = tmp["other_team"];
 			}
@@ -284,13 +284,17 @@
 	}
 
 	function MatchListVisible(){
-		if($("#MatchListThead").is(":visible")){
+		if($("#MatchListThead").is(":visible") || $("#MatchListTheadOnlyVs").is(":visible")){
 			$("#MatchListThead").hide();
 			$("#MatchlistTbody").hide();
+			$("#MatchListTheadOnlyVs").hide();
+			$("#MatchlistTbodyOnlyVs").hide();
 			//$("#MatchListCaption").text("경기 리스트 - 숨김");
 		}else{
 			$("#MatchListThead").show();
 			$("#MatchlistTbody").show();
+			$("#MatchListTheadOnlyVs").show();
+			$("#MatchlistTbodyOnlyVs").show();
 			//$("#MatchListCaption").text("경기 리스트 - 보기");
 		}
 	}
@@ -397,7 +401,7 @@
 					경기 리스트 (보기 / 숨기기)
 				</h6>
 				<button class="btn btn-danger" onclick="setMatchOnlyVs();">매치만보기</button>
-				<div id="MatchListMainDiv" style="height:720px; overflow: hidden;">
+				<div id="MatchListMainDiv" style="height:700px; overflow: hidden;">
 					<table class="table auto_font_size" id="MatchListMainTable">
 						<colgroup>
 							<col width="15%"/>
@@ -414,14 +418,14 @@
 						<tbody id="MatchlistTbody"></tbody>
 					</table>
 				</div>
-				<div id="MatchListMainDivOnlyVs" style="height:720px; overflow: hidden; display: none;">
+				<div id="MatchListMainDivOnlyVs" style="height:700px; overflow: hidden; display: none;">
 					<table class="table auto_font_size" id="MatchListMainTable">
 						<colgroup>
 							<col width="15%"/>
 							<col width="25%"/>
 							<col width="25%"/>
 						</colgroup>
-						<thead id="MatchListThead">
+						<thead id="MatchListTheadOnlyVs">
 							<tr>
 								<th scope="col">#</th>
 								<th scope="col">경기일자</th>
