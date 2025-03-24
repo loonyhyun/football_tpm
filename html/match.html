@@ -15,6 +15,8 @@
 	});
 
 
+	var dlist = null;
+	var dlist_m = [];
 	function getMatchHtmlList(){
 		$.ajax({
 			type : "post",
@@ -25,39 +27,98 @@
 			},
 			dataType:"json",
 			success : function(data, textStatus, jqXHR) {
-				var target = $("#MatchlistTbody");
-				target.html("");
+				dlist = data;
 				
+				setMatchHtml(dlist);
+
 				for(var i=0; i<data.length; i++){
 					var tmp = data[i];
-					var match_id = tmp["match_id"];
-					var match_date = tmp["match_date"];
-					var win_ab = tmp["win_ab"];
 					var match_yn = tmp["match_yn"];
-					if(win_ab == 'a'){
-						win_ab = "A팀 (RED)";
-					}else if(win_ab == 'b'){
-						win_ab = "B팀 (BLUE)";
-					}else if(win_ab == "-"){
-						win_ab = "DRAW"
-					}
-					var str = "<tr id='matchlist_"+match_id+"' onclick='getMatchHtml("+match_id+", \""+match_date+"\", \""+win_ab+"\");'>";
-						str += "<td>"+(i+1)+"</td>";
-						str += "<td>"+match_date + (match_yn == 'Y' ? '(M)' : '') +"</td>";
-						if(match_yn == 'Y'){
-							str += "<td>"+ (tmp["win_ab"] == 'a' ? '승' : tmp["win_ab"] == 'b' ? '패' : 'DRAW') +"</td>";
-						}else{
-							str += "<td>"+win_ab+"</td>";
-						}
-						str += "</tr>";
-					target.append(str);
-
-					if(i==0){
-						getMatchHtml(match_id, match_date, win_ab);
+					if(match_yn == 'Y'){
+						dlist_m.push(tmp);
 					}
 				}
+				//console.log(dlist_m)
 			}
 		});
+	}
+
+	function setMatchOnlyVs(){
+		setMatchHtmlOnlyVs(dlist_m);
+		$("#MatchListMainDiv").hide();
+		$("#MatchListMainDivOnlyVs").show();
+	}
+
+	function setMatchHtml(data){
+		var target = $("#MatchlistTbody");
+		target.html("");
+		
+		for(var i=0; i<data.length; i++){
+			var tmp = data[i];
+			var match_id = tmp["match_id"];
+			var match_date = tmp["match_date"];
+			var win_ab = tmp["win_ab"];
+			var match_yn = tmp["match_yn"];
+			if(win_ab == 'a'){
+				win_ab = "A팀 (RED)";
+			}else if(win_ab == 'b'){
+				win_ab = "B팀 (BLUE)";
+			}else if(win_ab == "-"){
+				win_ab = "DRAW"
+			}
+			var str = "<tr id='matchlist_"+match_id+"' onclick='getMatchHtml("+match_id+", \""+match_date+"\", \""+win_ab+"\");'>";
+				str += "<td>"+(i+1)+"</td>";
+				str += "<td>"+match_date + (match_yn == 'Y' ? '(M)' : '') +"</td>";
+				if(match_yn == 'Y'){
+					str += "<td>"+ (tmp["win_ab"] == 'a' ? '승' : tmp["win_ab"] == 'b' ? '패' : 'DRAW') +"</td>";
+				}else{
+					str += "<td>"+win_ab+"</td>";
+				}
+				str += "</tr>";
+			target.append(str);
+
+			if(i==0){
+				getMatchHtml(match_id, match_date, win_ab);
+			}
+		}
+	}
+	function setMatchHtmlOnlyVs(data){
+		var target = $("#MatchlistTbodyOnlyVs");
+		target.html("");
+		
+		for(var i=0; i<data.length; i++){
+			var tmp = data[i];
+			var match_id = tmp["match_id"];
+			var match_date = tmp["match_date"];
+			var win_ab = tmp["win_ab"];
+			var match_yn = tmp["match_yn"];
+			var otherTeam = "-";
+			if(win_ab == 'a'){
+				win_ab = "A팀 (RED)";
+			}else if(win_ab == 'b'){
+				win_ab = "B팀 (BLUE)";
+			}else if(win_ab == "-"){
+				win_ab = "DRAW"
+			}
+			console.log(tmp)
+			if(tmp["other_team"] != undefined && tmp["other_team"] != null){
+				otherTeam = tmp["other_team"];
+			}
+			var str = "<tr id='matchlist_"+match_id+"' onclick='getMatchHtml("+match_id+", \""+match_date+"\", \""+win_ab+"\");'>";
+				str += "<td>"+(i+1)+"</td>";
+				str += "<td>"+match_date + " " + (tmp["win_ab"] == 'a' ? '승' : tmp["win_ab"] == 'b' ? '패' : 'DRAW') +"</td>";
+				if(match_yn == 'Y'){
+					str += "<td>"+ otherTeam + "</td>";
+				}else{
+					str += "<td>"+win_ab+"</td>";
+				}
+				str += "</tr>";
+			target.append(str);
+
+			if(i==0){
+				getMatchHtml(match_id, match_date, win_ab);
+			}
+		}
 	}
 
 	var selectedIdByMatchHtml = 0;
@@ -335,6 +396,7 @@
 				<h6 style="margin-top:10px; font-weight: bold; color:black; cursor: pointer;" onclick="MatchListVisible()" id="MatchListCaption">
 					경기 리스트 (보기 / 숨기기)
 				</h6>
+				<button class="btn btn-danger" onclick="setMatchOnlyVs();">매치만보기</button>
 				<div id="MatchListMainDiv" style="height:720px; overflow: hidden;">
 					<table class="table auto_font_size" id="MatchListMainTable">
 						<colgroup>
@@ -352,8 +414,25 @@
 						<tbody id="MatchlistTbody"></tbody>
 					</table>
 				</div>
+				<div id="MatchListMainDivOnlyVs" style="height:720px; overflow: hidden;">
+					<table class="table auto_font_size" id="MatchListMainTable">
+						<colgroup>
+							<col width="15%"/>
+							<col width="25%"/>
+							<col width="25%"/>
+						</colgroup>
+						<thead id="MatchListThead">
+							<tr>
+								<th scope="col">#</th>
+								<th scope="col">경기일자</th>
+								<th scope="col">상대팀</th>
+							</tr>
+						</thead>
+						<tbody id="MatchlistTbodyOnlyVs"></tbody>
+					</table>
+				</div>
 				<div class="d-grid gap-2">
-					<button class="btn btn-warning" onclick="$('#MatchListMainDiv').css('height', '');">전체리스트보기</button>
+					<button class="btn btn-warning" onclick="$('#MatchListMainDiv').css('height', '');$('#MatchListMainDivOnlyVs').css('height', '');">전체리스트보기</button>
 				</div>
 			</div>
 		</div>

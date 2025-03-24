@@ -535,14 +535,15 @@ else if($pcmd == "tpm_view_month_rank"){
 }
 else if($pcmd == "matchlist"){
     if($conn){
-        $sql = "SELECT id, match_date, win_ab, match_yn
+        $sql = "SELECT id, match_date, win_ab, match_yn, other_team
                 FROM football_match
                 WHERE team_id = '".$pid."' order by match_date desc";
         $result = mysqli_query($conn, $sql);
         //$row = mysqli_fetch_array($result);
         while($row = mysqli_fetch_array($result)){
             array_push($array, array('match_id'=>$row['id'],'match_date'=>$row['match_date']
-            ,'win_ab'=>$row['win_ab'],'match_yn'=>$row['match_yn']));
+            ,'win_ab'=>$row['win_ab'],'match_yn'=>$row['match_yn']
+            ,'other_team'=>$row['other_team']));
         }
     }
 }
