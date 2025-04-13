@@ -32,6 +32,7 @@
 		}
 		*/
 		var VIEW_CNT = 3;
+		
 		$.ajax({
 			async : false,
 			type : "post",
@@ -60,7 +61,11 @@
 								if(max_arr[prev.player_id] < max){
 									max_arr[prev.player_id] = max;
 								}
-								max = 0;
+								if(next.play_yn == 1){
+									max = 1;
+								}else{
+									max = 0;
+								}
 							}
 						}
 						else{
@@ -115,6 +120,7 @@
 			}
 		});
 		
+		
 		$.ajax({
 			type : "post",
 			url : '/football_tpm/get.php',
@@ -148,7 +154,11 @@
 								if(max_arr[prev.player_id] < max){
 									max_arr[prev.player_id] = max;
 								}
-								max = 0;
+								if(next.goal_cnt > 0){
+									max = 1;
+								}else{
+									max = 0;
+								}
 							}
 							if(prev.asst_cnt > 0 && next.asst_cnt > 0){
 								max2++;
@@ -157,7 +167,11 @@
 								if(max2_arr[prev.player_id] < max2){
 									max2_arr[prev.player_id] = max2;
 								}
-								max2 = 0;
+								if(next.asst_cnt > 0){
+									max2 = 1;
+								}else{
+									max2 = 0;
+								}
 							}
 							if(
 									(prev.goal_cnt > 0 || prev.asst_cnt > 0)
@@ -169,11 +183,14 @@
 								if(max3_arr[prev.player_id] < max3){
 									max3_arr[prev.player_id] = max3;
 								}
-								max3 = 0;
+								if((next.goal_cnt > 0 || next.asst_cnt > 0)){
+									max3 = 1;
+								}else{
+									max3 = 0;
+								}
 							}
 						}
 						else{
-							//console.log(next)
 							if(max_arr[prev.player_id] < max){
 								max_arr[prev.player_id] = max;
 							}
@@ -271,6 +288,9 @@
 				alert("오류발생 관리자에게 문의하세요.")
 			}
 		});
+		if(1==1){
+			return;
+		}
 		$.ajax({
 			async : false,
 			type : "post",
