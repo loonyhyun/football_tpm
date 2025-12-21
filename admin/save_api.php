@@ -42,7 +42,7 @@ else if($pcmd == "games"){
 		$stmt = $pdo->prepare($sql);
 		$stmt->execute();
 
-		$result = $stmt->fetch();
+		$result = $stmt->execute();
 		if($result){
 			echo "ok";
 		}
@@ -51,7 +51,20 @@ else if($pcmd == "games"){
 		}
 	}
 	else{
-		echo "exist";
+		$sql = "UPDATE api_games
+		SET
+			game_value = '".$_REQUEST["game_value"]."'
+		WHERE game_id = '".$_REQUEST["game_id"]."'
+		";
+
+		$stmt = $pdo->prepare($sql);
+		$result = $stmt->execute();
+		if($result){
+			echo "update_ok";
+		}
+		else{
+			echo "update_fail";
+		}
 	}
 }
 else if($pcmd == "attends"){
@@ -72,9 +85,7 @@ else if($pcmd == "attends"){
 		)";
 
 		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-
-		$result = $stmt->fetch();
+		$result = $stmt->execute();
 		if($result){
 			echo "ok";
 		}
@@ -90,14 +101,13 @@ else if($pcmd == "attends"){
 		";
 
 		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-
-		$result = $stmt->fetch();
+		$result = $stmt->execute();
+		echo ($result);
 		if($result){
-			echo "ok";
+			echo "update_ok";
 		}
 		else{
-			echo "fail";
+			echo "update_fail";
 		}
 	}
 }
@@ -119,9 +129,7 @@ else if($pcmd == "quarter_events"){
 		)";
 
 		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-
-		$result = $stmt->fetch();
+		$result = $stmt->execute();
 		if($result){
 			echo "ok";
 		}
@@ -137,14 +145,12 @@ else if($pcmd == "quarter_events"){
 		";
 
 		$stmt = $pdo->prepare($sql);
-		$stmt->execute();
-
-		$result = $stmt->fetch();
+		$result = $stmt->execute();
 		if($result){
-			echo "ok";
+			echo "update_ok";
 		}
 		else{
-			echo "fail";
+			echo "update_fail";
 		}
 	}
 }
