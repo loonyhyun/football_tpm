@@ -703,6 +703,9 @@ function saveMatch() {
                         var tmpQuarter = tmpB[i];
                         match_d_scoreless2(mid, tmpQuarter, 'b');
                     }
+                    if(tmpA.length == 0 && tmpB.length == 0){
+                        match_d_scoreless2(mid, '0', 'c');
+                    }
 
                     alert("등록되었습니다.");
                     location.reload();
