@@ -31,7 +31,8 @@ else if($pcmd == "games"){
 	$stmt->execute();
 
 	$result = $stmt->fetch();
-	if($result['cnt'] === 0){
+	
+	if($result['cnt'] === 0 || $result['cnt'] === '0'){
 		$sql = "INSERT INTO api_games
 		(game_id, game_value)
 		values (
@@ -41,8 +42,6 @@ else if($pcmd == "games"){
 
 		$stmt = $pdo->prepare($sql);
 		$stmt->execute();
-
-		$result = $stmt->execute();
 		if($result){
 			echo "ok";
 		}
