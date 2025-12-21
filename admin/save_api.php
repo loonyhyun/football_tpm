@@ -75,7 +75,7 @@ else if($pcmd == "attends"){
 	$stmt->execute();
 
 	$result = $stmt->fetch();
-	if($result['cnt'] === 0){
+	if($result['cnt'] === 0 || $result['cnt'] === '0'){
 		$sql = "INSERT INTO api_attendances
 		(game_id, attendances_value)
 		values (
@@ -119,7 +119,7 @@ else if($pcmd == "quarter_events"){
 	$stmt->execute();
 
 	$result = $stmt->fetch();
-	if($result['cnt'] === 0){
+	if($result['cnt'] === 0 || $result['cnt'] === '0'){
 		$sql = "INSERT INTO api_quarter_events
 		(game_id, quarter_events_value)
 		values (
