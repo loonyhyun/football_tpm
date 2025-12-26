@@ -1,0 +1,162 @@
+<script>
+	var difWindowHeight = 320;
+
+	$(document).ready(function(){
+		var targetHeader = 99;
+		getTeam();
+		$("#header_" + targetHeader).addClass("fw-bold");
+		$("#drop_header").text($("#drop_header_" + targetHeader).text());
+		
+		setLayoutTableInnerDiv();
+
+		getMercenary();
+
+		if(month < 10){
+			month = "0" + month;
+		}
+		if(date < 10){
+			date = "0" + date;
+		}
+		$("#input_match_date").val(year + "." + month + "." + date);
+	});
+
+	$(window).resize(function(){
+		setLayoutTableInnerDiv();
+	});
+
+	function setLayoutTableInnerDiv(){
+		
+		var wh = $(window).height();
+		$(".TABLE_INNER_DIV").each(function(){
+			//$(this).css("height", wh - difWindowHeight);
+		});
+	}
+
+	function getMercenary(){
+		
+		$.ajax({
+			//async: false, 
+			type : "post",
+			url : '/football_tpm/into.php',
+			data : {
+				cmd : "get",
+				id : TEAM_ID
+			},
+			dataType : "json",
+			success : function(data) {
+				var tbody = $("#DATA_TBODY");
+				tbody.html("");
+
+				var d1 = data[0]["d1"];
+				var d2 = data[0]["d2"];
+
+				var avg = [];
+
+				var chk = 0;
+				var arr = [];
+				var prevdate = new Date();
+				for(var i=0; i<d2.length; i++){
+					var tmp = d2[i];
+
+					var rn = tmp["rnum"];
+					var md = tmp["m_date"];
+					var nm = tmp["m_name"];
+
+					var date = new Date(md.replace(/\./g, '-'));
+					if(rn == 1){
+						// first
+						chk = 0;
+						arr = [];
+					}
+					else{
+						chk = (prevdate - date) / (1000 * 3600 * 24);
+						arr.push(chk);
+					}
+					avg[nm] = arr;
+					prevdate = date;
+				}
+
+				for(var i=0; i<d1.length; i++){
+					var tmp = d1[i];
+					var md = tmp["m_date"];
+					var nm = tmp["m_name"];
+					var desc = tmp["m_desc"];
+					var tot = tmp["tot"];
+					var avg = avg[nm];
+					var sum = 0;
+					if(avg != undefined && avg.length > 0){
+						avg.forEach(n => sum += n);
+						avg = Math.floor(sum / avg.length);
+					}else{
+						avg = 0;
+					}
+					tbody.append("<tr>"
+						+"<td>"+(i+1)+"</td>"
+						+"<td>"+md+"</td>"
+						+"<td>"+nm+"</td>"
+						+"<td>"+tot+"</td>"
+						+"<td>"+avg+"</td>"
+						+"</tr>"
+					);
+				}
+				$("#loadingDiv").hide();
+			},
+			error : function(err) {
+				alert("오류발생 관리자에게 문의하세요.")
+				$("#loadingDiv").hide();
+			}
+		});
+	}
+
+	function saveMercenary(){
+		
+        $.ajax({
+            type : "post",
+            url : '/football_tpm/into.php',
+            data : {
+                cmd : "save",
+                id : TEAM_ID,
+                match_date : $("#input_match_date").val(),
+				nm: $("#input_nm").val()
+            },
+            success : function(data, textStatus, jqXHR) {
+                if (data == "ok") {
+                    location.reload();
+                }
+            }
+        });
+	}
+
+
+</script>
+
+	<div class="container" style="max-width:100%;">
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col">
+				<p>
+				</p>
+				<table class="table auto_font_size" style="width:100%; text-align:center;">
+					<colgroup>
+						<col width="130px"/>
+						<col width="300px"/>
+						<col width="300px"/>
+						<col width="300px"/>
+						<col width="300px"/>
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">No</th>
+							<th scope="col">Recent Date</th>
+							<th scope="col">Name</th>
+							<th scope="col">Total</th>
+							<th scope="col">Avg Interval</th>
+						</tr>
+					</thead>
+					<tbody style="font-size:12px;" id="DATA_TBODY">
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	
