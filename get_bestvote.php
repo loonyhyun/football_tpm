@@ -112,6 +112,9 @@ else if($pcmd == "count_player"){
     , sum(pos_rb ) pos_rb 
     , sum(pos_gk ) pos_gk 
     , sum(pos_lw + pos_st + pos_rw + pos_lm + pos_am + pos_cm + pos_dm + pos_rm + pos_lwb+ pos_rwb+ pos_lb + pos_cb + pos_rb + pos_gk) total_cnt
+    , sum(pos_lw + pos_lm + pos_lwb + pos_lb) left_cnt
+    , sum(pos_rw + pos_rm + pos_rwb + pos_rb) right_cnt
+    , sum(pos_st + pos_cm + pos_am + pos_dm + pos_cb) center_cnt
     FROM (
         select p.*
         ,(f.pos_lw like convert(concat('%$', p.player_id,'$%') using utf8)) AS pos_lw
@@ -144,6 +147,9 @@ else if($pcmd == "count_player"){
     while($row = mysqli_fetch_array($result)){
         array_push($array, array('player_name'=>$row['player_name']
             ,'total_cnt'=>$row['total_cnt']
+            ,'left_cnt'=>$row['left_cnt']
+            ,'right_cnt'=>$row['right_cnt']
+            ,'center_cnt'=>$row['center_cnt']
             ,'pos_lw'=>$row['pos_lw']
             ,'pos_st'=>$row['pos_st']
             ,'pos_rw'=>$row['pos_rw']
