@@ -1,3 +1,4 @@
+
 <script src="/football_tpm/include/bestresult.js"></script>
 <style>
 	.bestPlayer {
@@ -7,15 +8,15 @@
 </style>
 <script>
 	$(document).ready(function(){
-		var target_header = "best2025_2";
+		var target_header = "best2024";
 		getTeam();
 		$("#header_" + target_header).addClass("text-warning").removeClass("text-white");
 		$("#drop_header").text($("#drop_header_" + target_header).text());
 		setLayout();
-		var from = '2025.07.01';
+		var from = '2025.01.01';
 		var to = '2025.12.31';
-		getCount('2025.12.26', '2025.12.31');
 		MIN_PER = 50;
+		//getCount(from, '2023.01.01');
 		getTopScore(from, to, 10);
 	});
 
@@ -29,7 +30,7 @@
 	<div class="container">
 		<div class="row">&nbsp;</div>
 		<div class="row">
-			<h2>2025년 하반기 결산 - TOP10</h2>
+			<h2>2025년 결산 - TOP10</h2>
 			<h5 id="match_cnt"></h5>
 			<div class="col">
 				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
@@ -105,7 +106,7 @@
 			</div>
 		</div>
 		<div class="row">&nbsp;</div>
-		<div class="row">
+		<!-- <div class="row">
 			<div class="col-md-6">
 				<h2>BEST11</h2>
 				<div class="input-group">
@@ -161,6 +162,6 @@
 					<tbody id="RESULT_TBODY"></tbody>
 				</table>
 			</div>
-		</div>
+		</div> -->
 		<div class="row">&nbsp;</div>
 	</div>
