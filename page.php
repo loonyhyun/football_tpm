@@ -33,7 +33,7 @@ try {
         echo fgets($fp);
     }
     fclose($fp);
-    if(strpos($PAGE_NAME, "best20") == 0 && (strstr($PAGE_NAME, "_1") || strstr($PAGE_NAME, "_2"))){
+    if(substr($PAGE_NAME, 0, strlen("best20")) == "best20" && (strstr($PAGE_NAME, "_1") || strstr($PAGE_NAME, "_2"))){
         include './html/best.html';
     }
 } catch (Exception $th) {
