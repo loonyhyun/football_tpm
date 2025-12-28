@@ -33,6 +33,9 @@ try {
         echo fgets($fp);
     }
     fclose($fp);
+    if(strpos($PAGE_NAME, "best20") == 0 && (strstr($PAGE_NAME, "_1") || strstr($PAGE_NAME, "_2"))){
+        include './html/best.html';
+    }
 } catch (Exception $th) {
     $fp = fopen($SET_DIRECTORY."error.html", "r") or die("no found file.");
     while (!feof($fp)){

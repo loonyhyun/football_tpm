@@ -115,6 +115,9 @@ else if($pcmd == "count_player"){
     , sum(pos_lw + pos_lm + pos_lwb + pos_lb) left_cnt
     , sum(pos_rw + pos_rm + pos_rwb + pos_rb) right_cnt
     , sum(pos_st + pos_cm + pos_am + pos_dm + pos_cb) center_cnt
+    , sum(pos_lw + pos_st + pos_rw) fw_cnt
+    , sum(pos_lm + pos_am + pos_cm + pos_dm + pos_rm) mf_cnt
+    , sum(pos_lwb + pos_lb + pos_cb + pos_rb + pos_rwb) df_cnt
     FROM (
         select p.*
         ,(f.pos_lw like convert(concat('%$', p.player_id,'$%') using utf8)) AS pos_lw
@@ -150,6 +153,9 @@ else if($pcmd == "count_player"){
             ,'left_cnt'=>$row['left_cnt']
             ,'right_cnt'=>$row['right_cnt']
             ,'center_cnt'=>$row['center_cnt']
+            ,'fw_cnt'=>$row['fw_cnt']
+            ,'mf_cnt'=>$row['mf_cnt']
+            ,'df_cnt'=>$row['df_cnt']
             ,'pos_lw'=>$row['pos_lw']
             ,'pos_st'=>$row['pos_st']
             ,'pos_rw'=>$row['pos_rw']

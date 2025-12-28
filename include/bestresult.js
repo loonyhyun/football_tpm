@@ -15,6 +15,12 @@ pos_info["pos_lb" ] = [];
 pos_info["pos_cb" ] = [];
 pos_info["pos_rb" ] = [];
 pos_info["pos_gk" ] = [];
+pos_info["left_cnt" ] = [];
+pos_info["right_cnt" ] = [];
+pos_info["center_cnt" ] = [];
+pos_info["fw_cnt" ] = [];
+pos_info["mf_cnt" ] = [];
+pos_info["df_cnt" ] = [];
 var pos_ret = [];
 
 function getCount(from, to){
@@ -66,6 +72,10 @@ function getCountPlayer(from, to){
 				
 				tbody.append(str);
 			}
+
+			//2025.12.28 add.
+			setTypeByCount(data);
+			//2025.12.28 add.end.
 
 			setPositionByCount("pos_lw" );
 			setPositionByCount("pos_st" );
@@ -360,4 +370,105 @@ function setHtml(name, value, idx, target){
 	+"<td>"+name+"</td>"
 	+"<td>"+value+"</td>"
 	+"</tr>");
+}
+
+function setTypeByCount(data){
+	const lefts = [...data];
+	const rights = [...data];
+	const centers = [...data];
+	const fws = [...data];
+	const mfs = [...data];
+	const dfs = [...data];
+	lefts.sort((a, b) => b.left_cnt - a.left_cnt);
+	rights.sort((a, b) => b.right_cnt - a.right_cnt);
+	centers.sort((a, b) => b.center_cnt - a.center_cnt);
+	fws.sort((a, b) => b.fw_cnt - a.fw_cnt);
+	mfs.sort((a, b) => b.mf_cnt - a.mf_cnt);
+	dfs.sort((a, b) => b.df_cnt - a.df_cnt);
+
+
+	const multis = [...data];
+	multis.sort((a, b) => {
+		const an = (a.pos_st  > 0 ? 1 : 0)
+				   + (a.pos_lw  > 0 ? 1 : 0)
+				   + (a.pos_rw  > 0 ? 1 : 0)
+	               + (a.pos_lm  > 0 ? 1 : 0)
+	               + (a.pos_am  > 0 ? 1 : 0)
+	               + (a.pos_cm  > 0 ? 1 : 0)
+	               + (a.pos_dm  > 0 ? 1 : 0)
+	               + (a.pos_rm  > 0 ? 1 : 0)
+	               + (a.pos_lwb > 0 ? 1 : 0)
+	               + (a.pos_rwb > 0 ? 1 : 0)
+	               + (a.pos_lb  > 0 ? 1 : 0)
+	               + (a.pos_cb  > 0 ? 1 : 0)
+	               + (a.pos_rb  > 0 ? 1 : 0)
+	               + (a.pos_gk  > 0 ? 1 : 0)
+		const bn = (b.pos_st  > 0 ? 1 : 0)
+	               + (b.pos_lw  > 0 ? 1 : 0)
+	               + (b.pos_rw  > 0 ? 1 : 0)
+	               + (b.pos_lm  > 0 ? 1 : 0)
+	               + (b.pos_am  > 0 ? 1 : 0)
+	               + (b.pos_cm  > 0 ? 1 : 0)
+	               + (b.pos_dm  > 0 ? 1 : 0)
+	               + (b.pos_rm  > 0 ? 1 : 0)
+	               + (b.pos_lwb > 0 ? 1 : 0)
+	               + (b.pos_rwb > 0 ? 1 : 0)
+	               + (b.pos_lb  > 0 ? 1 : 0)
+	               + (b.pos_cb  > 0 ? 1 : 0)
+	               + (b.pos_rb  > 0 ? 1 : 0)
+	               + (b.pos_gk  > 0 ? 1 : 0);
+		if(an == bn){
+			return b.total_cnt - a.total_cnt;
+		}
+		return bn - an;
+	});
+	
+	const VIEW_CNT = 5;
+	for(let i=0; i<VIEW_CNT; i++){
+		setViewTypeByCount($('#RESULT_TBODY_LEFT'), (i+1), lefts[i].player_name, lefts[i].left_cnt);
+		setViewTypeByCount($('#RESULT_TBODY_RIGHT'), (i+1), rights[i].player_name, rights[i].right_cnt);
+		setViewTypeByCount($('#RESULT_TBODY_CENTER'), (i+1), centers[i].player_name, centers[i].center_cnt);
+		setViewTypeByCount($('#RESULT_TBODY_FW'), (i+1), fws[i].player_name, fws[i].fw_cnt);
+		setViewTypeByCount($('#RESULT_TBODY_MF'), (i+1), mfs[i].player_name, mfs[i].mf_cnt);
+		setViewTypeByCount($('#RESULT_TBODY_DF'), (i+1), dfs[i].player_name, dfs[i].df_cnt);
+
+		setViewTypeMultiByCount($('#RESULT_TBODY_MULTI'), (i+1), multis[i].player_name, multis[i]);
+	}
+}
+
+function setViewTypeByCount(tbody, no, player_name, cnt){
+	var str = "<tr>";
+		str += "<td>" + no + "</td>";
+		str += "<td>" + player_name + "</td>";
+		str += "<td>" + cnt + "</td>";
+		str += "</tr>";
+	
+	tbody.append(str);
+}
+
+function setViewTypeMultiByCount(tbody, no, player_name, multi) {
+	let cnt = 0;
+	let view = '';
+	if(multi.pos_st  > 0) { if(view != '') { view += '<br>'} view += '[ST] '  + multi.pos_st ; cnt++; }
+	if(multi.pos_lw  > 0) { if(view != '') { view += '<br>'} view += '[LW] '  + multi.pos_lw ; cnt++; }
+	if(multi.pos_rw  > 0) { if(view != '') { view += '<br>'} view += '[RW] '  + multi.pos_rw ; cnt++; }
+	if(multi.pos_lm  > 0) { if(view != '') { view += '<br>'} view += '[LM] '  + multi.pos_lm ; cnt++; }
+	if(multi.pos_am  > 0) { if(view != '') { view += '<br>'} view += '[AM] '  + multi.pos_am ; cnt++; }
+	if(multi.pos_cm  > 0) { if(view != '') { view += '<br>'} view += '[CM] '  + multi.pos_cm ; cnt++; }
+	if(multi.pos_dm  > 0) { if(view != '') { view += '<br>'} view += '[DM] '  + multi.pos_dm ; cnt++; }
+	if(multi.pos_rm  > 0) { if(view != '') { view += '<br>'} view += '[RM] '  + multi.pos_rm ; cnt++; }
+	if(multi.pos_lwb > 0) { if(view != '') { view += '<br>'} view += '[LWB] ' + multi.pos_lwb; cnt++; }
+	if(multi.pos_rwb > 0) { if(view != '') { view += '<br>'} view += '[RWB] ' + multi.pos_rwb; cnt++; }
+	if(multi.pos_lb  > 0) { if(view != '') { view += '<br>'} view += '[LB] '  + multi.pos_lb ; cnt++; }
+	if(multi.pos_cb  > 0) { if(view != '') { view += '<br>'} view += '[CB] '  + multi.pos_cb ; cnt++; }
+	if(multi.pos_rb  > 0) { if(view != '') { view += '<br>'} view += '[RB] '  + multi.pos_rb ; cnt++; }
+	if(multi.pos_gk  > 0) { if(view != '') { view += '<br>'} view += '[GK] '  + multi.pos_gk ; cnt++; }
+	var str = "<tr>";
+		str += "<td>" + no + "</td>";
+		str += "<td>" + player_name + "</td>";
+		str += "<td>" + cnt + ' (' + multi.total_cnt + ")</td>";
+		str += "<td>" + view + "</td>";
+		str += "</tr>";
+	
+	tbody.append(str);
 }

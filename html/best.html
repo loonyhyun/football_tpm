@@ -1,0 +1,213 @@
+<script src="/football_tpm/include/bestresult.js"></script>
+<style>
+	.bestPlayer {
+		max-width:80px;
+		display:inline-block; width:auto;
+	}
+</style>
+
+	<div class="container">
+		<div class="row">
+			<h5 id="match_cnt"></h5>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Play</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_BEST_TBODY" id="VIEW_BEST_PLAY_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Goal</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_BEST_TBODY" id="VIEW_BEST_GOAL_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Asst</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_BEST_TBODY" id="VIEW_BEST_ASST_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Pts</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_BEST_TBODY" id="VIEW_BEST_PTS_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">WinPer</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_BEST_TBODY" id="VIEW_BEST_WINPER_TBODY"></tbody>
+				</table>
+			</div>
+			<div class="col">
+				<table class="table text-center align-middle auto_font_size table-bordered table-striped">
+					<thead>
+						<tr class="table-success">
+							<th scope="col">#</th>
+							<th scope="col">Name</th>
+							<th scope="col">Def</th>
+						</tr>
+					</thead>
+					<tbody class="VIEW_BEST_TBODY"  id="VIEW_BEST_DEF_TBODY"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+		<div class="row">
+			<div class="col-md-6">
+				<h2>BEST11</h2>
+				<div class="input-group">
+					<span class="input-group-text">포메이션</span>
+					<input type="text" id="REG_FORMATION" class="form-control" readonly/>
+				</div>
+				<br>
+				<button class="btn-primary">FW</button>
+				<button class="btn-success">MF</button>
+				<button class="btn-warning">DF</button>
+				<button class="btn-secondary">GK</button>
+				<br>
+				
+				<table class="table" style="height:500px; text-align: center;vertical-align: middle;">
+					<tr class="table-primary">
+						<td class="bg-primary">
+							<div class="row" id="POSITION_ATT" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_1" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_2" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-success">
+						<td class="bg-success">
+							<div class="row" id="POSITION_MID_3" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-warning">
+						<td class="bg-warning">
+							<div class="row" id="POSITION_DEF" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+					<tr class="table-secondary">
+						<td class="bg-secondary">
+							<div class="row" id="POSITION_KEEP" style="text-align: -webkit-center; display: inline;"></div>
+						</td>
+					</tr>
+				</table>
+				<div class="row">
+					<div class="col-xs col-md-4">
+						<h2><i class="bi bi-arrow-left-square-fill" style="color:red;"></i> 좌측</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="table-danger"><th>No.</th><th>Name.</th><th>Cn.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_LEFT"></tbody>
+						</table>
+					</div>
+					<div class="col-xs col-md-4">
+						<h2><i class="bi bi-dash-square-fill" style="color:green;"></i> 중앙</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="table-success"><th>No.</th><th>Name.</th><th>Cn.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_CENTER"></tbody>
+						</table>
+					</div>
+					<div class="col-xs col-md-4">
+						<h2><i class="bi bi-arrow-right-square-fill" style="color:blue;"></i> 우측</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="table-primary"><th>No.</th><th>Name.</th><th>Cn.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_RIGHT"></tbody>
+						</table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs col-md-4">
+						<h2><i class="bi bi-arrow-up-circle-fill" style="color:#0d6efd;"></i> 공격</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="bg-primary"><th>No.</th><th>Name.</th><th>Cn.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_FW"></tbody>
+						</table>
+					</div>
+					<div class="col-xs col-md-4">
+						<h2><i class="bi bi-dash-circle-fill" style="color: #198754;"></i> 미들</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="bg-success"><th>No.</th><th>Name.</th><th>Cn.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_MF"></tbody>
+						</table>
+					</div>
+					<div class="col-xs col-md-4">
+						<h2><i class="bi bi-arrow-down-circle-fill" style="color: #ffc107;"></i> 수비</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="bg-warning"><th>No.</th><th>Name.</th><th>Cn.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_DF"></tbody>
+						</table>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col">
+						<h2><i class="bi bi-dpad-fill" style="color: #9d08c9;"></i> 멀티</h2>
+						<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+							<thead>
+								<tr class="bg-primary"><th>No.</th><th>Name.</th><th>Cn.(Total)</th><th>Detail.</th></tr>
+							</thead>
+							<tbody id="RESULT_TBODY_MULTI"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			<div class="col">
+				<h2>투표결과</h2>
+				<table class="table text-center align-middle auto_font_size table-bordered table-strip">
+					<thead>
+						<tr class="table-secondary"><th>No.</th><th>Name.</th><th>Count.</th><th>Detail.</th></tr>
+					</thead>
+					<tbody id="RESULT_TBODY"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="row">&nbsp;</div>
+	</div>
