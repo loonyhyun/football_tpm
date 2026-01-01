@@ -4,7 +4,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 $ch = curl_init();
 
-curl_setopt($ch, CURLOPT_URL, "https://soccer-two-liard.vercel.app/api/games");
+curl_setopt($ch, CURLOPT_URL, "https://soccer-fc.vercel.app/api/games");
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true); // SSL 검증
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
