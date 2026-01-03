@@ -33,7 +33,9 @@ try {
         echo fgets($fp);
     }
     fclose($fp);
-    if(substr($PAGE_NAME, 0, strlen("best20")) == "best20" && (strstr($PAGE_NAME, "_1") || strstr($PAGE_NAME, "_2"))){
+    //if(substr($PAGE_NAME, 0, strlen("best20")) == "best20" && (strstr($PAGE_NAME, "_1") || strstr($PAGE_NAME, "_2")))
+    if(substr($PAGE_NAME, 0, strlen("best20")) == "best20" && $PAGE_NAME != "best2021")
+    {
         include './html/best.html';
     }
 } catch (Exception $th) {

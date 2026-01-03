@@ -42,6 +42,12 @@ function getCount(from, to){
 			$("#REG_FORMATION").val(data[0]["formation"]);
 			setSelectedPosition();
 
+			let totalCnt = 0;
+			for(const d of data) {
+				totalCnt += parseInt(d.cnt);
+			}
+			$('#vote_result_h2').text('투표결과 (' + totalCnt + '표)')
+
 			getCountPlayer(from, to);
 		},
 		error : function(err) {
